@@ -1,5 +1,13 @@
+import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
 const data = [
   { name: "Takpannor av lertegel", value: 95 },
@@ -16,7 +24,9 @@ export function TopCostsChart() {
   return (
     <Card className="border-none shadow-none flex flex-col">
       <CardHeader>
-        <CardTitle className="text-lg">10 största kostnader - Artikelnivå</CardTitle>
+        <CardTitle className="text-lg">
+          10 största kostnader - Artikelnivå
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 p-0 pb-4">
         <ResponsiveContainer width="100%" height={300}>
@@ -25,9 +35,13 @@ export function TopCostsChart() {
             layout="vertical"
             margin={{ left: 8, right: 16, top: 0, bottom: 0 }}
           >
-            <XAxis key="x-axis" type="number" tick={{ fill: "#6b7280", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <XAxis
+              type="number"
+              tick={{ fill: "#6b7280", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+            />
             <YAxis
-              key="y-axis"
               type="category"
               dataKey="name"
               tick={{ fill: "#6b7280", fontSize: 11 }}
@@ -35,8 +49,19 @@ export function TopCostsChart() {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip key="tooltip" cursor={{ fill: "rgba(20,184,166,0.12)" }} contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }} />
-            <Bar key="bar-value" dataKey="value" fill="#14b8a6" radius={[0, 4, 4, 0]} />
+            <Tooltip
+              cursor={{ fill: "rgba(20,184,166,0.12)" }}
+              contentStyle={{
+                borderRadius: 10,
+                border: "1px solid #e5e7eb",
+                fontSize: 12,
+              }}
+            />
+            <Bar
+              dataKey="value"
+              fill="#14b8a6"
+              radius={[0, 4, 4, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
