@@ -9,7 +9,12 @@ import { Installningar } from "./pages/Installningar";
 export interface AppSettings {
   darkMode: boolean;
   language: "sv" | "en";
-  notifications: { dueInvoices: boolean; weeklyReport: boolean; newSupplier: boolean; budgetAlert: boolean };
+  notifications: {
+    dueInvoices: boolean;
+    weeklyReport: boolean;
+    newSupplier: boolean;
+    budgetAlert: boolean;
+  };
   defaultFormat: "csv" | "pdf";
   dateFormat: "dmy" | "ymd";
   currency: "SEK" | "EUR";
@@ -22,7 +27,12 @@ export interface AppSettings {
 const DEFAULT_SETTINGS: AppSettings = {
   darkMode: false,
   language: "sv",
-  notifications: { dueInvoices: true, weeklyReport: false, newSupplier: true, budgetAlert: true },
+  notifications: {
+    dueInvoices: true,
+    weeklyReport: false,
+    newSupplier: true,
+    budgetAlert: true,
+  },
   defaultFormat: "csv",
   dateFormat: "dmy",
   currency: "SEK",
@@ -35,7 +45,8 @@ const DEFAULT_SETTINGS: AppSettings = {
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
-  const [pendingDashboardAnalysis, setPendingDashboardAnalysis] = useState<SavedAnalysis | null>(null);
+  const [pendingDashboardAnalysis, setPendingDashboardAnalysis] =
+    useState<SavedAnalysis | null>(null);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [dashboardEditMode, setDashboardEditMode] = useState(false);
 
@@ -48,7 +59,7 @@ export default function App() {
   }, [settings.darkMode]);
 
   function handleSave(analysis: SavedAnalysis) {
-    setSavedAnalyses(prev => [analysis, ...prev]);
+    setSavedAnalyses((prev) => [analysis, ...prev]);
   }
 
   function handleAddToDashboard(analysis: SavedAnalysis) {
@@ -56,18 +67,25 @@ export default function App() {
   }
 
   function handleDeleteSaved(id: string) {
-    setSavedAnalyses(prev => prev.filter(a => a.id !== id));
+    setSavedAnalyses((prev) => prev.filter((a) => a.id !== id));
   }
 
   return (
-    <div className={`size-full ${settings.darkMode ? "bg-zinc-900" : "bg-[#f5f6fa]"}`}>
+    <div
+      className={`size-full ${settings.darkMode ? "bg-zinc-900" : "bg-[#f5f6fa]"}`}
+      role="application"
+      aria-label="Finansiellt kontrollcenter"
+    >
       <Sidebar currentPage={page} onNavigate={setPage} />
 
-      <div className="flex flex-col size-full overflow-hidden pl-16">
+      <main
+        className="flex flex-col size-full overflow-hidden pl-16"
+        aria-live="polite"
+      >
         {page === "dashboard" && (
           <Header
             editMode={dashboardEditMode}
-            onEditModeToggle={() => setDashboardEditMode(e => !e)}
+            onEditModeToggle={() => setDashboardEditMode((e) => !e)}
           />
         )}
         {page === "dashboard" && (
@@ -81,7 +99,10 @@ export default function App() {
           />
         )}
         {page === "ny-analys" && (
-          <NyAnalys onSave={handleSave} onAddToDashboard={handleAddToDashboard} />
+          <NyAnalys
+            onSave={handleSave}
+            onAddToDashboard={handleAddToDashboard}
+          />
         )}
         {page === "sparade" && (
           <SparadeAnalyser
@@ -95,7 +116,7 @@ export default function App() {
         {page === "installningar" && (
           <Installningar settings={settings} onSettingsChange={setSettings} />
         )}
-      </div>
+      </main>
     </div>
   );
 }

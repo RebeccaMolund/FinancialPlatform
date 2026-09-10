@@ -3,9 +3,16 @@ import { ChevronLeft, ChevronRight, Pencil, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { DateFieldButton } from "./DateFieldButton";
 import {
-  format, addMonths, subMonths, startOfMonth, endOfMonth,
-  eachDayOfInterval, isSameDay, isWithinInterval,
-  startOfWeek, endOfWeek,
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
+  isWithinInterval,
+  startOfWeek,
+  endOfWeek,
 } from "date-fns";
 import { sv } from "date-fns/locale";
 
@@ -32,7 +39,7 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
       if (range.start && day < range.start) {
         setRange({ start: day, end: range.start });
       } else {
-        setRange(r => ({ ...r, end: day }));
+        setRange((r) => ({ ...r, end: day }));
       }
       setSelecting("start");
     }
@@ -46,8 +53,11 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="absolute right-0 top-full mt-2 z-[100] rounded-2xl border border-gray-100 p-4 w-72"
-      style={{ backgroundColor: "var(--card)", boxShadow: "0 4px 24px rgba(0,47,85,0.12)" }}
-      onClick={e => e.stopPropagation()}
+      style={{
+        backgroundColor: "var(--card)",
+        boxShadow: "0 4px 24px rgba(0,47,85,0.12)",
+      }}
+      onClick={(e) => e.stopPropagation()}
     >
       {/* Month nav */}
       <div className="flex items-center justify-between mb-3">
@@ -70,8 +80,10 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-1">
-        {["Mån","Tis","Ons","Tor","Fre","Lör","Sön"].map(d => (
-          <div key={d} className="text-center text-xs text-gray-400 py-1">{d}</div>
+        {["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"].map((d) => (
+          <div key={d} className="text-center text-xs text-gray-400 py-1">
+            {d}
+          </div>
         ))}
       </div>
 
@@ -89,10 +101,11 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
               className={[
                 "text-xs py-1.5 rounded-lg transition-colors font-medium",
                 !isCurrentMonth ? "text-gray-300" : "text-gray-700",
-                (isStart || isEnd) ? "bg-[#14b8a6] !text-white" : "",
+                isStart || isEnd ? "bg-[#14b8a6] !text-white" : "",
                 inside ? "bg-[#14b8a6]/15 text-[#14b8a6]" : "",
                 isCurrentMonth && !isStart && !isEnd && !inside
-                  ? "hover:bg-[#14b8a6]/15 hover:text-[#14b8a6]" : "",
+                  ? "hover:bg-[#14b8a6]/15 hover:text-[#14b8a6]"
+                  : "",
               ].join(" ")}
             >
               {format(day, "d")}
@@ -125,48 +138,92 @@ interface HeaderProps {
 
 export function Header({ editMode, onEditModeToggle }: HeaderProps) {
   const [open, setOpen] = useState(false);
-  const [range] = useState({ start: new Date(2025, 6, 17), end: new Date(2025, 7, 17) });
+  const [range] = useState({
+    start: new Date(2025, 6, 17),
+    end: new Date(2025, 7, 17),
+  });
 
   const label = `${format(range.start, "dd/MM/yyyy")} - ${format(range.end, "dd/MM/yyyy")}`;
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 bg-transparent">
+    <header className="flex items-center justify-between px-6 py-4 bg-transparent">
       <div className="flex items-center gap-4">
-        {/* Avatar */}
-        <div className="w-10 h-10 bg-[#14b8a6] rounded-full flex items-center justify-center shrink-0">
-          <span className="text-white text-xs font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>LG</span>
+        <div
+          className="w-10 h-10 bg-[#14b8a6] rounded-full flex items-center justify-center shrink-0"
+          aria-hidden="true"
+        >
+          <span
+            className="text-white text-xs font-bold"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            LG
+          </span>
         </div>
-        {/* Welcome */}
         <h1
           className="text-[20px] leading-[28px] text-[#101828] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
         >
           Välkommen, Rebecca!
         </h1>
-        {/* Redigera dashboard */}
         {onEditModeToggle && (
           <button
+            type="button"
             onClick={onEditModeToggle}
-            className="flex items-center gap-2 px-6 py-3 rounded-[12px] transition-colors hover:bg-[#007681]/8"
-            style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500 }}
-          >
-            {editMode
-              ? <><Check className="size-4" style={{ color: "#007681" }} /><span className="text-[14px] tracking-[0.056px]" style={{ color: "#007681" }}>Klar</span></>
-              : <><Pencil className="size-4" style={{ color: "#007681" }} /><span className="text-[14px] tracking-[0.056px]" style={{ color: "#007681" }}>Redigera dashboard</span></>
+            aria-pressed={editMode}
+            aria-label={
+              editMode
+                ? "Avsluta redigering av dashboard"
+                : "Redigera dashboard"
             }
+            className="flex items-center gap-2 px-6 py-3 rounded-[12px] transition-colors hover:bg-[#007681]/8"
+            style={{
+              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontWeight: 500,
+            }}
+          >
+            {editMode ? (
+              <>
+                <Check className="size-4" style={{ color: "#007681" }} />
+                <span
+                  className="text-[14px] tracking-[0.056px]"
+                  style={{ color: "#007681" }}
+                >
+                  Klar
+                </span>
+              </>
+            ) : (
+              <>
+                <Pencil className="size-4" style={{ color: "#007681" }} />
+                <span
+                  className="text-[14px] tracking-[0.056px]"
+                  style={{ color: "#007681" }}
+                >
+                  Redigera dashboard
+                </span>
+              </>
+            )}
           </button>
         )}
       </div>
 
       <div className="relative">
-        <DateFieldButton label={label} open={open} onClick={() => setOpen(o => !o)} />
+        <DateFieldButton
+          label={label}
+          open={open}
+          onClick={() => setOpen((o) => !o)}
+          ariaLabel="Välj datumintervall"
+        />
         {open && (
           <>
-            <div className="fixed inset-0 z-[99]" onClick={() => setOpen(false)} />
+            <div
+              className="fixed inset-0 z-[99]"
+              onClick={() => setOpen(false)}
+              aria-hidden="true"
+            />
             <DateRangePicker onClose={() => setOpen(false)} />
           </>
         )}
       </div>
-    </div>
+    </header>
   );
 }
