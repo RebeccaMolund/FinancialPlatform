@@ -8,12 +8,24 @@ interface StatCardProps {
   backgroundColor: string;
 }
 
-export function StatCard({ title, value, subtitle, icon: Icon, backgroundColor }: StatCardProps) {
+export function StatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  backgroundColor,
+}: StatCardProps) {
   return (
-    <div className={`flex-1 min-w-[215px] rounded-[12px] overflow-hidden bg-white flex flex-col`}>
+    <div
+      className={`flex-1 min-w-[215px] rounded-[12px] overflow-hidden bg-white flex flex-col`}
+    >
       {/* Colored header band */}
       <div className={`${backgroundColor} flex items-center gap-2 px-4 py-3`}>
-        <Icon className="size-4 shrink-0" style={{ color: "#364153" }} strokeWidth={1.33} />
+        <Icon
+          className="size-4 shrink-0"
+          style={{ color: "#364153" }}
+          strokeWidth={1.33}
+        />
         <span
           className="text-[14px] leading-[20px] text-[#364153] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
@@ -22,7 +34,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, backgroundColor }
         </span>
       </div>
       {/* White body with value */}
-      <div className="flex flex-col items-center px-4 py-6 flex-1 justify-center">
+      <div className="flex flex-col justify-between px-4 py-6 flex-1">
         <p
           className="text-[30px] leading-[36px] text-[#101828] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}
@@ -30,7 +42,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, backgroundColor }
           {value}
         </p>
         <p
-          className="text-[12px] leading-[16px] text-[#6a7282] mt-1 whitespace-nowrap"
+          className="text-[12px] leading-[16px] text-[#6a7282] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
         >
           {subtitle}
