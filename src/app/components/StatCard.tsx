@@ -42,7 +42,7 @@ export function StatCard({
           {value}
         </p>
         <p
-          className="text-[12px] leading-[16px] text-[#6a7282] whitespace-nowrap"
+          className="text-[12px] leading-[16px] text-[#475467] whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
         >
           {subtitle}

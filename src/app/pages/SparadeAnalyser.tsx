@@ -22,8 +22,8 @@ interface Props {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-32 text-center">
-      <div className="size-16 rounded-2xl bg-[#14b8a6]/10 flex items-center justify-center mb-4">
-        <Sparkles className="size-8 text-[#14b8a6]" />
+      <div className="size-16 rounded-2xl bg-[#0f9f96]/10 flex items-center justify-center mb-4">
+        <Sparkles className="size-8 text-[#0f9f96]" />
       </div>
       <h2 className="text-lg font-semibold text-gray-800 mb-2">Inga sparade analyser ännu</h2>
       <p className="text-sm text-gray-400 max-w-sm">
@@ -47,7 +47,7 @@ function AnalysisCard({ analysis, onDelete, onOpen, onAddToDashboard, onDashboar
             <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={onOpen}
-                className="p-1.5 rounded-lg text-gray-400 hover:bg-[#14b8a6]/10 hover:text-[#14b8a6] transition-colors"
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] transition-colors"
                 title="Öppna analys"
               >
                 <ExternalLink className="size-3.5" />
@@ -99,7 +99,7 @@ function AnalysisCard({ analysis, onDelete, onOpen, onAddToDashboard, onDashboar
         <div className="flex items-center justify-between px-5 py-3 bg-gray-50/60 border-t border-gray-100">
           <div className="flex items-center gap-3">
             {analysis.activeFilterCount > 0 && (
-              <span className="flex items-center gap-1 text-[10px] text-[#14b8a6] font-medium">
+              <span className="flex items-center gap-1 text-[10px] text-[#0f9f96] font-medium">
                 <Filter className="size-3" />{analysis.activeFilterCount} aktiva filter
               </span>
             )}
@@ -117,8 +117,8 @@ function AnalysisCard({ analysis, onDelete, onOpen, onAddToDashboard, onDashboar
               className={[
                 "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors",
                 onDashboard
-                  ? "bg-[#14b8a6]/15 text-[#14b8a6] border-[#14b8a6]/30 cursor-default"
-                  : "border-gray-200 text-gray-500 hover:bg-[#14b8a6]/10 hover:text-[#14b8a6] hover:border-[#14b8a6]/30",
+                  ? "bg-[#0f9f96]/15 text-[#0f9f96] border-[#0f9f96]/30 cursor-default"
+                  : "border-gray-200 text-gray-500 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] hover:border-[#0f9f96]/30",
               ].join(" ")}
             >
               <LayoutDashboard className="size-3" />
@@ -170,7 +170,7 @@ export function SparadeAnalyser({ savedAnalyses, onDelete, onOpen, onAddToDashbo
 
       {toast && (
         <div className="fixed bottom-6 right-6 z-[500] flex items-center gap-2.5 px-4 py-3 bg-gray-900 text-white text-sm font-medium rounded-2xl shadow-xl">
-          <CheckCircle2 className="size-4 text-[#14b8a6] shrink-0" />
+          <CheckCircle2 className="size-4 text-[#0f9f96] shrink-0" />
           Diagrammet lades till på dashboarden
         </div>
       )}

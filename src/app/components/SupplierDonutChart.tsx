@@ -4,8 +4,8 @@ const TOTAL = 6846500;
 
 const data = [
   { name: "1. Solent", pct: 19.02, color: "#0d9488" },
-  { name: "2. Jämtkraft", pct: 17.18, color: "#14b8a6" },
-  { name: "3. Nyman", pct: 14.36, color: "#2dd4bf" },
+  { name: "2. Jämtkraft", pct: 17.18, color: "#0f9f96" },
+  { name: "3. Nyman", pct: 14.36, color: "#1ab5a8" },
   { name: "4. Falun Energi", pct: 13.4, color: "#5eead4" },
   { name: "5. Peab", pct: 11.53, color: "#99f6e4" },
   { name: "6. Fyrfältet", pct: 7.11, color: "#0f766e" },

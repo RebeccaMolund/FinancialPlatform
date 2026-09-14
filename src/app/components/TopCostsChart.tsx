@@ -57,7 +57,7 @@ export function TopCostsChart() {
                 fontSize: 12,
               }}
             />
-            <Bar dataKey="value" fill="#14b8a6" radius={[0, 4, 4, 0]} />
+            <Bar dataKey="value" fill="#0f9f96" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

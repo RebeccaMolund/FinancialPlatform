@@ -27,7 +27,7 @@ export function SpendAnalysisChart() {
               contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }}
             />
             <Legend key="legend" wrapperStyle={{ fontSize: "12px" }} iconType="square" />
-            <Bar key="bar-sek" dataKey="Sek" name="SEK" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+            <Bar key="bar-sek" dataKey="Sek" name="SEK" fill="#0f9f96" radius={[4, 4, 0, 0]} />
             <Bar key="bar-euro" dataKey="Euro" name="Euro" fill="#a78bfa" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

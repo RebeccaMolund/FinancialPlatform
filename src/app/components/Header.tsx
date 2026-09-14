@@ -16,13 +16,23 @@ import {
 } from "date-fns";
 import { sv } from "date-fns/locale";
 
-function DateRangePicker({ onClose }: { onClose: () => void }) {
+export interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+
+function DateRangePicker({
+  onClose,
+  value,
+  onApply,
+}: {
+  onClose: () => void;
+  value: DateRange;
+  onApply: (range: DateRange) => void;
+}) {
   const today = new Date();
-  const [viewMonth, setViewMonth] = useState(today);
-  const [range, setRange] = useState<{ start: Date | null; end: Date | null }>({
-    start: new Date(2025, 6, 17),
-    end: new Date(2025, 7, 17),
-  });
+  const [viewMonth, setViewMonth] = useState(value.start ?? today);
+  const [range, setRange] = useState<DateRange>(value);
   const [selecting, setSelecting] = useState<"start" | "end">("start");
 
   const monthStart = startOfMonth(viewMonth);
@@ -63,7 +73,7 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
       <div className="flex items-center justify-between mb-3">
         <button
           onClick={() => setViewMonth(subMonths(viewMonth, 1))}
-          className="p-1 rounded-lg hover:bg-[#14b8a6]/15 hover:text-[#14b8a6] transition-colors"
+          className="p-1 rounded-lg hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -72,7 +82,7 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
         </span>
         <button
           onClick={() => setViewMonth(addMonths(viewMonth, 1))}
-          className="p-1 rounded-lg hover:bg-[#14b8a6]/15 hover:text-[#14b8a6] transition-colors"
+          className="p-1 rounded-lg hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors"
         >
           <ChevronRight className="size-4" />
         </button>
@@ -101,10 +111,10 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
               className={[
                 "text-xs py-1.5 rounded-lg transition-colors font-medium",
                 !isCurrentMonth ? "text-gray-300" : "text-gray-700",
-                isStart || isEnd ? "bg-[#14b8a6] !text-white" : "",
-                inside ? "bg-[#14b8a6]/15 text-[#14b8a6]" : "",
+                isStart || isEnd ? "bg-[#0f9f96] !text-white" : "",
+                inside ? "bg-[#0f9f96]/15 text-[#0f9f96]" : "",
                 isCurrentMonth && !isStart && !isEnd && !inside
-                  ? "hover:bg-[#14b8a6]/15 hover:text-[#14b8a6]"
+                  ? "hover:bg-[#0f9f96]/15 hover:text-[#0f9f96]"
                   : "",
               ].join(" ")}
             >
@@ -122,8 +132,11 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
       </div>
 
       <Button
-        className="mt-3 w-full bg-[#14b8a6] hover:bg-[#0f766e] text-white text-sm"
-        onClick={onClose}
+        className="mt-3 w-full bg-[#0f9f96] hover:bg-[#0f766e] text-white text-sm"
+        onClick={() => {
+          onApply(range);
+          onClose();
+        }}
       >
         Använd intervall
       </Button>
@@ -134,22 +147,25 @@ function DateRangePicker({ onClose }: { onClose: () => void }) {
 interface HeaderProps {
   editMode?: boolean;
   onEditModeToggle?: () => void;
+  range: DateRange;
+  onRangeChange?: (range: DateRange) => void;
 }
 
-export function Header({ editMode, onEditModeToggle }: HeaderProps) {
+export function Header({
+  editMode,
+  onEditModeToggle,
+  range,
+  onRangeChange,
+}: HeaderProps) {
   const [open, setOpen] = useState(false);
-  const [range] = useState({
-    start: new Date(2025, 6, 17),
-    end: new Date(2025, 7, 17),
-  });
 
-  const label = `${format(range.start, "dd/MM/yyyy")} - ${format(range.end, "dd/MM/yyyy")}`;
+  const label = `${format(range.start ?? new Date(), "dd/MM/yyyy")} - ${format(range.end ?? new Date(), "dd/MM/yyyy")}`;
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-transparent">
       <div className="flex items-center gap-4">
         <div
-          className="w-10 h-10 bg-[#14b8a6] rounded-full flex items-center justify-center shrink-0"
+          className="w-10 h-10 bg-[#0f9f96] rounded-full flex items-center justify-center shrink-0"
           aria-hidden="true"
         >
           <span
@@ -220,7 +236,11 @@ export function Header({ editMode, onEditModeToggle }: HeaderProps) {
               onClick={() => setOpen(false)}
               aria-hidden="true"
             />
-            <DateRangePicker onClose={() => setOpen(false)} />
+            <DateRangePicker
+              value={range}
+              onClose={() => setOpen(false)}
+              onApply={(nextRange) => onRangeChange?.(nextRange)}
+            />
           </>
         )}
       </div>

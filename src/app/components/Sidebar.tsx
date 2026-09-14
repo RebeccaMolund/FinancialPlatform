@@ -12,12 +12,20 @@ const navItems: { icon: React.ElementType; label: string; page: Page }[] = [
 interface SidebarProps {
   currentPage: Page;
   onNavigate: (page: Page) => void;
+  darkMode?: boolean;
 }
 
-export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
+export function Sidebar({
+  currentPage,
+  onNavigate,
+  darkMode = false,
+}: SidebarProps) {
   return (
     <aside
-      className="group fixed left-0 top-0 h-full z-50 flex flex-col py-6 overflow-hidden transition-all duration-300 ease-in-out bg-white shadow-sm"
+      className={[
+        "group fixed left-0 top-0 h-full z-50 flex flex-col py-6 overflow-hidden transition-all duration-300 ease-in-out shadow-sm",
+        darkMode ? "bg-zinc-950" : "bg-white",
+      ].join(" ")}
       style={{ width: "64px" }}
       onMouseEnter={(e) =>
         ((e.currentTarget as HTMLElement).style.width = "220px")
@@ -40,8 +48,12 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
               className={[
                 "flex items-center gap-3 mx-2 px-3 py-3 rounded-xl whitespace-nowrap transition-colors duration-150 text-left",
                 isActive
-                  ? "bg-[#14b8a6]/15 text-[#14b8a6]"
-                  : "text-gray-400 hover:bg-[#14b8a6]/15 hover:text-[#14b8a6]",
+                  ? darkMode
+                    ? "bg-[#0f9f96]/25 text-[#5eead4]"
+                    : "bg-[#0f9f96]/15 text-[#0f9f96]"
+                  : darkMode
+                    ? "text-gray-400 hover:bg-[#0f9f96]/15 hover:text-[#5eead4]"
+                    : "text-gray-400 hover:bg-[#0f9f96]/15 hover:text-[#0f9f96]",
               ].join(" ")}
             >
               <Icon className="size-5 shrink-0" aria-hidden="true" />

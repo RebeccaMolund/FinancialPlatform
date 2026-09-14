@@ -13,7 +13,7 @@ function Text() {
 
 function Container3() {
   return (
-    <div className="bg-[#14b8a6] content-stretch flex items-center justify-center relative rounded-[33554400px] shrink-0 size-[40px]" data-name="Container">
+    <div className="bg-[#0f9f96] content-stretch flex items-center justify-center relative rounded-[33554400px] shrink-0 size-[40px]" data-name="Container">
       <Text />
     </div>
   );
@@ -428,7 +428,7 @@ function Paragraph() {
 }
 
 function Text5() {
-  return <div className="bg-[#14b8a6] relative rounded-[33554400px] shrink-0 size-[20px]" data-name="Text" />;
+  return <div className="bg-[#0f9f96] relative rounded-[33554400px] shrink-0 size-[20px]" data-name="Text" />;
 }
 
 function Button() {
@@ -906,7 +906,7 @@ function Paragraph2() {
 }
 
 function Text6() {
-  return <div className="bg-[#14b8a6] relative rounded-[33554400px] shrink-0 size-[20px]" data-name="Text" />;
+  return <div className="bg-[#0f9f96] relative rounded-[33554400px] shrink-0 size-[20px]" data-name="Text" />;
 }
 
 function Button2() {
@@ -1621,7 +1621,7 @@ function Paragraph3() {
 }
 
 function Text7() {
-  return <div className="bg-[#14b8a6] relative rounded-[33554400px] shrink-0 size-[20px]" data-name="Text" />;
+  return <div className="bg-[#0f9f96] relative rounded-[33554400px] shrink-0 size-[20px]" data-name="Text" />;
 }
 
 function Button4() {

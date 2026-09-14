@@ -198,7 +198,7 @@ const SCENARIOS: Scenario[] = [
       { type: "success", text: "Elkraftskostnaden minskade 7 % tack vare ny avtalsmodell med Jämtkraft." },
       { type: "info",    text: "3 fakturor från Sundsvall Energi AB saknar projektkod och kan inte allokeras." },
     ],
-    chart1Title: "Energikostnad per leverantör (kr)", chart1Color: "#14b8a6",
+    chart1Title: "Energikostnad per leverantör (kr)", chart1Color: "#0f9f96",
     chart2Title: "Energislag – antal enheter",        chart2Color: "#818cf8",
     chips: ["Spend historiskt", "Enheter per kategori"],
     preFilter: { kategori: ["Energi"] } as any,
@@ -211,7 +211,7 @@ const SCENARIOS: Scenario[] = [
       { type: "warning", text: "Styckpriset på grävmaskiner ökade 8 % i senaste avtalsjusteringen." },
       { type: "info",    text: "Möjlig volymrabatt på 3 % om månatliga beställningar överstiger 85 000 kr." },
     ],
-    chart1Title: "Peab – kostnad per artikel (kr)", chart1Color: "#14b8a6",
+    chart1Title: "Peab – kostnad per artikel (kr)", chart1Color: "#0f9f96",
     chart2Title: "Peab – fördelning per kategori",  chart2Color: "#f59e0b",
     chips: ["Spend historiskt", "Top leverantörer"],
     preFilter: { leverantor: ["Peab Sverige AB"] },
@@ -224,7 +224,7 @@ const SCENARIOS: Scenario[] = [
       { type: "success", text: "Betongpriset är stabilt och ligger 2 % under indexutvecklingen." },
       { type: "info",    text: "Armeringsnät köps från 4 leverantörer – konsolidering kan ge bättre pris." },
     ],
-    chart1Title: "Materialkostnad per leverantör (kr)", chart1Color: "#14b8a6",
+    chart1Title: "Materialkostnad per leverantör (kr)", chart1Color: "#0f9f96",
     chart2Title: "Material – antal enheter per artikel", chart2Color: "#818cf8",
     chips: ["Medelpris per produkt", "Top 3 billigaste lev."],
     preFilter: { kategori: ["Material"] } as any,
@@ -238,7 +238,7 @@ const SCENARIOS: Scenario[] = [
       { type: "success", text: "Andelen e-fakturor ökade till 44 % – minskar manuell hantering." },
     ],
     chart1Title: "Fakturor per fakturaformat",   chart1Color: "#a78bfa",
-    chart2Title: "Fakturor per leverantör (antal)", chart2Color: "#14b8a6",
+    chart2Title: "Fakturor per leverantör (antal)", chart2Color: "#0f9f96",
     chips: ["Spend historiskt", "Enheter per kategori"],
     preFilter: {},
   },
@@ -250,7 +250,7 @@ const SCENARIOS: Scenario[] = [
       { type: "warning", text: "Colv Sverige AB fakturerar enbart i EUR – valutarisk bör bevakas." },
       { type: "success", text: "Nyman AB förbättrade sin leveransprecision till 97 % denna period." },
     ],
-    chart1Title: "Inköpsvärde per leverantör (kr)", chart1Color: "#14b8a6",
+    chart1Title: "Inköpsvärde per leverantör (kr)", chart1Color: "#0f9f96",
     chart2Title: "Antal fakturor per leverantör",   chart2Color: "#818cf8",
     chips: ["Top leverantörer", "Spend historiskt"],
     preFilter: {},
@@ -263,7 +263,7 @@ const SCENARIOS: Scenario[] = [
       { type: "warning", text: "Maskinhyra överskrider budget med 8,4 %." },
       { type: "success", text: "IT-kostnader minskade 11 % efter omförhandling av licensavtal." },
     ],
-    chart1Title: "Kostnad per kategori (kr)", chart1Color: "#14b8a6",
+    chart1Title: "Kostnad per kategori (kr)", chart1Color: "#0f9f96",
     chart2Title: "Kostnad per leverantör (kr)", chart2Color: "#818cf8",
     chips: ["Spend historiskt", "Enheter per kategori"],
     preFilter: {},
@@ -389,9 +389,9 @@ function useOutsideClick(ref: React.RefObject<HTMLElement | null>, cb: () => voi
 
 function CheckItem({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
-    <button onClick={onChange} className="flex items-center justify-between w-full py-1.5 px-2 rounded-lg hover:bg-[#14b8a6]/10 transition-colors text-sm text-gray-700">
+    <button onClick={onChange} className="flex items-center justify-between w-full py-1.5 px-2 rounded-lg hover:bg-[#0f9f96]/10 transition-colors text-sm text-gray-700">
       <span>{label}</span>
-      <span className={`size-4 rounded flex items-center justify-center border shrink-0 transition-colors ${checked ? "bg-[#14b8a6] border-[#14b8a6]" : "border-gray-300"}`}>
+      <span className={`size-4 rounded flex items-center justify-center border shrink-0 transition-colors ${checked ? "bg-[#0f9f96] border-[#0f9f96]" : "border-gray-300"}`}>
         {checked && <Check className="size-3 text-white" strokeWidth={3} />}
       </span>
     </button>
@@ -423,9 +423,9 @@ function MiniCalendar({ value, onChange }: { value: DateRange; onChange: (r: Dat
   return (
     <div className="w-60">
       <div className="flex items-center justify-between mb-2">
-        <button onClick={() => setView(subMonths(view, 1))} className="p-1 rounded hover:bg-[#14b8a6]/15 hover:text-[#14b8a6] transition-colors"><ChevronLeft className="size-4" /></button>
+        <button onClick={() => setView(subMonths(view, 1))} className="p-1 rounded hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors"><ChevronLeft className="size-4" /></button>
         <span className="text-xs font-semibold text-gray-700 capitalize">{format(view, "MMMM yyyy", { locale: sv })}</span>
-        <button onClick={() => setView(addMonths(view, 1))} className="p-1 rounded hover:bg-[#14b8a6]/15 hover:text-[#14b8a6] transition-colors"><ChevronRight className="size-4" /></button>
+        <button onClick={() => setView(addMonths(view, 1))} className="p-1 rounded hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors"><ChevronRight className="size-4" /></button>
       </div>
       <div className="grid grid-cols-7 mb-1">{["M","T","O","T","F","L","S"].map((d,i)=><div key={i} className="text-center text-[10px] text-gray-400 py-1">{d}</div>)}</div>
       <div className="grid grid-cols-7 gap-y-0.5">
@@ -435,7 +435,7 @@ function MiniCalendar({ value, onChange }: { value: DateRange; onChange: (r: Dat
           const inside  = inRange(day) && !isStart && !isEnd;
           const dim     = day.getMonth() !== view.getMonth();
           return (
-            <button key={i} onClick={() => pick(day)} className={["text-[11px] py-1 rounded-lg transition-colors font-medium", dim?"text-gray-300":"text-gray-700", (isStart||isEnd)?"!bg-[#14b8a6] !text-white":"", inside?"bg-[#14b8a6]/15 text-[#14b8a6]":"", !dim&&!isStart&&!isEnd&&!inside?"hover:bg-[#14b8a6]/15 hover:text-[#14b8a6]":""].join(" ")}>
+            <button key={i} onClick={() => pick(day)} className={["text-[11px] py-1 rounded-lg transition-colors font-medium", dim?"text-gray-300":"text-gray-700", (isStart||isEnd)?"!bg-[#0f9f96] !text-white":"", inside?"bg-[#0f9f96]/15 text-[#0f9f96]":"", !dim&&!isStart&&!isEnd&&!inside?"hover:bg-[#0f9f96]/15 hover:text-[#0f9f96]":""].join(" ")}>
               {format(day,"d")}
             </button>
           );
@@ -461,7 +461,7 @@ function DropdownContent({ def, value, onChange, onClose }: {
   function commit() { onChange(draft); onClose(); }
 
   const apply = (
-    <button onClick={commit} className="w-full mt-3 py-2 bg-[#14b8a6] hover:bg-[#0f766e] text-white text-xs font-medium rounded-lg transition-colors">
+    <button onClick={commit} className="w-full mt-3 py-2 bg-[#0f9f96] hover:bg-[#0f766e] text-white text-xs font-medium rounded-lg transition-colors">
       Tillämpa
     </button>
   );
@@ -475,7 +475,7 @@ function DropdownContent({ def, value, onChange, onClose }: {
         <div>
           <label className="text-xs text-gray-500 mb-1.5 block">{def.label}</label>
           <input autoFocus value={v} onChange={e => setDraft(e.target.value)}
-            placeholder="Sök..." className="w-full px-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#14b8a6]" />
+            placeholder="Sök..." className="w-full px-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#0f9f96]" />
           {apply}
         </div>
       );
@@ -499,13 +499,13 @@ function DropdownContent({ def, value, onChange, onClose }: {
             <div className="flex-1">
               <label className="text-[10px] text-gray-400 mb-1 block">Från</label>
               <input type="number" value={nr.from} onChange={e => setDraft({ ...nr, from: e.target.value })} placeholder="0"
-                className="w-full px-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#14b8a6]" />
+                className="w-full px-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#0f9f96]" />
             </div>
             <span className="text-gray-300 mb-2.5">—</span>
             <div className="flex-1">
               <label className="text-[10px] text-gray-400 mb-1 block">Till</label>
               <input type="number" value={nr.to} onChange={e => setDraft({ ...nr, to: e.target.value })} placeholder="∞"
-                className="w-full px-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#14b8a6]" />
+                className="w-full px-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#0f9f96]" />
             </div>
           </div>
           {apply}
@@ -519,7 +519,7 @@ function DropdownContent({ def, value, onChange, onClose }: {
         <div className="flex flex-col gap-2">
           {["Befintligt", "Ej befintligt"].map(opt => (
             <button key={opt} onClick={() => setDraft(tv === opt ? null : opt)}
-              className={`w-full py-2 rounded-lg text-xs font-medium border transition-colors ${tv===opt?"bg-[#14b8a6]/15 text-[#14b8a6] border-[#14b8a6]/30":"border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+              className={`w-full py-2 rounded-lg text-xs font-medium border transition-colors ${tv===opt?"bg-[#0f9f96]/15 text-[#0f9f96] border-[#0f9f96]/30":"border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
               {opt}
             </button>
           ))}
@@ -536,7 +536,7 @@ function DropdownContent({ def, value, onChange, onClose }: {
           <div className="flex gap-2 mb-3">
             {(["befintligt","ej"] as const).map(m => (
               <button key={m} onClick={() => setDraft({ ...ov, mode: ov.mode===m ? null : m })}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-colors ${ov.mode===m?"bg-[#14b8a6]/15 text-[#14b8a6] border-[#14b8a6]/30":"border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+                className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-colors ${ov.mode===m?"bg-[#0f9f96]/15 text-[#0f9f96] border-[#0f9f96]/30":"border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
                 {m==="befintligt"?"Befintligt":"Ej befintligt"}
               </button>
             ))}
@@ -544,7 +544,7 @@ function DropdownContent({ def, value, onChange, onClose }: {
           <div className="relative mb-2">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-gray-400" />
             <input value={ov.search} onChange={e => setDraft({ ...ov, search: e.target.value })} placeholder="Sök ordernummer..."
-              className="w-full pl-8 pr-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#14b8a6]" />
+              className="w-full pl-8 pr-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#0f9f96]" />
           </div>
           <div className="flex flex-col gap-0.5 max-h-36 overflow-y-auto">
             {orders.filter(o => o.toLowerCase().includes(ov.search.toLowerCase())).map(o => (
@@ -570,7 +570,7 @@ function DropdownContent({ def, value, onChange, onClose }: {
             <div className="relative mb-2">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-gray-400" />
               <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Sök..."
-                className="w-full pl-8 pr-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#14b8a6]" />
+                className="w-full pl-8 pr-3 py-2 bg-gray-50 rounded-lg text-xs border border-gray-200 focus:outline-none focus:border-[#0f9f96]" />
             </div>
           )}
           <div className="flex flex-col gap-0.5 max-h-48 overflow-y-auto">
@@ -610,12 +610,12 @@ function FilterPill({ def, value, onChange }: { def: FilterDef; value: FilterVal
       <button
         onClick={() => setOpen(o => !o)}
         className={["flex items-center gap-1.5 pl-3 pr-2.5 py-2 rounded-xl text-xs font-medium border transition-colors whitespace-nowrap",
-          (open || active > 0) ? "bg-[#14b8a6]/15 text-[#14b8a6] border-[#14b8a6]/30" : "bg-white border-gray-200 text-gray-600 hover:bg-[#14b8a6]/10 hover:text-[#14b8a6] hover:border-[#14b8a6]/30"
+          (open || active > 0) ? "bg-[#0f9f96]/15 text-[#0f9f96] border-[#0f9f96]/30" : "bg-white border-gray-200 text-gray-600 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] hover:border-[#0f9f96]/30"
         ].join(" ")}
       >
         {def.label}
         {active > 0 && (
-          <span className="bg-[#14b8a6] text-white rounded-full size-4 flex items-center justify-center text-[10px] font-bold shrink-0">{active}</span>
+          <span className="bg-[#0f9f96] text-white rounded-full size-4 flex items-center justify-center text-[10px] font-bold shrink-0">{active}</span>
         )}
         {open ? <ChevronUp className="size-3 opacity-60" /> : <ChevronDown className="size-3 opacity-60" />}
       </button>
@@ -640,8 +640,8 @@ function InsightCard({ scenario }: { scenario: Scenario }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col">
       <div className="flex items-start gap-3 px-5 py-4 border-b border-gray-100">
-        <div className="size-7 rounded-xl bg-[#14b8a6]/15 flex items-center justify-center shrink-0 mt-0.5">
-          <Sparkles className="size-3.5 text-[#14b8a6]" />
+        <div className="size-7 rounded-xl bg-[#0f9f96]/15 flex items-center justify-center shrink-0 mt-0.5">
+          <Sparkles className="size-3.5 text-[#0f9f96]" />
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900 leading-snug">{scenario.headline}</p>
@@ -695,7 +695,7 @@ const fmtY = (v: number) =>
 type ChartVariant = "bar" | "hbar" | "line" | "area" | "pie" | "donut";
 
 const CHART_COLORS = [
-  "#14b8a6", "#818cf8", "#a78bfa", "#fb7185",
+  "#0f9f96", "#818cf8", "#a78bfa", "#fb7185",
   "#f59e0b", "#34d399", "#60a5fa", "#f97316",
 ];
 
@@ -803,7 +803,7 @@ function ExportModal({ defaultName, onClose }: { defaultName: string; onClose: (
           autoFocus
           value={fileName}
           onChange={e => setFileName(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#14b8a6] mb-4"
+          className="w-full px-3 py-2 bg-gray-50 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#0f9f96] mb-4"
         />
         <label className="text-xs font-medium text-gray-500 block mb-2">Filformat</label>
         <div className="flex gap-3 mb-5">
@@ -814,7 +814,7 @@ function ExportModal({ defaultName, onClose }: { defaultName: string; onClose: (
               className={[
                 "flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors",
                 format === f
-                  ? "bg-[#14b8a6]/15 text-[#14b8a6] border-[#14b8a6]/30"
+                  ? "bg-[#0f9f96]/15 text-[#0f9f96] border-[#0f9f96]/30"
                   : "border-gray-200 text-gray-600 hover:bg-gray-50",
               ].join(" ")}
             >
@@ -828,7 +828,7 @@ function ExportModal({ defaultName, onClose }: { defaultName: string; onClose: (
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-[#14b8a6] hover:bg-[#0f766e] text-white transition-colors"
+            className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-[#0f9f96] hover:bg-[#0f766e] text-white transition-colors"
           >
             Exportera {format.toUpperCase()}
           </button>
@@ -862,7 +862,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
   const [saveName, setSaveName] = useState("");
   const [savedToast, setSavedToast] = useState(false);
   const [chartVariant, setChartVariant] = useState<ChartVariant>("bar");
-  const [chartColor, setChartColor] = useState("#14b8a6");
+  const [chartColor, setChartColor] = useState("#0f9f96");
   const [exportOpen, setExportOpen] = useState(false);
   const [sortCol, setSortCol] = useState<keyof MockRow | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
@@ -905,7 +905,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
       resultCount: filteredRows.length,
       totalRadbelopp: filteredRows.reduce((s, r) => s + r.radbelopp, 0),
       chart1Title: activeScenario?.chart1Title ?? "Kostnad per kategori (kr)",
-      chart1Color: activeScenario?.chart1Color ?? "#14b8a6",
+      chart1Color: activeScenario?.chart1Color ?? "#0f9f96",
       chart2Title: activeScenario?.chart2Title ?? "Enheter per leverantör",
       chart2Color: activeScenario?.chart2Color ?? "#818cf8",
       chart1Data: charts.chart1,
@@ -961,19 +961,19 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
           <input type="text" value={query} onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === "Enter" && runSearch(query)}
             placeholder="Beskriv vad du vill analysera..."
-            className="w-full h-full pl-11 pr-14 py-3 bg-white rounded-xl border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/30 focus:border-[#14b8a6]" />
+            className="w-full h-full pl-11 pr-14 py-3 bg-white rounded-xl border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0f9f96]/30 focus:border-[#0f9f96]" />
           {query && (
             <button
               onClick={() => runSearch(query)}
               title="Analysera"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 size-9 flex items-center justify-center rounded-xl bg-[#e9ebef] hover:bg-[#14b8a6]/20 text-[#14b8a6] transition-colors"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 size-9 flex items-center justify-center rounded-xl bg-[#e9ebef] hover:bg-[#0f9f96]/20 text-[#0f9f96] transition-colors"
             >
               <CornerDownLeft className="size-4" />
             </button>
           )}
         </div>
         <button onClick={() => setFilterOpen(o => !o)}
-          className={["flex items-center gap-2 px-5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap", filterOpen ? "bg-[#0f766e] text-white" : "bg-[#14b8a6] hover:bg-[#0f766e] text-white"].join(" ")}>
+          className={["flex items-center gap-2 px-5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap", filterOpen ? "bg-[#0f766e] text-white" : "bg-[#0f9f96] hover:bg-[#0f766e] text-white"].join(" ")}>
           <SlidersHorizontal className="size-4" />
           Filtrera
           {activeFilterCount > 0 && (
@@ -988,7 +988,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
         <div className="flex flex-wrap gap-2 mb-6">
           {SUGGESTIONS.map(s => (
             <button key={s} onClick={() => { setQuery(s); runSearch(s); }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-500 hover:bg-[#14b8a6]/10 hover:text-[#14b8a6] hover:border-[#14b8a6]/30 transition-colors">
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-500 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] hover:border-[#0f9f96]/30 transition-colors">
               <ArrowRight className="size-3" />{s}
             </button>
           ))}
@@ -1000,10 +1000,10 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
         <div className="mb-5 p-4 bg-white rounded-2xl border border-gray-100">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Filter {activeFilterCount > 0 && <span className="ml-1 text-[#14b8a6]">· {filteredRows.length} av {MOCK_DATA.length} rader visas</span>}
+              Filter {activeFilterCount > 0 && <span className="ml-1 text-[#0f9f96]">· {filteredRows.length} av {MOCK_DATA.length} rader visas</span>}
             </span>
             {activeFilterCount > 0 && (
-              <button onClick={clearAllFilters} className="text-xs text-gray-400 hover:text-[#14b8a6] transition-colors">Rensa alla</button>
+              <button onClick={clearAllFilters} className="text-xs text-gray-400 hover:text-[#0f9f96] transition-colors">Rensa alla</button>
             )}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1019,7 +1019,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
         <div className="mb-6 space-y-3">
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="size-8 rounded-xl bg-[#14b8a6]/15 animate-pulse" />
+              <div className="size-8 rounded-xl bg-[#0f9f96]/15 animate-pulse" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-gray-100 rounded-lg animate-pulse w-2/3" />
                 <div className="h-3 bg-gray-100 rounded-lg animate-pulse w-full" />
@@ -1059,11 +1059,11 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                       onChange={e => setSaveName(e.target.value)}
                       onKeyDown={e => e.key === "Enter" && doSave()}
                       placeholder="Namnge din analys..."
-                      className="w-full px-3 py-2 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-[#14b8a6] mb-3"
+                      className="w-full px-3 py-2 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-[#0f9f96] mb-3"
                     />
                     <div className="flex gap-2">
                       <button onClick={() => setSaveOpen(false)} className="flex-1 py-2 rounded-lg text-xs font-medium border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">Avbryt</button>
-                      <button onClick={doSave} className="flex-1 py-2 rounded-lg text-xs font-medium bg-[#14b8a6] hover:bg-[#0f766e] text-white transition-colors">Spara</button>
+                      <button onClick={doSave} className="flex-1 py-2 rounded-lg text-xs font-medium bg-[#0f9f96] hover:bg-[#0f766e] text-white transition-colors">Spara</button>
                     </div>
                   </div>
                 )}
@@ -1093,7 +1093,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                     setSavedToast(true);
                     setTimeout(() => setSavedToast(false), 2500);
                   }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-[#14b8a6]/10 hover:text-[#14b8a6] hover:border-[#14b8a6]/30 text-sm font-medium rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] hover:border-[#0f9f96]/30 text-sm font-medium rounded-xl transition-colors"
                 >
                   <LayoutDashboard className="size-4" />
                   Lägg till på dashboard
@@ -1134,7 +1134,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                         className={[
                           "px-2.5 py-1 rounded-lg text-xs font-medium transition-colors",
                           chartVariant === o.value
-                            ? "bg-[#14b8a6]/15 text-[#14b8a6]"
+                            ? "bg-[#0f9f96]/15 text-[#0f9f96]"
                             : "text-gray-400 hover:bg-gray-100 hover:text-gray-600",
                         ].join(" ")}
                       >
@@ -1163,11 +1163,11 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                 </div>
                 <div className="flex items-center gap-3">
                   {activeFilterCount > 0 && (
-                    <span className="px-3 py-1.5 bg-[#14b8a6]/10 text-[#14b8a6] text-xs rounded-full font-medium">
+                    <span className="px-3 py-1.5 bg-[#0f9f96]/10 text-[#0f9f96] text-xs rounded-full font-medium">
                       {activeFilterCount} aktiva filter
                     </span>
                   )}
-                  <Button variant="outline" size="sm" onClick={() => setExportOpen(true)} className="gap-1.5 border-gray-200 text-gray-600 hover:bg-[#14b8a6]/15 hover:text-[#14b8a6] hover:border-[#14b8a6]/30 rounded-lg">
+                  <Button variant="outline" size="sm" onClick={() => setExportOpen(true)} className="gap-1.5 border-gray-200 text-gray-600 hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] hover:border-[#0f9f96]/30 rounded-lg">
                     <Download className="size-3.5" />Exportera
                   </Button>
                 </div>
@@ -1185,7 +1185,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                   <button
                     key={label}
                     onClick={() => col && handleSort(col)}
-                    className={["flex items-center gap-1 text-xs font-medium transition-colors", col ? "cursor-pointer hover:text-[#14b8a6]" : "cursor-default", sortCol === col ? "text-[#14b8a6]" : "text-gray-500"].join(" ")}
+                    className={["flex items-center gap-1 text-xs font-medium transition-colors", col ? "cursor-pointer hover:text-[#0f9f96]" : "cursor-default", sortCol === col ? "text-[#0f9f96]" : "text-gray-500"].join(" ")}
                   >
                     {label}
                     {col && (
@@ -1203,7 +1203,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                 </div>
               ) : (
                 pagedRows.map((row) => (
-                  <div key={row.id} className="grid grid-cols-[2fr_2fr_1.2fr_0.8fr_1fr_1fr] px-6 py-4 border-b border-gray-50 hover:bg-[#14b8a6]/5 transition-colors text-sm">
+                  <div key={row.id} className="grid grid-cols-[2fr_2fr_1.2fr_0.8fr_1fr_1fr] px-6 py-4 border-b border-gray-50 hover:bg-[#0f9f96]/5 transition-colors text-sm">
                     <span className="text-gray-800 font-medium">{row.artikel}</span>
                     <span className="text-gray-600">{row.leverantor}</span>
                     <span className="text-gray-600">{row.kategori}</span>
@@ -1223,7 +1223,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
-                      className="px-2 py-1 hover:text-[#14b8a6] disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-2 py-1 hover:text-[#0f9f96] disabled:opacity-30 disabled:cursor-not-allowed"
                     >‹</button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
                       .filter(n => n === 1 || n === totalPages || Math.abs(n - currentPage) <= 1)
@@ -1236,14 +1236,14 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
                         item === "…"
                           ? <span key={`ellipsis-${i}`} className="px-1 text-gray-300">…</span>
                           : <button key={item} onClick={() => setCurrentPage(item as number)}
-                              className={`px-2.5 py-1 rounded ${currentPage === item ? "bg-[#14b8a6] text-white" : "hover:text-[#14b8a6]"}`}>
+                              className={`px-2.5 py-1 rounded ${currentPage === item ? "bg-[#0f9f96] text-white" : "hover:text-[#0f9f96]"}`}>
                               {item}
                             </button>
                       )}
                     <button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-2 py-1 hover:text-[#14b8a6] disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-2 py-1 hover:text-[#0f9f96] disabled:opacity-30 disabled:cursor-not-allowed"
                     >›</button>
                   </div>
                 )}
@@ -1264,7 +1264,7 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
       {/* Save toast */}
       {savedToast && (
         <div className="fixed bottom-6 right-6 z-[500] flex items-center gap-2.5 px-4 py-3 bg-gray-900 text-white text-sm font-medium rounded-2xl shadow-xl">
-          <CheckCircle2 className="size-4 text-[#14b8a6] shrink-0" />
+          <CheckCircle2 className="size-4 text-[#0f9f96] shrink-0" />
           Diagrammet lades till på dashboarden
         </div>
       )}
@@ -1272,8 +1272,8 @@ export function NyAnalys({ onSave, onAddToDashboard }: { onSave?: (a: SavedAnaly
       {/* Empty state */}
       {!activeScenario && !loading && !query && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="size-16 rounded-2xl bg-[#14b8a6]/10 flex items-center justify-center mb-4">
-            <Sparkles className="size-8 text-[#14b8a6]" />
+          <div className="size-16 rounded-2xl bg-[#0f9f96]/10 flex items-center justify-center mb-4">
+            <Sparkles className="size-8 text-[#0f9f96]" />
           </div>
           <h2 className="text-lg font-semibold text-gray-800 mb-2">Vad vill du analysera?</h2>
           <p className="text-sm text-gray-400 max-w-sm">Beskriv din fråga i fritext eller välj ett förslag ovan. AI:n söker automatiskt igenom alla dina inköpsdata.</p>

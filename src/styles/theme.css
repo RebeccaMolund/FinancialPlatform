@@ -3,7 +3,7 @@
 :root {
   --font-size: 16px;
 
-  --md3-primary: #14b8a6;
+  --md3-primary: #0f9f96;
   --md3-on-primary: #062d2a;
   --md3-primary-container: #d9f8f4;
   --md3-on-primary-container: #0c3d38;
@@ -22,7 +22,7 @@
   --md3-surface: #ffffff;
   --md3-surface-variant: #f3f4f6;
   --md3-on-surface: #111827;
-  --md3-on-surface-variant: #4b5563;
+  --md3-on-surface-variant: #475467;
   --md3-outline: #d1d5db;
   --md3-outline-variant: #e5e7eb;
 
@@ -64,8 +64,8 @@
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: color-mix(in srgb, var(--md3-primary) 60%, white);
-  --chart-1: #14b8a6;
-  --chart-2: #2dd4bf;
+  --chart-1: #0f9f96;
+  --chart-2: #1ab5a8;
   --chart-3: #7c3aed;
   --chart-4: #f59e0b;
   --chart-5: #ef4444;
@@ -81,7 +81,7 @@
 }
 
 .dark {
-  --md3-primary: #2dd4bf;
+  --md3-primary: #1ab5a8;
   --md3-on-primary: #022f2d;
   --md3-primary-container: #0f4d48;
   --md3-on-primary-container: #d8f8f5;
@@ -134,7 +134,7 @@
   --input-background: var(--md3-surface-variant);
   --switch-background: #334155;
   --ring: color-mix(in srgb, var(--md3-primary) 70%, black);
-  --chart-1: #2dd4bf;
+  --chart-1: #1ab5a8;
   --chart-2: #60a5fa;
   --chart-3: #a78bfa;
   --chart-4: #fbbf24;

@@ -28,8 +28,8 @@ function Toggle({
       aria-label={ariaLabel}
       aria-pressed={on}
       className={[
-        "relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14b8a6]",
-        on ? "bg-[#14b8a6]" : "bg-gray-200",
+        "relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f96]",
+        on ? "bg-[#0f9f96]" : "bg-gray-200",
       ].join(" ")}
     >
       <span
@@ -52,10 +52,10 @@ function SectionHeader({
   return (
     <div className="flex items-center gap-2 mb-3">
       <div
-        className="size-7 rounded-lg bg-[#14b8a6]/15 flex items-center justify-center"
+        className="size-7 rounded-lg bg-[#0f9f96]/15 flex items-center justify-center"
         aria-hidden="true"
       >
-        <Icon className="size-4 text-[#14b8a6]" />
+        <Icon className="size-4 text-[#0f9f96]" />
       </div>
       <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
     </div>
@@ -111,7 +111,7 @@ function SegmentedControl<T extends string>({
           className={[
             "px-3 py-1.5 text-xs font-medium transition-colors",
             value === o.value
-              ? "bg-[#14b8a6] text-white"
+              ? "bg-[#0f9f96] text-white"
               : "text-gray-500 hover:bg-gray-50",
           ].join(" ")}
         >
@@ -130,6 +130,7 @@ interface Props {
 export function Installningar({ settings, onSettingsChange }: Props) {
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const isDark = settings.darkMode;
 
   function update<K extends keyof AppSettings>(key: K, value: AppSettings[K]) {
     onSettingsChange({ ...settings, [key]: value });
@@ -189,18 +190,45 @@ export function Installningar({ settings, onSettingsChange }: Props) {
   };
 
   return (
-    <main className="flex-1 overflow-auto p-8 pt-6">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">{t.title}</h1>
+    <main
+      className={[
+        "flex-1 overflow-auto p-8 pt-6",
+        isDark ? "bg-zinc-950 text-zinc-100" : "bg-[#f5f6fa] text-gray-900",
+      ].join(" ")}
+    >
+      <h1
+        className={
+          isDark
+            ? "text-2xl font-semibold text-zinc-100 mb-6"
+            : "text-2xl font-semibold text-gray-900 mb-6"
+        }
+      >
+        {t.title}
+      </h1>
 
       <div className="max-w-xl mx-auto space-y-5">
         {/* Profile */}
-        <Card className="border-none shadow-none bg-white">
-          <CardContent className="px-6 pt-5 pb-3">
+        <Card
+          className={
+            isDark
+              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
+              : "border-none shadow-none bg-white"
+          }
+        >
+          <CardContent
+            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
+          >
             <SectionHeader icon={Sun} title={t.profile} />
-            <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+            <div
+              className={
+                isDark
+                  ? "flex items-center gap-4 mb-4 pb-4 border-b border-zinc-700"
+                  : "flex items-center gap-4 mb-4 pb-4 border-b border-gray-100"
+              }
+            >
               <button
                 type="button"
-                className="size-14 rounded-full bg-[#14b8a6] flex items-center justify-center shrink-0 overflow-hidden cursor-pointer ring-2 ring-white hover:ring-[#14b8a6]/40 transition-all"
+                className="size-14 rounded-full bg-[#0f9f96] flex items-center justify-center shrink-0 overflow-hidden cursor-pointer ring-2 ring-white hover:ring-[#0f9f96]/40 transition-all"
                 onClick={() => fileRef.current?.click()}
                 title={t.uploadBtn}
                 aria-label={t.uploadBtn}
@@ -221,16 +249,28 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 )}
               </button>
               <div>
-                <p className="text-sm font-semibold text-gray-800">
+                <p
+                  className={
+                    isDark
+                      ? "text-sm font-semibold text-zinc-100"
+                      : "text-sm font-semibold text-gray-800"
+                  }
+                >
                   {settings.displayName}
                 </p>
-                <p className="text-xs text-gray-400 mb-1.5">
+                <p
+                  className={
+                    isDark
+                      ? "text-xs text-zinc-400 mb-1.5"
+                      : "text-xs text-gray-400 mb-1.5"
+                  }
+                >
                   Inköpsanalytiker · Sundsvall Fastigheter AB
                 </p>
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-1.5 text-xs text-[#14b8a6] hover:underline font-medium"
+                  className="flex items-center gap-1.5 text-xs text-[#0f9f96] hover:underline font-medium"
                   aria-label={t.uploadBtn}
                 >
                   <Upload className="size-3" aria-hidden="true" />
@@ -254,7 +294,12 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 id="display-name"
                 value={settings.displayName}
                 onChange={(e) => update("displayName", e.target.value)}
-                className="w-44 px-3 py-1.5 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-[#14b8a6]"
+                className={[
+                  "w-44 px-3 py-1.5 rounded-lg text-sm border focus:outline-none focus:border-[#0f9f96]",
+                  isDark
+                    ? "bg-zinc-800 text-zinc-100 border-zinc-700"
+                    : "bg-gray-50 text-gray-700 border-gray-200",
+                ].join(" ")}
               />
             </Row>
             <Row label={t.emailLabel}>
@@ -265,16 +310,25 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 id="email"
                 value={settings.email}
                 onChange={(e) => update("email", e.target.value)}
-                className="w-44 px-3 py-1.5 bg-gray-50 rounded-lg text-sm border border-gray-200 focus:outline-none focus:border-[#14b8a6]"
+                className={[
+                  "w-44 px-3 py-1.5 rounded-lg text-sm border focus:outline-none focus:border-[#0f9f96]",
+                  isDark
+                    ? "bg-zinc-800 text-zinc-100 border-zinc-700"
+                    : "bg-gray-50 text-gray-700 border-gray-200",
+                ].join(" ")}
               />
             </Row>
             <Row label={t.role}>
-              <span className="px-2.5 py-1 bg-[#14b8a6]/15 text-[#14b8a6] text-xs font-medium rounded-full">
+              <span className="px-2.5 py-1 bg-[#0f9f96]/15 text-[#0f9f96] text-xs font-medium rounded-full">
                 Analytiker
               </span>
             </Row>
             <Row label={t.company}>
-              <span className="text-sm text-gray-500">
+              <span
+                className={
+                  isDark ? "text-sm text-zinc-400" : "text-sm text-gray-500"
+                }
+              >
                 Sundsvall Fastigheter AB
               </span>
             </Row>
@@ -282,8 +336,16 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Appearance */}
-        <Card className="border-none shadow-none bg-white">
-          <CardContent className="px-6 pt-5 pb-3">
+        <Card
+          className={
+            isDark
+              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
+              : "border-none shadow-none bg-white"
+          }
+        >
+          <CardContent
+            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
+          >
             <SectionHeader
               icon={settings.darkMode ? Moon : Sun}
               title={t.appearance}
@@ -310,8 +372,16 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Notifications */}
-        <Card className="border-none shadow-none bg-white">
-          <CardContent className="px-6 pt-5 pb-3">
+        <Card
+          className={
+            isDark
+              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
+              : "border-none shadow-none bg-white"
+          }
+        >
+          <CardContent
+            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
+          >
             <SectionHeader icon={Bell} title={t.notif} />
             <Row label={t.dueInv} description={t.dueInvDesc}>
               <Toggle
@@ -365,8 +435,16 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Export */}
-        <Card className="border-none shadow-none bg-white">
-          <CardContent className="px-6 pt-5 pb-3">
+        <Card
+          className={
+            isDark
+              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
+              : "border-none shadow-none bg-white"
+          }
+        >
+          <CardContent
+            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
+          >
             <SectionHeader icon={FileDown} title={t.exportS} />
             <Row label={t.defFmt} description={t.defFmtDesc}>
               <SegmentedControl
@@ -405,8 +483,16 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Security */}
-        <Card className="border-none shadow-none bg-white">
-          <CardContent className="px-6 pt-5 pb-3">
+        <Card
+          className={
+            isDark
+              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
+              : "border-none shadow-none bg-white"
+          }
+        >
+          <CardContent
+            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
+          >
             <SectionHeader icon={Shield} title={t.security} />
             <Row label={t.twoFA} description={t.twoFADesc}>
               <Toggle
@@ -418,7 +504,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
             <Row label={t.sessions} description={t.sessDesc}>
               <button
                 type="button"
-                className="flex items-center gap-1 text-xs font-medium text-[#14b8a6] hover:underline"
+                className="flex items-center gap-1 text-xs font-medium text-[#0f9f96] hover:underline"
                 aria-label={t.manage}
               >
                 {t.manage}{" "}
@@ -435,7 +521,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
             "w-full py-3 rounded-2xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2",
             saved
               ? "bg-emerald-500 text-white"
-              : "bg-[#14b8a6] hover:bg-[#0f766e] text-white",
+              : "bg-[#0f9f96] hover:bg-[#0f766e] text-white",
           ].join(" ")}
         >
           {saved ? (

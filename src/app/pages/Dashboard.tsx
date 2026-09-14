@@ -18,6 +18,13 @@ import {
   CircleDashed,
   MoreVertical,
 } from "lucide-react";
+import {
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  format,
+  startOfMonth,
+} from "date-fns";
+import type { DateRange } from "../components/Header";
 import { StatCard } from "../components/StatCard";
 import { Card, CardContent } from "../components/ui/card";
 import {
@@ -197,6 +204,40 @@ const SEK_TO_CURRENCY: Record<CurrencyCode, number> = {
   EUR: 0.09,
   USD: 0.11,
 };
+
+function getSpendDataForRange(range?: DateRange) {
+  if (!range?.start || !range?.end) {
+    return SPEND_DATA;
+  }
+
+  const rangeDays = eachDayOfInterval({
+    start: range.start,
+    end: range.end,
+  });
+
+  const rangeMonths = eachMonthOfInterval({
+    start: startOfMonth(range.start),
+    end: startOfMonth(range.end),
+  });
+
+  const days = Math.max(rangeDays.length, 1);
+  const rangeMomentum = Math.min(0.35, Math.max(0, days / 45) * 0.35);
+
+  if (rangeMonths.length === 0) {
+    return SPEND_DATA;
+  }
+
+  return rangeMonths.map((month, i) => {
+    const source = SPEND_DATA[i % SPEND_DATA.length];
+    const monthLabel = format(month, "MMM");
+
+    return {
+      k: monthLabel,
+      SEK: Math.round(source.SEK * (1 + rangeMomentum + i * 0.03)),
+      EUR: Math.round(source.EUR * (1 + rangeMomentum + i * 0.025)),
+    };
+  });
+}
 
 function convertCurrency(value: number, currency: CurrencyCode) {
   return value * SEK_TO_CURRENCY[currency];
@@ -528,26 +569,38 @@ function UniversalChart({
 function SpendChart({
   variant,
   color = "#14b8a6",
+  range,
 }: {
   variant: ChartVariant;
   color?: string;
+  range?: { start: Date | null; end: Date | null };
 }) {
+  const visibleSpend = getSpendDataForRange(range);
+
   if (variant === "pie" || variant === "donut") {
     const agg = [
-      { k: "SEK", v: SPEND_DATA.reduce((s, d) => s + d.SEK, 0), c: "#14b8a6" },
-      { k: "EUR", v: SPEND_DATA.reduce((s, d) => s + d.EUR, 0), c: "#a78bfa" },
+      {
+        k: "SEK",
+        v: visibleSpend.reduce((s, d) => s + d.SEK, 0),
+        c: "#14b8a6",
+      },
+      {
+        k: "EUR",
+        v: visibleSpend.reduce((s, d) => s + d.EUR, 0),
+        c: "#a78bfa",
+      },
     ];
     return <UniversalChart data={agg} variant={variant} />;
   }
   if (variant === "hbar") {
-    const agg = SPEND_DATA.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
+    const agg = visibleSpend.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
     return <UniversalChart data={agg} variant="hbar" colors={["#14b8a6"]} />;
   }
   const m = { left: 0, right: 12, top: 4, bottom: 0 };
   if (variant === "line") {
     return (
       <ResponsiveContainer width="100%" height={H}>
-        <LineChart data={SPEND_DATA} margin={m}>
+        <LineChart data={visibleSpend} margin={m}>
           <CartesianGrid
             key="sc-cg"
             strokeDasharray="3 3"
@@ -598,7 +651,7 @@ function SpendChart({
   if (variant === "area") {
     return (
       <ResponsiveContainer width="100%" height={H}>
-        <AreaChart data={SPEND_DATA} margin={m}>
+        <AreaChart data={visibleSpend} margin={m}>
           <defs>
             <linearGradient id="spend-sek" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#14b8a6" stopOpacity={0.25} />
@@ -659,7 +712,7 @@ function SpendChart({
   // bar (default)
   return (
     <ResponsiveContainer width="100%" height={H}>
-      <BarChart data={SPEND_DATA} barCategoryGap="25%" margin={m}>
+      <BarChart data={visibleSpend} barCategoryGap="25%" margin={m}>
         <CartesianGrid
           key="sc-cg"
           strokeDasharray="3 3"
@@ -694,18 +747,44 @@ function SpendChart({
   );
 }
 
+function getRangeMultiplier(range?: DateRange) {
+  if (!range?.start || !range?.end) {
+    return 1;
+  }
+
+  const days = eachDayOfInterval({
+    start: range.start,
+    end: range.end,
+  });
+
+  const dayCount = Math.max(days.length, 1);
+  return Math.min(2, 1 + Math.max(dayCount - 30, 0) / 60);
+}
+
 function getBuiltinData(
   key: BuiltinKey,
+  range?: DateRange,
 ): { k: string; v: number; c?: string }[] {
+  const multiplier = getRangeMultiplier(range);
+
   switch (key) {
     case "spend":
       return SPEND_DATA.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
     case "suppliers":
-      return SUPPLIER_DATA;
+      return SUPPLIER_DATA.map((d) => ({
+        ...d,
+        v: Math.round(d.v * multiplier),
+      }));
     case "topcosts":
-      return TOPCOSTS_DATA;
+      return TOPCOSTS_DATA.map((d) => ({
+        ...d,
+        v: Math.round(d.v * multiplier),
+      }));
     case "duedate":
-      return DUEDATE_DATA;
+      return DUEDATE_DATA.map((d) => ({
+        ...d,
+        v: Math.round(d.v * multiplier),
+      }));
   }
 }
 
@@ -878,6 +957,7 @@ function ChartCard({
   onDragOver,
   onDragEnd,
   onDrop,
+  range,
 }: {
   card: DashboardCard;
   editMode: boolean;
@@ -890,6 +970,7 @@ function ChartCard({
   onDragOver: (e: React.DragEvent) => void;
   onDragEnd: () => void;
   onDrop: () => void;
+  range?: DateRange;
 }) {
   const title =
     card.type === "builtin"
@@ -900,11 +981,13 @@ function ChartCard({
   function renderChart() {
     if (card.type === "builtin") {
       if (card.builtinKey === "spend") {
-        return <SpendChart variant={card.variant} color={card.color} />;
+        return (
+          <SpendChart variant={card.variant} color={card.color} range={range} />
+        );
       }
       return (
         <UniversalChart
-          data={getBuiltinData(card.builtinKey!)}
+          data={getBuiltinData(card.builtinKey!, range)}
           variant={card.variant}
           colors={[card.color]}
           currency={currency}
@@ -1126,6 +1209,7 @@ interface Props {
   darkMode?: boolean;
   editMode?: boolean;
   onEditModeChange?: (v: boolean) => void;
+  range?: DateRange;
 }
 
 export function Dashboard({
@@ -1135,8 +1219,23 @@ export function Dashboard({
   darkMode,
   editMode: externalEditMode,
   onEditModeChange,
+  range,
 }: Props) {
   const [cards, setCards] = useState<DashboardCard[]>(DEFAULT_CARDS);
+  const selectedRange = range ?? {
+    start: new Date(2025, 6, 17),
+    end: new Date(2025, 7, 17),
+  };
+  const rangeDays =
+    selectedRange.start && selectedRange.end
+      ? eachDayOfInterval({
+          start: selectedRange.start,
+          end: selectedRange.end,
+        })
+      : [];
+  const activeMonth = selectedRange.start
+    ? format(selectedRange.start, "MMM")
+    : "Jul";
   // editMode is driven externally (from Header "Redigera dashboard") but also toggleable internally
   const editMode = externalEditMode ?? false;
   function setEditMode(v: boolean | ((prev: boolean) => boolean)) {
@@ -1201,10 +1300,27 @@ export function Dashboard({
     setDragOverId(null);
   }
 
+  const filteredSpend = SPEND_DATA.map((row, i) => ({
+    ...row,
+    SEK: Math.round(
+      row.SEK * (1 + Math.min(0.35, Math.max(0, rangeDays.length / 45) * 0.35)),
+    ),
+    EUR: Math.round(
+      row.EUR * (1 + Math.min(0.4, Math.max(0, rangeDays.length / 50) * 0.4)),
+    ),
+  }));
+
   return (
     <main
       className={`flex-1 overflow-auto px-6 py-[24px] flex flex-col gap-[24px] ${darkMode ? "bg-zinc-900" : ""}`}
     >
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+          Visa intervall:{" "}
+          {format(selectedRange.start ?? new Date(), "dd/MM/yyyy")} –{" "}
+          {format(selectedRange.end ?? new Date(), "dd/MM/yyyy")}
+        </span>
+      </div>
       {/* Stat cards — matches Figma: flex row, gap-[24px], exact hex colors */}
       <div className="flex gap-[24px]">
         <StatCard
@@ -1293,6 +1409,7 @@ export function Dashboard({
                 setDragOverId(null);
               }}
               onDrop={() => handleDrop(card.instanceId)}
+              range={selectedRange}
             />
           ))}
         </div>
