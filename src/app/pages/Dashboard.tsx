@@ -51,6 +51,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { SavedAnalysis } from "./NyAnalys";
+import type { DashboardSpendPoint } from "../../types/dashboard-spend";
+import { getDashboardSpendData } from "../../services/dashboard-spend";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,14 +69,6 @@ interface DashboardCard {
 }
 
 // ─── Built-in chart data ──────────────────────────────────────────────────────
-
-const SPEND_DATA = [
-  { k: "Jan", SEK: 2000, EUR: 1500 },
-  { k: "Feb", SEK: 3000, EUR: 2000 },
-  { k: "Mar", SEK: 4500, EUR: 2500 },
-  { k: "Apr", SEK: 4000, EUR: 3000 },
-  { k: "Maj", SEK: 2000, EUR: 1000 },
-];
 
 const SUPPLIER_DATA = [
   { k: "Solent", v: 1302001, c: "#0d9488" },
@@ -264,9 +258,16 @@ const SEK_TO_CURRENCY: Record<CurrencyCode, number> = {
   USD: 0.11,
 };
 
-function getSpendDataForRange(range?: DateRange) {
+function getSpendDataForRange(
+  spendData: DashboardSpendPoint[],
+  range?: DateRange,
+) {
+  if (spendData.length === 0) {
+    return [];
+  }
+
   if (!range?.start || !range?.end) {
-    return SPEND_DATA;
+    return spendData;
   }
 
   const rangeDays = eachDayOfInterval({
@@ -283,11 +284,11 @@ function getSpendDataForRange(range?: DateRange) {
   const rangeMomentum = Math.min(0.35, Math.max(0, days / 45) * 0.35);
 
   if (rangeMonths.length === 0) {
-    return SPEND_DATA;
+    return spendData;
   }
 
   return rangeMonths.map((month, i) => {
-    const source = SPEND_DATA[i % SPEND_DATA.length];
+    const source = spendData[i % spendData.length];
     const monthLabel = format(month, "MMM");
 
     return {
@@ -625,13 +626,15 @@ function SpendChart({
   color = "#14b8a6",
   range,
   currency = "SEK",
+  spendData,
 }: {
   variant: ChartVariant;
   color?: string;
   range?: { start: Date | null; end: Date | null };
   currency?: CurrencyCode;
+  spendData: DashboardSpendPoint[];
 }) {
-  const visibleSpend = getSpendDataForRange(range).map((entry) => ({
+  const visibleSpend = getSpendDataForRange(spendData, range).map((entry) => ({
     ...entry,
     SEK: convertCurrency(entry.SEK, currency),
     EUR: convertCurrency(entry.EUR, currency),
@@ -853,12 +856,13 @@ function getRangeMultiplier(range?: DateRange) {
 function getBuiltinData(
   key: BuiltinKey,
   range?: DateRange,
+  spendData: DashboardSpendPoint[] = [],
 ): { k: string; v: number; c?: string }[] {
   const multiplier = getRangeMultiplier(range);
 
   switch (key) {
     case "spend":
-      return SPEND_DATA.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
+      return spendData.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
     case "suppliers":
       return SUPPLIER_DATA.map((d) => ({
         ...d,
@@ -982,6 +986,7 @@ function ChartCard({
   onDrop,
   range,
   currency,
+  spendData,
 }: {
   card: DashboardCard;
   editMode: boolean;
@@ -996,6 +1001,7 @@ function ChartCard({
   onDrop: () => void;
   range?: DateRange;
   currency: CurrencyCode;
+  spendData: DashboardSpendPoint[];
 }) {
   const title =
     card.type === "builtin"
@@ -1010,12 +1016,13 @@ function ChartCard({
             color={card.color}
             range={range}
             currency={currency}
+            spendData={spendData}
           />
         );
       }
       return (
         <UniversalChart
-          data={getBuiltinData(card.builtinKey!, range)}
+          data={getBuiltinData(card.builtinKey!, range, spendData)}
           variant={card.variant}
           colors={[card.color]}
           currency={currency}
@@ -1259,6 +1266,7 @@ export function Dashboard({
   currency = "SEK",
 }: Props) {
   const [cards, setCards] = useState<DashboardCard[]>(readDashboardCards);
+  const [spendData, setSpendData] = useState<DashboardSpendPoint[]>([]);
   const selectedRange = range ?? {
     start: new Date(2025, 6, 17),
     end: new Date(2025, 7, 17),
@@ -1282,6 +1290,16 @@ export function Dashboard({
   const [showAddPanel, setShowAddPanel] = useState(false);
   const draggedId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardSpendData().then((data) => {
+      if (active) setSpendData(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -1345,7 +1363,7 @@ export function Dashboard({
     setDragOverId(null);
   }
 
-  const filteredSpend = SPEND_DATA.map((row, i) => ({
+  const filteredSpend = spendData.map((row, i) => ({
     ...row,
     SEK: Math.round(
       row.SEK * (1 + Math.min(0.35, Math.max(0, rangeDays.length / 45) * 0.35)),
@@ -1458,6 +1476,7 @@ export function Dashboard({
               onDrop={() => handleDrop(card.instanceId)}
               range={selectedRange}
               currency={currency}
+              spendData={spendData}
             />
           ))}
         </div>

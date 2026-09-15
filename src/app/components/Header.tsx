@@ -179,7 +179,7 @@ export function Header({
     <header className="flex flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-6 sm:py-4 bg-transparent">
       <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
         <div
-          className="size-9 sm:size-10 bg-[#0f9f96] rounded-full flex items-center justify-center shrink-0"
+          className="size-9 sm:size-10 bg-[var(--md3-primary)] rounded-full flex items-center justify-center shrink-0"
           aria-hidden="true"
         >
           <span
@@ -213,20 +213,26 @@ export function Header({
           >
             {editMode ? (
               <>
-                <Check className="size-4" style={{ color: "#007681" }} />
+                <Check
+                  className="size-4"
+                  style={{ color: "var(--md3-primary)" }}
+                />
                 <span
                   className="hidden text-[14px] tracking-[0.056px] sm:inline"
-                  style={{ color: "#007681" }}
+                  style={{ color: "var(--md3-primary)" }}
                 >
                   Klar
                 </span>
               </>
             ) : (
               <>
-                <Pencil className="size-4" style={{ color: "#007681" }} />
+                <Pencil
+                  className="size-4"
+                  style={{ color: "var(--md3-primary)" }}
+                />
                 <span
                   className="hidden text-[14px] tracking-[0.056px] sm:inline"
-                  style={{ color: "#007681" }}
+                  style={{ color: "var(--md3-primary)" }}
                 >
                   Redigera dashboard
                 </span>
