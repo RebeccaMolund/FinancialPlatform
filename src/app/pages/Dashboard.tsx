@@ -53,6 +53,12 @@ import {
 import type { SavedAnalysis } from "./NyAnalys";
 import type { DashboardSpendPoint } from "../../types/dashboard-spend";
 import { getDashboardSpendData } from "../../services/dashboard-spend";
+import type { DashboardSupplierPoint } from "../../types/dashboard-supplier";
+import { getDashboardSupplierData } from "../../services/dashboard-supplier";
+import type { DashboardTopCostPoint } from "../../types/dashboard-top-cost";
+import { getDashboardTopCostsData } from "../../services/dashboard-top-costs";
+import type { DashboardDueDatePoint } from "../../types/dashboard-due-date";
+import { getDashboardDueDateData } from "../../services/dashboard-due-date";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,40 +75,6 @@ interface DashboardCard {
 }
 
 // ─── Built-in chart data ──────────────────────────────────────────────────────
-
-const SUPPLIER_DATA = [
-  { k: "Solent", v: 1302001, c: "#0d9488" },
-  { k: "Jämtkraft", v: 1176028, c: "#14b8a6" },
-  { k: "Nyman", v: 983237, c: "#2dd4bf" },
-  { k: "Falun", v: 917431, c: "#5eead4" },
-  { k: "Peab", v: 789262, c: "#99f6e4" },
-  { k: "Fyrfältet", v: 486586, c: "#0f766e" },
-  { k: "Fastec", v: 411474, c: "#115e59" },
-  { k: "Totalentr", v: 337532, c: "#134e4a" },
-  { k: "Fastoc", v: 289607, c: "#1a7a6e" },
-  { k: "CKC", v: 152577, c: "#3fb8a8" },
-];
-
-const TOPCOSTS_DATA = [
-  { k: "Stålbalk HEB200", v: 95 },
-  { k: "Gipsskivor", v: 90 },
-  { k: "Isolering 50mm", v: 85 },
-  { k: "Betongblandare 350L", v: 75 },
-  { k: "Armeringsnät", v: 68 },
-  { k: "Grävmaskin hyra", v: 65 },
-  { k: "Elkraft kWh", v: 72 },
-  { k: "Fjärrvärme kWh", v: 60 },
-].reverse();
-
-const DUEDATE_DATA = [
-  { k: "1", v: 65 },
-  { k: "6", v: 68 },
-  { k: "11", v: 55 },
-  { k: "16", v: 25 },
-  { k: "21", v: 70 },
-  { k: "26", v: 45 },
-  { k: "31", v: 40 },
-];
 
 const BUILTIN_META: Record<
   BuiltinKey,
@@ -857,6 +829,9 @@ function getBuiltinData(
   key: BuiltinKey,
   range?: DateRange,
   spendData: DashboardSpendPoint[] = [],
+  supplierData: DashboardSupplierPoint[] = [],
+  topCostsData: DashboardTopCostPoint[] = [],
+  dueDateData: DashboardDueDatePoint[] = [],
 ): { k: string; v: number; c?: string }[] {
   const multiplier = getRangeMultiplier(range);
 
@@ -864,17 +839,17 @@ function getBuiltinData(
     case "spend":
       return spendData.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
     case "suppliers":
-      return SUPPLIER_DATA.map((d) => ({
+      return supplierData.map((d) => ({
         ...d,
         v: Math.round(d.v * multiplier),
       }));
     case "topcosts":
-      return TOPCOSTS_DATA.map((d) => ({
+      return topCostsData.map((d) => ({
         ...d,
         v: Math.round(d.v * multiplier),
       }));
     case "duedate":
-      return DUEDATE_DATA.map((d) => ({
+      return dueDateData.map((d) => ({
         ...d,
         v: Math.round(d.v * multiplier),
       }));
@@ -987,6 +962,9 @@ function ChartCard({
   range,
   currency,
   spendData,
+  supplierData,
+  topCostsData,
+  dueDateData,
 }: {
   card: DashboardCard;
   editMode: boolean;
@@ -1002,6 +980,9 @@ function ChartCard({
   range?: DateRange;
   currency: CurrencyCode;
   spendData: DashboardSpendPoint[];
+  supplierData: DashboardSupplierPoint[];
+  topCostsData: DashboardTopCostPoint[];
+  dueDateData: DashboardDueDatePoint[];
 }) {
   const title =
     card.type === "builtin"
@@ -1022,7 +1003,14 @@ function ChartCard({
       }
       return (
         <UniversalChart
-          data={getBuiltinData(card.builtinKey!, range, spendData)}
+          data={getBuiltinData(
+            card.builtinKey!,
+            range,
+            spendData,
+            supplierData,
+            topCostsData,
+            dueDateData,
+          )}
           variant={card.variant}
           colors={[card.color]}
           currency={currency}
@@ -1267,6 +1255,11 @@ export function Dashboard({
 }: Props) {
   const [cards, setCards] = useState<DashboardCard[]>(readDashboardCards);
   const [spendData, setSpendData] = useState<DashboardSpendPoint[]>([]);
+  const [supplierData, setSupplierData] = useState<DashboardSupplierPoint[]>(
+    [],
+  );
+  const [topCostsData, setTopCostsData] = useState<DashboardTopCostPoint[]>([]);
+  const [dueDateData, setDueDateData] = useState<DashboardDueDatePoint[]>([]);
   const selectedRange = range ?? {
     start: new Date(2025, 6, 17),
     end: new Date(2025, 7, 17),
@@ -1295,6 +1288,36 @@ export function Dashboard({
     let active = true;
     getDashboardSpendData().then((data) => {
       if (active) setSpendData(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardSupplierData().then((data) => {
+      if (active) setSupplierData(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardTopCostsData().then((data) => {
+      if (active) setTopCostsData(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardDueDateData().then((data) => {
+      if (active) setDueDateData(data);
     });
     return () => {
       active = false;
@@ -1477,6 +1500,9 @@ export function Dashboard({
               range={selectedRange}
               currency={currency}
               spendData={spendData}
+              supplierData={supplierData}
+              topCostsData={topCostsData}
+              dueDateData={dueDateData}
             />
           ))}
         </div>

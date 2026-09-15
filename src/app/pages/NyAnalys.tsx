@@ -62,6 +62,10 @@ import {
 import { sv } from "date-fns/locale";
 import type { MockRow } from "../../types/invoice";
 import { getInvoices } from "../../services/invoices";
+import type { Scenario } from "../../types/analysis";
+import { getScenarios } from "../../services/scenarios";
+import type { FilterDef } from "../../types/filters";
+import { getFilterConfig } from "../../services/filters";
 
 // ─── Filter state types ───────────────────────────────────────────────────────
 
@@ -189,190 +193,16 @@ function countActive(val: FilterVal): number {
   return 0;
 }
 
-// ─── AI scenarios ─────────────────────────────────────────────────────────────
-
-interface Insight {
-  type: "success" | "warning" | "info";
-  text: string;
-}
-interface Scenario {
-  query: string;
-  headline: string;
-  summary: string;
-  insights: Insight[];
-  chart1Title: string;
-  chart1Color: string;
-  chart2Title: string;
-  chart2Color: string;
-  chips: string[];
-  preFilter?: Partial<Record<string, FilterVal>>;
-}
-
-const SCENARIOS: Scenario[] = [
-  {
-    query: "energi",
-    headline: "Energikostnader – analys för perioden",
-    summary:
-      "Totala energikostnader uppgår till 704 985 kr. Fjärrvärme är den dominerande posten (36 %) följt av elkraft. Sundsvall Energi AB är enskilt störst och står för 41 % av energiinköpen.",
-    insights: [
-      {
-        type: "warning",
-        text: "Fjärrvärmepriset har stigit 12 % jämfört med samma period förra året.",
-      },
-      {
-        type: "success",
-        text: "Elkraftskostnaden minskade 7 % tack vare ny avtalsmodell med Jämtkraft.",
-      },
-      {
-        type: "info",
-        text: "3 fakturor från Sundsvall Energi AB saknar projektkod och kan inte allokeras.",
-      },
-    ],
-    chart1Title: "Energikostnad per leverantör (kr)",
-    chart1Color: "#0f9f96",
-    chart2Title: "Energislag – antal enheter",
-    chart2Color: "#818cf8",
-    chips: ["Spend historiskt", "Enheter per kategori"],
-    preFilter: { kategori: ["Energi"] } as any,
-  },
-  {
-    query: "peab",
-    headline: "Leverantörsanalys – Peab Sverige AB",
-    summary:
-      "Peab Sverige AB är er 5:e största leverantör med totala inköp på 251 900 kr. Maskinhyra dominerar (76 %). Genomsnittlig betalningstid är 28 dagar mot avtalade 30.",
-    insights: [
-      {
-        type: "success",
-        text: "Peab levererar i tid i 94 % av fallen – bäst av era maskinhyrleverantörer.",
-      },
-      {
-        type: "warning",
-        text: "Styckpriset på grävmaskiner ökade 8 % i senaste avtalsjusteringen.",
-      },
-      {
-        type: "info",
-        text: "Möjlig volymrabatt på 3 % om månatliga beställningar överstiger 85 000 kr.",
-      },
-    ],
-    chart1Title: "Peab – kostnad per artikel (kr)",
-    chart1Color: "#0f9f96",
-    chart2Title: "Peab – fördelning per kategori",
-    chart2Color: "#f59e0b",
-    chips: ["Spend historiskt", "Top leverantörer"],
-    preFilter: { leverantor: ["Peab Sverige AB"] },
-  },
-  {
-    query: "material",
-    headline: "Materialkostnader – kategorianalys",
-    summary:
-      "Materialkostnader är er enskilt största inköpskategori och uppgår till 1 101 200 kr. Stål och betong dominerar. Prisutvecklingen har stabiliserats men är 6 % över föregående år.",
-    insights: [
-      {
-        type: "warning",
-        text: "Stålpriserna har ökat 14 % YoY – se över möjligheter till längre prisavtal.",
-      },
-      {
-        type: "success",
-        text: "Betongpriset är stabilt och ligger 2 % under indexutvecklingen.",
-      },
-      {
-        type: "info",
-        text: "Armeringsnät köps från 4 leverantörer – konsolidering kan ge bättre pris.",
-      },
-    ],
-    chart1Title: "Materialkostnad per leverantör (kr)",
-    chart1Color: "#0f9f96",
-    chart2Title: "Material – antal enheter per artikel",
-    chart2Color: "#818cf8",
-    chips: ["Medelpris per produkt", "Top 3 billigaste lev."],
-    preFilter: { kategori: ["Material"] } as any,
-  },
-  {
-    query: "fakturor",
-    headline: "Fakturastatus – förfalloanalys",
-    summary:
-      "Totalt 25 fakturor registrerade. 8 fakturor förfaller inom 30 dagar. Andelen fakturor betalda i tid är 91 %, upp från 87 % föregående period.",
-    insights: [
-      {
-        type: "warning",
-        text: "3 fakturor har redan passerat förfallodatum – risk för dröjsmålsränta.",
-      },
-      {
-        type: "info",
-        text: "8 fakturor förfaller inom 30 dagar med ett sammanlagt värde på 476 300 kr.",
-      },
-      {
-        type: "success",
-        text: "Andelen e-fakturor ökade till 44 % – minskar manuell hantering.",
-      },
-    ],
-    chart1Title: "Fakturor per fakturaformat",
-    chart1Color: "#a78bfa",
-    chart2Title: "Fakturor per leverantör (antal)",
-    chart2Color: "#0f9f96",
-    chips: ["Spend historiskt", "Enheter per kategori"],
-    preFilter: {},
-  },
-  {
-    query: "leverantörer",
-    headline: "Leverantörsöversikt – alla leverantörer",
-    summary:
-      "Ni arbetar med 7 aktiva leverantörer i denna period. Fastec AB är störst sett till antal fakturor. Peab och Fastec tillsammans utgör 40 % av totalt inköpsvärde.",
-    insights: [
-      {
-        type: "info",
-        text: "Fastec AB har flest fakturor (5 st) och bred kategoritäckning.",
-      },
-      {
-        type: "warning",
-        text: "Colv Sverige AB fakturerar enbart i EUR – valutarisk bör bevakas.",
-      },
-      {
-        type: "success",
-        text: "Nyman AB förbättrade sin leveransprecision till 97 % denna period.",
-      },
-    ],
-    chart1Title: "Inköpsvärde per leverantör (kr)",
-    chart1Color: "#0f9f96",
-    chart2Title: "Antal fakturor per leverantör",
-    chart2Color: "#818cf8",
-    chips: ["Top leverantörer", "Spend historiskt"],
-    preFilter: {},
-  },
-  {
-    query: "kostnad",
-    headline: "Kostnadsöversikt – alla kategorier",
-    summary:
-      "Totalt inköpsvärde för perioden är 2 318 735 kr. Material och energi dominerar. Maskinhyra överskrider budget med 8 % drivet av ökad projektaktivitet.",
-    insights: [
-      {
-        type: "info",
-        text: "Totalt inköpsvärde: 2 318 735 kr fördelat på 25 fakturor och 7 leverantörer.",
-      },
-      { type: "warning", text: "Maskinhyra överskrider budget med 8,4 %." },
-      {
-        type: "success",
-        text: "IT-kostnader minskade 11 % efter omförhandling av licensavtal.",
-      },
-    ],
-    chart1Title: "Kostnad per kategori (kr)",
-    chart1Color: "#0f9f96",
-    chart2Title: "Kostnad per leverantör (kr)",
-    chart2Color: "#818cf8",
-    chips: ["Spend historiskt", "Enheter per kategori"],
-    preFilter: {},
-  },
-];
-
-function matchScenario(q: string): Scenario {
+function matchScenario(q: string, scenarios: Scenario[]): Scenario | null {
   const ql = q.toLowerCase();
-  if (/energi|el\b|värme|fjärr|kwh/.test(ql)) return SCENARIOS[0];
-  if (/peab/.test(ql)) return SCENARIOS[1];
-  if (/material|betong|stål|gips|armer|isoler/.test(ql)) return SCENARIOS[2];
-  if (/faktura|fakturor|förfall|betalning|försen/.test(ql)) return SCENARIOS[3];
+  if (scenarios.length === 0) return null;
+  if (/energi|el\b|värme|fjärr|kwh/.test(ql)) return scenarios[0];
+  if (/peab/.test(ql)) return scenarios[1];
+  if (/material|betong|stål|gips|armer|isoler/.test(ql)) return scenarios[2];
+  if (/faktura|fakturor|förfall|betalning|försen/.test(ql)) return scenarios[3];
   if (/leverantör|leverantörer|solent|jämtkraft|nyman/.test(ql))
-    return SCENARIOS[4];
-  return SCENARIOS[5];
+    return scenarios[4];
+  return scenarios[5];
 }
 
 // ─── Computed charts from rows ────────────────────────────────────────────────
@@ -424,96 +254,6 @@ function computeCharts(rows: MockRow[], scenario: Scenario | null) {
     chart2: byLev.map(([k, v]) => ({ k: k.split(" ")[0], v })),
   };
 }
-
-// ─── Filter definitions ───────────────────────────────────────────────────────
-
-type FilterType =
-  | "text"
-  | "daterange"
-  | "numrange"
-  | "multiselect"
-  | "checklist"
-  | "ordernummer"
-  | "toggle"
-  | "avsnitt";
-interface FilterDef {
-  id: string;
-  label: string;
-  type: FilterType;
-}
-
-const FILTERS: FilterDef[] = [
-  { id: "fakturanummer", label: "Fakturanummer", type: "text" },
-  { id: "ordernummer", label: "Ordernummer", type: "ordernummer" },
-  { id: "totalbelopp", label: "Totalt belopp", type: "numrange" },
-  { id: "koparnref", label: "Köparens referens", type: "text" },
-  { id: "momsbelopp", label: "Totalt momsbelopp", type: "numrange" },
-  { id: "valuta", label: "Valuta", type: "checklist" },
-  { id: "leverantor", label: "Leverantör", type: "multiselect" },
-  { id: "mottagare", label: "Mottagare", type: "multiselect" },
-  { id: "forfallodatum", label: "Förfallodatum", type: "daterange" },
-  { id: "fakturadatum", label: "Fakturadatum", type: "daterange" },
-  { id: "kostnadsstalle", label: "Kostnadsställe", type: "multiselect" },
-  { id: "fakturaformat", label: "Fakturaformat", type: "checklist" },
-  { id: "kostnad", label: "Kostnad", type: "numrange" },
-  { id: "befintlighet", label: "Befintlighet", type: "toggle" },
-  { id: "betalningsvillkor", label: "Betalningsvillkor", type: "multiselect" },
-  { id: "projektkod", label: "Projektkod", type: "text" },
-  { id: "leverantorsadress", label: "Leverantörsadress", type: "text" },
-  { id: "kontaktperson", label: "Kontaktperson", type: "text" },
-  { id: "godkannandedatum", label: "Godkännandedatum", type: "daterange" },
-  { id: "valutakurs", label: "Valutakurs", type: "numrange" },
-  { id: "betalningsmetod", label: "Betalningsmetod", type: "checklist" },
-  { id: "avdelning", label: "Avdelning", type: "multiselect" },
-  { id: "referensnummer", label: "Referensnummer", type: "text" },
-  { id: "naturforman", label: "Naturförmån", type: "checklist" },
-  { id: "momsregnr", label: "Momsregistreringsnummer", type: "text" },
-  { id: "rabatprocent", label: "Rabatprocent", type: "numrange" },
-  { id: "antalrader", label: "Antal rader", type: "numrange" },
-  { id: "fraktkostnad", label: "Fraktkostnad", type: "numrange" },
-  { id: "internkommentar", label: "Intern kommentar", type: "text" },
-  { id: "avsnitt", label: "Avsnitt", type: "avsnitt" },
-];
-
-const OPTIONS: Record<string, string[]> = {
-  leverantor: [
-    "Peab Sverige AB",
-    "CKC AB",
-    "Fastec AB",
-    "Sundsvall Energi AB",
-    "Fyrfasen Energi AB",
-    "Colv Sverige AB",
-    "Lambertinson",
-    "Nyman AB",
-    "Jämtkraft AB",
-  ],
-  mottagare: [
-    "Bygg & Betong AB",
-    "Henrik Olsson",
-    "Anna Berg",
-    "Bojan Byggmästare",
-    "S & Verksamheten AB",
-  ],
-  kostnadsstalle: [
-    "Marknadsforing B2B",
-    "Projektkostn. Projekt Orion",
-    "Ekonomi & Redovisning",
-    "Drift, Region Väst",
-    "Produktionsavdelning, Bygg",
-  ],
-  betalningsvillkor: [
-    "30 dagar netto",
-    "60 dagar netto",
-    "Förskottsbetalning",
-    "Delbetalning",
-  ],
-  avdelning: ["Ekonomi", "Inköp", "Produktion", "IT", "HR", "Marknad"],
-  valuta: ["SEK", "EUR", "USD", "GBP", "JPY"],
-  fakturaformat: ["PDF", "E-faktura (Peppol)", "EDI", "Papper"],
-  betalningsmetod: ["Banköverföring", "Autogiro", "Kreditkort", "Bankgiro"],
-  naturforman: ["Bil", "Bostad", "Måltid", "Övrigt"],
-  avsnitt: ["Antal", "Styckpris", "Radbelopp", "Rabatt", "Momsprocent"],
-};
 
 // ─── Shared UI helpers ────────────────────────────────────────────────────────
 
@@ -657,11 +397,13 @@ function DropdownContent({
   value,
   onChange,
   onClose,
+  options,
 }: {
   def: FilterDef;
   value: FilterVal;
   onChange: (v: FilterVal) => void;
   onClose: () => void;
+  options: Record<string, string[]>;
 }) {
   // local draft — committed on Tillämpa
   const [draft, setDraft] = useState<FilterVal>(value ?? null);
@@ -680,7 +422,7 @@ function DropdownContent({
     </button>
   );
 
-  const opts = OPTIONS[def.id] ?? [];
+  const opts = options[def.id] ?? [];
 
   switch (def.type) {
     case "text": {
@@ -887,11 +629,13 @@ function FilterPill({
   def,
   value,
   onChange,
+  options,
   darkMode = false,
 }: {
   def: FilterDef;
   value: FilterVal;
   onChange: (v: FilterVal) => void;
+  options: Record<string, string[]>;
   darkMode?: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -954,6 +698,7 @@ function FilterPill({
               onChange(v);
             }}
             onClose={() => setOpen(false)}
+            options={options}
           />
         </div>
       )}
@@ -1483,11 +1228,13 @@ export function NyAnalys({
   darkMode?: boolean;
 }) {
   const [invoiceRows, setInvoiceRows] = useState<MockRow[]>([]);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [filterDefs, setFilterDefs] = useState<FilterDef[]>([]);
+  const [filterOptions, setFilterOptions] = useState<Record<string, string[]>>(
+    {},
+  );
   const [query, setQuery] = useState(() => readAnalysisField("query", ""));
-  const [activeScenario, setActiveScenario] = useState<Scenario | null>(() => {
-    const storedQuery = readAnalysisField("query", "");
-    return storedQuery ? matchScenario(storedQuery) : null;
-  });
+  const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterValues, setFilterValues] =
@@ -1528,6 +1275,33 @@ export function NyAnalys({
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    getFilterConfig().then((config) => {
+      if (!active) return;
+      setFilterDefs(config.filters);
+      setFilterOptions(config.options);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getScenarios().then((loadedScenarios) => {
+      if (!active) return;
+      setScenarios(loadedScenarios);
+      const storedQuery = readAnalysisField("query", "");
+      if (storedQuery) {
+        setActiveScenario(matchScenario(storedQuery, loadedScenarios));
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   useEffect(() => writeAnalysisState("query", query), [query]);
   useEffect(
     () => writeAnalysisState("filterValues", filterValues),
@@ -1562,14 +1336,18 @@ export function NyAnalys({
     setLoading(true);
     setActiveScenario(null);
     setTimeout(() => {
-      const s = matchScenario(q);
+      const s = matchScenario(q, scenarios);
       setActiveScenario(s);
+      if (!s) {
+        setLoading(false);
+        return;
+      }
       // pre-apply the scenario's filter
       if (s.preFilter && Object.keys(s.preFilter).length > 0) {
         const safePreFilter = Object.entries(s.preFilter).reduce<
           Record<string, FilterVal>
         >((acc, [key, value]) => {
-          if (value !== undefined) acc[key] = value;
+          if (value !== undefined) acc[key] = value as FilterVal;
           return acc;
         }, {});
         setFilterValues((prev) => ({ ...prev, ...safePreFilter }));
@@ -1769,12 +1547,13 @@ export function NyAnalys({
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            {FILTERS.map((f) => (
+            {filterDefs.map((f) => (
               <FilterPill
                 key={f.id}
                 def={f}
                 value={filterValues[f.id] ?? null}
                 onChange={(v) => updateFilter(f.id, v)}
+                options={filterOptions}
                 darkMode={darkMode}
               />
             ))}
