@@ -1933,7 +1933,7 @@ export function NyAnalys({
                       {/* Color swatches */}
                       <div className="flex gap-1.5">
                         {CHART_COLORS.map((c) => (
-                          <button
+                          <Button
                             key={c}
                             onClick={() => setChartColor(c)}
                             className={[
