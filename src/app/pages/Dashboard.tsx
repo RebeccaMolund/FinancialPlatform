@@ -156,6 +156,44 @@ export const CHART_COLORS = [
   "#f97316", // orange
 ];
 
+function mixHexColors(source: string, target: string, amount: number) {
+  const sourceRgb = source
+    .match(/[\da-f]{2}/gi)
+    ?.map((part) => parseInt(part, 16));
+  const targetRgb = target
+    .match(/[\da-f]{2}/gi)
+    ?.map((part) => parseInt(part, 16));
+
+  if (
+    !sourceRgb ||
+    sourceRgb.length !== 3 ||
+    !targetRgb ||
+    targetRgb.length !== 3
+  ) {
+    return source;
+  }
+
+  return `#${sourceRgb
+    .map((value, index) =>
+      Math.round(value + (targetRgb[index] - value) * amount)
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
+
+function getColorScale(base: string, count: number) {
+  if (count <= 1) return [base];
+  if (count === 2) return [base, mixHexColors(base, "#ffffff", 0.65)];
+
+  return Array.from({ length: count }, (_, index) => {
+    const amount = index / (count - 1);
+    return amount < 0.5
+      ? mixHexColors(base, "#000000", (0.5 - amount) * 1.1)
+      : mixHexColors(base, "#ffffff", (amount - 0.5) * 1.5);
+  });
+}
+
 const DEFAULT_CARDS: DashboardCard[] = [
   {
     instanceId: "spend-0",
@@ -286,6 +324,7 @@ function UniversalChart({
   currency?: CurrencyCode;
 }) {
   const base = colors?.[0] ?? "#14b8a6";
+  const colorScale = getColorScale(base, data.length);
   const gradId = `ug-${base.replace("#", "")}`;
 
   if (variant === "pie" || variant === "donut") {
@@ -317,12 +356,7 @@ function UniversalChart({
                 animationEasing="ease-out"
               >
                 {displayData.map((entry, i) => (
-                  <Cell
-                    key={`uc-cell-${i}`}
-                    fill={
-                      entry.c ?? colors?.[i % (colors?.length ?? 1)] ?? base
-                    }
-                  />
+                  <Cell key={`uc-cell-${i}`} fill={colorScale[i]} />
                 ))}
               </Pie>
               <text
@@ -371,8 +405,7 @@ function UniversalChart({
                   <span
                     className="size-2.5 rounded-sm shrink-0"
                     style={{
-                      backgroundColor:
-                        entry.c ?? colors?.[i % (colors?.length ?? 1)] ?? base,
+                      backgroundColor: colorScale[i],
                     }}
                   />
                   <span className="min-w-0 truncate text-muted-foreground flex-1">
@@ -603,19 +636,23 @@ function SpendChart({
       {
         k: "SEK",
         v: visibleSpend.reduce((s, d) => s + d.SEK, 0),
-        c: "#14b8a6",
       },
       {
         k: "EUR",
         v: visibleSpend.reduce((s, d) => s + d.EUR, 0),
-        c: "#a78bfa",
       },
     ];
-    return <UniversalChart data={agg} variant={variant} />;
+    return (
+      <UniversalChart
+        data={agg}
+        variant={variant}
+        colors={getColorScale(color, 2)}
+      />
+    );
   }
   if (variant === "hbar") {
     const agg = visibleSpend.map((d) => ({ k: d.k, v: d.SEK + d.EUR }));
-    return <UniversalChart data={agg} variant="hbar" colors={["#14b8a6"]} />;
+    return <UniversalChart data={agg} variant="hbar" colors={[color]} />;
   }
   const m = { left: 0, right: 12, top: 4, bottom: 0 };
   if (variant === "line") {
@@ -653,7 +690,7 @@ function SpendChart({
             key="sc-sek"
             type="monotone"
             dataKey="SEK"
-            stroke="#14b8a6"
+            stroke={color}
             strokeWidth={2}
             dot={false}
           />
@@ -661,7 +698,7 @@ function SpendChart({
             key="sc-eur"
             type="monotone"
             dataKey="EUR"
-            stroke="#a78bfa"
+            stroke={getColorScale(color, 2)[1]}
             strokeWidth={2}
             dot={false}
           />
@@ -674,13 +711,33 @@ function SpendChart({
       <ResponsiveContainer width="100%" height={H}>
         <AreaChart data={visibleSpend} margin={m}>
           <defs>
-            <linearGradient id="spend-sek" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#14b8a6" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#14b8a6" stopOpacity={0} />
+            <linearGradient
+              id={`spend-sek-${color.replace("#", "")}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="0%" stopColor={color} stopOpacity={0.25} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
-            <linearGradient id="spend-eur" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#a78bfa" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
+            <linearGradient
+              id={`spend-eur-${color.replace("#", "")}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                stopColor={getColorScale(color, 2)[1]}
+                stopOpacity={0.25}
+              />
+              <stop
+                offset="100%"
+                stopColor={getColorScale(color, 2)[1]}
+                stopOpacity={0}
+              />
             </linearGradient>
           </defs>
           <CartesianGrid
@@ -714,17 +771,17 @@ function SpendChart({
             key="sc-sek"
             type="monotone"
             dataKey="SEK"
-            stroke="#14b8a6"
+            stroke={color}
             strokeWidth={2}
-            fill="url(#spend-sek)"
+            fill={`url(#spend-sek-${color.replace("#", "")})`}
           />
           <Area
             key="sc-eur"
             type="monotone"
             dataKey="EUR"
-            stroke="#a78bfa"
+            stroke={getColorScale(color, 2)[1]}
             strokeWidth={2}
-            fill="url(#spend-eur)"
+            fill={`url(#spend-eur-${color.replace("#", "")})`}
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -761,8 +818,13 @@ function SpendChart({
           wrapperStyle={{ fontSize: 11 }}
           iconType="square"
         />
-        <Bar key="sc-sek" dataKey="SEK" fill="#14b8a6" radius={[4, 4, 0, 0]} />
-        <Bar key="sc-eur" dataKey="EUR" fill="#a78bfa" radius={[4, 4, 0, 0]} />
+        <Bar key="sc-sek" dataKey="SEK" fill={color} radius={[4, 4, 0, 0]} />
+        <Bar
+          key="sc-eur"
+          dataKey="EUR"
+          fill={getColorScale(color, 2)[1]}
+          radius={[4, 4, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );
