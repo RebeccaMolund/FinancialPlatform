@@ -200,7 +200,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
 
       <div className="max-w-xl mx-auto space-y-5">
         {/* Profile */}
-        <Card className="border-none shadow-none bg-card">
+        <Card className="rounded-2xl overflow-hidden border-none shadow-none bg-card">
           <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={Sun} title={t.profile} />
             <div
@@ -298,7 +298,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Appearance */}
-        <Card className="border-none shadow-none bg-card">
+        <Card className="rounded-2xl overflow-hidden border-none shadow-none bg-card">
           <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader
               icon={settings.darkMode ? Moon : Sun}
@@ -326,7 +326,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Notifications */}
-        <Card className="border-none shadow-none bg-card">
+        <Card className="rounded-2xl overflow-hidden border-none shadow-none bg-card">
           <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={Bell} title={t.notif} />
             <Row label={t.dueInv} description={t.dueInvDesc}>
@@ -381,7 +381,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Export */}
-        <Card className="border-none shadow-none bg-card">
+        <Card className="rounded-2xl overflow-hidden border-none shadow-none bg-card">
           <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={FileDown} title={t.exportS} />
             <Row label={t.defFmt} description={t.defFmtDesc}>
@@ -421,7 +421,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Security */}
-        <Card className="border-none shadow-none bg-card">
+        <Card className="rounded-2xl overflow-hidden border-none shadow-none bg-card">
           <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={Shield} title={t.security} />
             <Row label={t.twoFA} description={t.twoFADesc}>

@@ -247,7 +247,7 @@ export function Header({
             onChange={(event) =>
               onCurrencyChange(event.target.value as CurrencyCode)
             }
-            className="h-[40px] min-w-[90px] appearance-none rounded-[12px] border border-border bg-card px-4 py-2 pr-10 text-center text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="h-[40px] min-w-[90px] appearance-none rounded-full border border-border bg-card px-4 py-2 pr-10 text-center text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label="Välj valuta för dashboarden"
           >
             <option value="SEK">SEK</option>

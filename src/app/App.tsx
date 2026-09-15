@@ -231,7 +231,7 @@ export default function App() {
       >
         <Suspense
           fallback={
-            <div className="flex h-full w-full items-center justify-center bg-[#f5f6fa] p-8">
+            <div className="flex h-full w-full items-center justify-center bg-background p-8">
               <div
                 className="w-full max-w-6xl animate-pulse space-y-6"
                 aria-label="Laddar innehåll"

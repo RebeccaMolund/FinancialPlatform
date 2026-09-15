@@ -35,10 +35,10 @@ export function DateFieldButton({
       aria-label={ariaLabel ?? "Datumfält"}
       aria-expanded={open}
       aria-haspopup="dialog"
-      className="bg-card rounded-[24px] overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground"
+      className="bg-card rounded-full border border-border overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground"
     >
       {/* TextField1 — drop-shadow, rounded-[12px] */}
-      <div className="drop-shadow-[0px_0px_7.5px_rgba(0,47,85,0.17)] flex flex-col items-start justify-center overflow-clip rounded-[12px]">
+      <div className="drop-shadow-[0px_0px_7.5px_rgba(0,47,85,0.17)] flex flex-col items-start justify-center overflow-clip rounded-full">
         {/* StateLayer — inner row */}
         <div className="rounded-tl-[4px] rounded-tr-[4px] w-full">
           <div className="flex flex-row items-center">

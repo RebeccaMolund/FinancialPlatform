@@ -824,10 +824,9 @@ function ColorPicker({
       {/* Exactly matches Figma: 32px, rounded-[10px], border #e5e7eb, inner 20px circle */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative size-[32px] rounded-[10px] flex items-center justify-center transition-opacity hover:opacity-80"
+        className="relative size-[32px] rounded-[10px] bg-surface-high flex items-center justify-center transition-colors hover:bg-surface-highest"
         title="Byt färg"
       >
-        <div className="absolute inset-0 rounded-[10px] border border-border pointer-events-none" />
         <span
           className="size-[20px] rounded-full block"
           style={{ backgroundColor: current }}
@@ -835,7 +834,7 @@ function ColorPicker({
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-card rounded-xl border border-border p-3"
+          className="absolute right-0 top-full mt-1 z-[200] bg-surface-high rounded-xl border-0 p-3"
           style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)", minWidth: 136 }}
         >
           <div className="grid grid-cols-4 gap-1">
@@ -879,7 +878,7 @@ function VariantPicker({
       {/* Exactly matches Figma: h-[32px], rounded-[10px], bg-[#f3f4f6] */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 h-[32px] px-[10px] rounded-[10px] bg-muted hover:bg-background transition-colors text-muted-foreground text-xs"
+        className="flex items-center gap-1 h-[32px] px-[10px] rounded-[10px] bg-surface-high hover:bg-surface-highest transition-colors text-muted-foreground text-xs"
         title="Byt diagramtyp"
       >
         <CurrentIcon className="size-3.5" />
@@ -887,7 +886,7 @@ function VariantPicker({
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-card rounded-xl border border-border p-1.5 flex flex-col gap-0.5 min-w-[130px]"
+          className="absolute right-0 top-full mt-1 z-[200] bg-surface-high rounded-xl border-0 p-1.5 flex flex-col gap-0.5 min-w-[130px]"
           style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)" }}
         >
           {VARIANT_OPTIONS.map((opt) => (
