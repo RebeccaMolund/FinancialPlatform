@@ -176,10 +176,10 @@ export function Header({
   const label = `${format(range.start ?? new Date(), "dd/MM/yyyy")} - ${format(range.end ?? new Date(), "dd/MM/yyyy")}`;
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-transparent">
-      <div className="flex items-center gap-4">
+    <header className="flex flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-6 sm:py-4 bg-transparent">
+      <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
         <div
-          className="w-10 h-10 bg-[#0f9f96] rounded-full flex items-center justify-center shrink-0"
+          className="size-9 sm:size-10 bg-[#0f9f96] rounded-full flex items-center justify-center shrink-0"
           aria-hidden="true"
         >
           <span
@@ -190,7 +190,7 @@ export function Header({
           </span>
         </div>
         <h1
-          className="text-[20px] leading-[28px] text-foreground whitespace-nowrap"
+          className="truncate text-base leading-6 text-foreground sm:text-[20px] sm:leading-[28px]"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
         >
           Välkommen, Rebecca!
@@ -205,7 +205,7 @@ export function Header({
                 ? "Avsluta redigering av dashboard"
                 : "Redigera dashboard"
             }
-            className="flex items-center gap-2 px-6 py-3 rounded-[12px] transition-colors hover:bg-[#007681]/8"
+            className="flex shrink-0 items-center gap-1 rounded-[12px] px-2 py-2 transition-colors hover:bg-[#007681]/8 sm:gap-2 sm:px-6 sm:py-3"
             style={{
               fontFamily: "'IBM Plex Sans', sans-serif",
               fontWeight: 500,
@@ -215,7 +215,7 @@ export function Header({
               <>
                 <Check className="size-4" style={{ color: "#007681" }} />
                 <span
-                  className="text-[14px] tracking-[0.056px]"
+                  className="hidden text-[14px] tracking-[0.056px] sm:inline"
                   style={{ color: "#007681" }}
                 >
                   Klar
@@ -225,7 +225,7 @@ export function Header({
               <>
                 <Pencil className="size-4" style={{ color: "#007681" }} />
                 <span
-                  className="text-[14px] tracking-[0.056px]"
+                  className="hidden text-[14px] tracking-[0.056px] sm:inline"
                   style={{ color: "#007681" }}
                 >
                   Redigera dashboard
@@ -236,11 +236,11 @@ export function Header({
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
         <label className="sr-only" htmlFor="dashboard-currency">
           Valuta
         </label>
-        <div className="relative">
+        <div className="relative max-[639px]:flex-1">
           <select
             id="dashboard-currency"
             value={currency}

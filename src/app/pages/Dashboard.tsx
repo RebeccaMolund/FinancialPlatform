@@ -28,6 +28,12 @@ import type { CurrencyCode, DateRange } from "../components/Header";
 import { StatCard } from "../components/StatCard";
 import { Card, CardContent } from "../components/ui/card";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import {
   BarChart,
   Bar,
   LineChart,
@@ -336,8 +342,8 @@ function UniversalChart({
     const totalValue = displayData.reduce((sum, entry) => sum + entry.v, 0);
 
     return (
-      <div className="flex w-full items-center gap-4 min-w-0">
-        <div className="h-[220px] w-[220px] shrink-0">
+      <div className="flex w-full min-w-0 items-center gap-4 max-[1023px]:flex-col max-[1023px]:items-start">
+        <div className="h-[220px] w-[220px] shrink-0 max-[480px]:h-[180px] max-[480px]:w-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -392,7 +398,7 @@ function UniversalChart({
           </ResponsiveContainer>
         </div>
 
-        <div className="flex-1 min-w-0 overflow-hidden">
+        <div className="min-w-0 flex-1 overflow-hidden max-[1023px]:w-full">
           <div className="flex flex-col gap-1">
             {displayData.map((entry, i) => {
               const pct = totalValue > 0 ? (entry.v / totalValue) * 100 : 0;
@@ -880,46 +886,35 @@ function ColorPicker({
   current: string;
   onChange: (c: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
   return (
-    <div className="relative">
-      {/* Exactly matches Figma: 32px, rounded-[10px], border #e5e7eb, inner 20px circle */}
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="relative size-[32px] rounded-[10px] bg-surface-high flex items-center justify-center transition-colors hover:bg-surface-highest"
-        title="Byt färg"
-      >
-        <span
-          className="size-[20px] rounded-full block"
-          style={{ backgroundColor: current }}
-        />
-      </button>
-      {open && (
-        <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-surface-high rounded-xl border-0 p-3"
-          style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)", minWidth: 136 }}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="relative flex size-[32px] items-center justify-center rounded-[10px] bg-surface-high transition-colors hover:bg-surface-highest"
+          title="Byt färg"
+          aria-label="Byt färg"
         >
-          <div className="grid grid-cols-4 gap-1">
-            {CHART_COLORS.map((c) => (
-              <button
-                key={c}
-                onClick={() => {
-                  onChange(c);
-                  setOpen(false);
-                }}
-                className={[
-                  "size-7 rounded-full transition-transform hover:scale-110",
-                  current === c
-                    ? "ring-2 ring-offset-2 ring-gray-500 scale-110"
-                    : "",
-                ].join(" ")}
-                style={{ backgroundColor: c }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+          <span
+            className="block size-[20px] rounded-full"
+            style={{ backgroundColor: current }}
+          />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="grid min-w-[136px] grid-cols-4 gap-1 rounded-xl border-0 bg-surface-high p-3"
+      >
+        {CHART_COLORS.map((c) => (
+          <DropdownMenuItem
+            key={c}
+            onSelect={() => onChange(c)}
+            className="size-7 cursor-pointer rounded-full p-0 focus:bg-transparent"
+            style={{ backgroundColor: c }}
+            aria-label={`Välj färg ${c}`}
+          />
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -932,47 +927,42 @@ function VariantPicker({
   current: ChartVariant;
   onChange: (v: ChartVariant) => void;
 }) {
-  const [open, setOpen] = useState(false);
   const CurrentIcon =
     VARIANT_OPTIONS.find((o) => o.value === current)?.icon ?? BarChart2;
   return (
-    <div className="relative">
-      {/* Exactly matches Figma: h-[32px], rounded-[10px], bg-[#f3f4f6] */}
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 h-[32px] px-[10px] rounded-[10px] bg-surface-high hover:bg-surface-highest transition-colors text-muted-foreground text-xs"
-        title="Byt diagramtyp"
-      >
-        <CurrentIcon className="size-3.5" />
-        <ChevronDown className="size-3" />
-      </button>
-      {open && (
-        <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-surface-high rounded-xl border-0 p-1.5 flex flex-col gap-0.5 min-w-[130px]"
-          style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)" }}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="flex h-[32px] items-center gap-1 rounded-[10px] bg-surface-high px-[10px] text-xs text-muted-foreground transition-colors hover:bg-surface-highest"
+          title="Byt diagramtyp"
+          aria-label="Byt diagramtyp"
         >
-          {VARIANT_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
-              className={[
-                "flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors w-full text-left",
-                current === opt.value
-                  ? "bg-[#14b8a6]/15 text-[#14b8a6]"
-                  : "text-muted-foreground hover:bg-muted",
-              ].join(" ")}
-            >
-              <opt.icon className="size-3.5" />
-              {opt.label}
-              {current === opt.value && <Check className="size-3 ml-auto" />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+          <CurrentIcon className="size-3.5" />
+          <ChevronDown className="size-3" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="min-w-[130px] rounded-xl border-0 bg-surface-high p-1.5"
+      >
+        {VARIANT_OPTIONS.map((opt) => (
+          <DropdownMenuItem
+            key={opt.value}
+            onSelect={() => onChange(opt.value)}
+            className={[
+              "flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium",
+              current === opt.value
+                ? "bg-[#14b8a6]/15 text-[#14b8a6]"
+                : "text-muted-foreground hover:bg-muted",
+            ].join(" ")}
+          >
+            <opt.icon className="size-3.5" />
+            {opt.label}
+            {current === opt.value && <Check className="ml-auto size-3" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -1058,7 +1048,7 @@ function ChartCard({
       ].join(" ")}
     >
       {/* Matches Figma: bg-white rounded-[12px] h-[326px] p-[20px] gap-[8px] */}
-      <Card className="border-none shadow-none h-[326px] bg-card">
+      <Card className="h-[326px] border-none shadow-none bg-card max-[1023px]:h-auto max-[1023px]:min-h-[326px]">
         <CardContent className="p-[20px] flex flex-col gap-[8px] h-full">
           {/* Card header — h-[32px], matches Figma exactly */}
           <div className="flex items-center justify-between h-[32px] shrink-0">
@@ -1366,7 +1356,7 @@ export function Dashboard({
   }));
 
   return (
-    <main className="flex-1 overflow-auto px-6 py-[24px] flex flex-col gap-[24px] bg-background">
+    <main className="flex-1 overflow-auto px-3 py-4 flex flex-col gap-4 bg-background sm:px-6 sm:py-[24px] sm:gap-[24px]">
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
           Visa intervall:{" "}
@@ -1375,9 +1365,9 @@ export function Dashboard({
         </span>
       </div>
       {/* Stat cards — match card semantics while keeping the light pastel header bands */}
-      <div className="flex gap-[24px]">
+      <div className="grid grid-cols-1 gap-3 min-[640px]:grid-cols-2 lg:grid-cols-4 lg:gap-[24px]">
         <StatCard
-          title="Totalblopp denna månad"
+          title="Kostnader denna månad"
           value="12,5 M kr"
           subtitle="EUR · fakturaladatum"
           icon={Receipt}
@@ -1443,7 +1433,7 @@ export function Dashboard({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-[24px]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-[24px]">
           {cards.map((card) => (
             <ChartCard
               key={card.instanceId}

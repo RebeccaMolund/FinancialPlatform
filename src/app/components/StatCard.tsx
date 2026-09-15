@@ -29,7 +29,7 @@ export function StatCard({
     : undefined;
 
   return (
-    <div className="flex-1 min-w-[215px] rounded-[12px] overflow-hidden bg-card text-card-foreground flex flex-col border border-border">
+    <div className="min-w-0 flex-1 rounded-[12px] overflow-hidden bg-card text-card-foreground flex flex-col border border-border lg:min-w-[200px]">
       {/* Colored header band */}
       <div
         className={`${backgroundColor} flex items-center gap-2 px-4 py-3`}

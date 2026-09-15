@@ -226,7 +226,7 @@ export default function App() {
       />
 
       <main
-        className="flex flex-col size-full overflow-hidden pl-16"
+        className="flex min-w-0 flex-col size-full overflow-hidden pl-12 pb-0 lg:pl-16 max-[500px]:pl-0 max-[500px]:pb-16"
         aria-live="polite"
       >
         <Suspense

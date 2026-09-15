@@ -23,6 +23,13 @@ import {
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../components/ui/carousel";
+import {
   BarChart,
   Bar,
   LineChart,
@@ -53,636 +60,8 @@ import {
   parseISO,
 } from "date-fns";
 import { sv } from "date-fns/locale";
-
-// ─── Mock dataset ─────────────────────────────────────────────────────────────
-
-interface MockRow {
-  id: string;
-  fakturanummer: string;
-  ordernummer: string | null;
-  artikel: string;
-  leverantor: string;
-  kategori: string;
-  antal: number;
-  styckpris: number;
-  radbelopp: number;
-  valuta: string;
-  mottagare: string;
-  forfallodatum: string; // ISO date string
-  fakturadatum: string;
-  kostnadsstalle: string;
-  fakturaformat: string;
-  betalningsvillkor: string;
-  projektkod: string;
-  avdelning: string;
-  betalningsmetod: string;
-  rabatprocent: number;
-  fraktkostnad: number;
-  momsbelopp: number;
-}
-
-const MOCK_DATA: MockRow[] = [
-  {
-    id: "1",
-    fakturanummer: "INV-2801",
-    ordernummer: "ORD-1234",
-    artikel: "Stålbalk HEB200 6m",
-    leverantor: "Fyrfasen Energi AB",
-    kategori: "Material",
-    antal: 24,
-    styckpris: 4200,
-    radbelopp: 100800,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-08-15",
-    fakturadatum: "2025-07-10",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 25200,
-  },
-  {
-    id: "2",
-    fakturanummer: "INV-2802",
-    ordernummer: "ORD-1235",
-    artikel: "Betong C30/37 m³",
-    leverantor: "Fastec AB",
-    kategori: "Material",
-    antal: 60,
-    styckpris: 1450,
-    radbelopp: 87000,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-08-20",
-    fakturadatum: "2025-07-15",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 2500,
-    momsbelopp: 21750,
-  },
-  {
-    id: "3",
-    fakturanummer: "INV-2803",
-    ordernummer: null,
-    artikel: "Fjärrvärme MWh",
-    leverantor: "Sundsvall Energi AB",
-    kategori: "Energi",
-    antal: 310,
-    styckpris: 520,
-    radbelopp: 161200,
-    valuta: "SEK",
-    mottagare: "Henrik Olsson",
-    forfallodatum: "2025-08-01",
-    fakturadatum: "2025-07-01",
-    kostnadsstalle: "Drift, Region Väst",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-002",
-    avdelning: "Ekonomi",
-    betalningsmetod: "Autogiro",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 40300,
-  },
-  {
-    id: "4",
-    fakturanummer: "INV-2804",
-    ordernummer: "ORD-1236",
-    artikel: "Grävmaskin 21t/dag",
-    leverantor: "Peab Sverige AB",
-    kategori: "Maskinhyra",
-    antal: 12,
-    styckpris: 5900,
-    radbelopp: 70800,
-    valuta: "SEK",
-    mottagare: "Anna Berg",
-    forfallodatum: "2025-08-10",
-    fakturadatum: "2025-07-08",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-003",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 17700,
-  },
-  {
-    id: "5",
-    fakturanummer: "INV-2805",
-    ordernummer: "ORD-1234",
-    artikel: "Armeringsnät Ø8",
-    leverantor: "CKC AB",
-    kategori: "Material",
-    antal: 180,
-    styckpris: 310,
-    radbelopp: 55800,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-09-01",
-    fakturadatum: "2025-07-20",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "60 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 2,
-    fraktkostnad: 0,
-    momsbelopp: 13950,
-  },
-  {
-    id: "6",
-    fakturanummer: "INV-2806",
-    ordernummer: "ORD-1237",
-    artikel: "Gipsskivor 1200x2400",
-    leverantor: "Fastec AB",
-    kategori: "Material",
-    antal: 820,
-    styckpris: 185,
-    radbelopp: 151700,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-08-25",
-    fakturadatum: "2025-07-18",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 2500,
-    momsbelopp: 37925,
-  },
-  {
-    id: "7",
-    fakturanummer: "INV-2807",
-    ordernummer: null,
-    artikel: "Elkraft kWh",
-    leverantor: "Jämtkraft AB",
-    kategori: "Energi",
-    antal: 48500,
-    styckpris: 1.89,
-    radbelopp: 91665,
-    valuta: "SEK",
-    mottagare: "Henrik Olsson",
-    forfallodatum: "2025-08-01",
-    fakturadatum: "2025-07-01",
-    kostnadsstalle: "Drift, Region Väst",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-002",
-    avdelning: "Ekonomi",
-    betalningsmetod: "Autogiro",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 22916,
-  },
-  {
-    id: "8",
-    fakturanummer: "INV-2808",
-    ordernummer: "ORD-1238",
-    artikel: "Isolering 50mm mineralull",
-    leverantor: "CKC AB",
-    kategori: "Material",
-    antal: 460,
-    styckpris: 290,
-    radbelopp: 133400,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-09-05",
-    fakturadatum: "2025-07-22",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "60 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 33350,
-  },
-  {
-    id: "9",
-    fakturanummer: "INV-2809",
-    ordernummer: "ORD-1236",
-    artikel: "Hjullastare 18t/dag",
-    leverantor: "Peab Sverige AB",
-    kategori: "Maskinhyra",
-    antal: 8,
-    styckpris: 4200,
-    radbelopp: 33600,
-    valuta: "SEK",
-    mottagare: "Anna Berg",
-    forfallodatum: "2025-08-12",
-    fakturadatum: "2025-07-09",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-003",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 8400,
-  },
-  {
-    id: "10",
-    fakturanummer: "INV-2810",
-    ordernummer: null,
-    artikel: "Naturgas m³",
-    leverantor: "Colv Sverige AB",
-    kategori: "Energi",
-    antal: 580,
-    styckpris: 500,
-    radbelopp: 290000,
-    valuta: "EUR",
-    mottagare: "Bojan Byggmästare",
-    forfallodatum: "2025-08-05",
-    fakturadatum: "2025-07-05",
-    kostnadsstalle: "Drift, Region Väst",
-    fakturaformat: "EDI",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-002",
-    avdelning: "Ekonomi",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 72500,
-  },
-  {
-    id: "11",
-    fakturanummer: "INV-2811",
-    ordernummer: "ORD-1239",
-    artikel: "Takpannor av lertegel",
-    leverantor: "Lambertinson",
-    kategori: "Material",
-    antal: 1200,
-    styckpris: 79,
-    radbelopp: 94800,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-08-30",
-    fakturadatum: "2025-07-25",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "Papper",
-    betalningsvillkor: "60 dagar netto",
-    projektkod: "PRJ-004",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 3,
-    fraktkostnad: 1200,
-    momsbelopp: 23700,
-  },
-  {
-    id: "12",
-    fakturanummer: "INV-2812",
-    ordernummer: "ORD-1236",
-    artikel: "Betongpump dag",
-    leverantor: "Peab Sverige AB",
-    kategori: "Maskinhyra",
-    antal: 5,
-    styckpris: 7800,
-    radbelopp: 39000,
-    valuta: "SEK",
-    mottagare: "Anna Berg",
-    forfallodatum: "2025-08-08",
-    fakturadatum: "2025-07-07",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-003",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 9750,
-  },
-  {
-    id: "13",
-    fakturanummer: "INV-2813",
-    ordernummer: "ORD-12345",
-    artikel: "Markarbeten tim",
-    leverantor: "Nyman AB",
-    kategori: "Tjänster",
-    antal: 87,
-    styckpris: 1150,
-    radbelopp: 100050,
-    valuta: "SEK",
-    mottagare: "Bojan Byggmästare",
-    forfallodatum: "2025-08-18",
-    fakturadatum: "2025-07-14",
-    kostnadsstalle: "Projektkostn. Projekt Orion",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-005",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 25013,
-  },
-  {
-    id: "14",
-    fakturanummer: "INV-2814",
-    ordernummer: null,
-    artikel: "Elkraft kWh",
-    leverantor: "Sundsvall Energi AB",
-    kategori: "Energi",
-    antal: 41200,
-    styckpris: 2.1,
-    radbelopp: 86520,
-    valuta: "SEK",
-    mottagare: "Henrik Olsson",
-    forfallodatum: "2025-08-01",
-    fakturadatum: "2025-07-01",
-    kostnadsstalle: "Drift, Region Väst",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-002",
-    avdelning: "Ekonomi",
-    betalningsmetod: "Autogiro",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 21630,
-  },
-  {
-    id: "15",
-    fakturanummer: "INV-2815",
-    ordernummer: "ORD-1236",
-    artikel: "Frakttjänst km",
-    leverantor: "Peab Sverige AB",
-    kategori: "Transport",
-    antal: 1040,
-    styckpris: 50,
-    radbelopp: 52000,
-    valuta: "SEK",
-    mottagare: "S & Verksamheten AB",
-    forfallodatum: "2025-08-22",
-    fakturadatum: "2025-07-17",
-    kostnadsstalle: "Drift, Region Väst",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-003",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 13000,
-  },
-  {
-    id: "16",
-    fakturanummer: "INV-2816",
-    ordernummer: "ORD-12345",
-    artikel: "Rörarbeten h",
-    leverantor: "Fastec AB",
-    kategori: "Tjänster",
-    antal: 120,
-    styckpris: 980,
-    radbelopp: 117600,
-    valuta: "SEK",
-    mottagare: "Bojan Byggmästare",
-    forfallodatum: "2025-08-15",
-    fakturadatum: "2025-07-11",
-    kostnadsstalle: "Projektkostn. Projekt Orion",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-005",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 29400,
-  },
-  {
-    id: "17",
-    fakturanummer: "INV-2817",
-    ordernummer: "ORD-1240",
-    artikel: "Diesel L",
-    leverantor: "Colv Sverige AB",
-    kategori: "Energi",
-    antal: 4200,
-    styckpris: 18,
-    radbelopp: 75600,
-    valuta: "EUR",
-    mottagare: "Anna Berg",
-    forfallodatum: "2025-08-10",
-    fakturadatum: "2025-07-08",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "EDI",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-003",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 800,
-    momsbelopp: 18900,
-  },
-  {
-    id: "18",
-    fakturanummer: "INV-2818",
-    ordernummer: "ORD-12344a",
-    artikel: "Rivningsarbeten h",
-    leverantor: "Nyman AB",
-    kategori: "Tjänster",
-    antal: 64,
-    styckpris: 1350,
-    radbelopp: 86400,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-08-20",
-    fakturadatum: "2025-07-16",
-    kostnadsstalle: "Projektkostn. Projekt Orion",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-005",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 21600,
-  },
-  {
-    id: "19",
-    fakturanummer: "INV-2819",
-    ordernummer: "ORD-1239",
-    artikel: "Plåttak m²",
-    leverantor: "Lambertinson",
-    kategori: "Material",
-    antal: 340,
-    styckpris: 420,
-    radbelopp: 142800,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-09-10",
-    fakturadatum: "2025-07-28",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "Papper",
-    betalningsvillkor: "60 dagar netto",
-    projektkod: "PRJ-004",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 5,
-    fraktkostnad: 0,
-    momsbelopp: 35700,
-  },
-  {
-    id: "20",
-    fakturanummer: "INV-2820",
-    ordernummer: null,
-    artikel: "IT-licenser st",
-    leverantor: "Fastec AB",
-    kategori: "IT",
-    antal: 12,
-    styckpris: 4200,
-    radbelopp: 50400,
-    valuta: "EUR",
-    mottagare: "Henrik Olsson",
-    forfallodatum: "2025-08-15",
-    fakturadatum: "2025-07-12",
-    kostnadsstalle: "Ekonomi & Redovisning",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-006",
-    avdelning: "IT",
-    betalningsmetod: "Kreditkort",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 12600,
-  },
-  {
-    id: "21",
-    fakturanummer: "INV-2821",
-    ordernummer: "ORD-1234",
-    artikel: "Betong C25/30 m³",
-    leverantor: "CKC AB",
-    kategori: "Material",
-    antal: 95,
-    styckpris: 1380,
-    radbelopp: 131100,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-09-01",
-    fakturadatum: "2025-07-21",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "60 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 2,
-    fraktkostnad: 0,
-    momsbelopp: 32775,
-  },
-  {
-    id: "22",
-    fakturanummer: "INV-2822",
-    ordernummer: "ORD-12456f",
-    artikel: "Konsulttjänster h",
-    leverantor: "Nyman AB",
-    kategori: "Tjänster",
-    antal: 42,
-    styckpris: 2100,
-    radbelopp: 88200,
-    valuta: "SEK",
-    mottagare: "Bojan Byggmästare",
-    forfallodatum: "2025-08-25",
-    fakturadatum: "2025-07-19",
-    kostnadsstalle: "Marknadsforing B2B",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-007",
-    avdelning: "Marknad",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 22050,
-  },
-  {
-    id: "23",
-    fakturanummer: "INV-2823",
-    ordernummer: "ORD-1237",
-    artikel: "Stålrör DN100 6m",
-    leverantor: "Fyrfasen Energi AB",
-    kategori: "Material",
-    antal: 56,
-    styckpris: 1850,
-    radbelopp: 103600,
-    valuta: "SEK",
-    mottagare: "Bygg & Betong AB",
-    forfallodatum: "2025-08-28",
-    fakturadatum: "2025-07-23",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-001",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 1800,
-    momsbelopp: 25900,
-  },
-  {
-    id: "24",
-    fakturanummer: "INV-2824",
-    ordernummer: "ORD-1236",
-    artikel: "Kran 100t/dag",
-    leverantor: "Peab Sverige AB",
-    kategori: "Maskinhyra",
-    antal: 3,
-    styckpris: 18500,
-    radbelopp: 55500,
-    valuta: "SEK",
-    mottagare: "Anna Berg",
-    forfallodatum: "2025-08-05",
-    fakturadatum: "2025-07-04",
-    kostnadsstalle: "Produktionsavdelning, Bygg",
-    fakturaformat: "PDF",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-003",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 13875,
-  },
-  {
-    id: "25",
-    fakturanummer: "INV-2825",
-    ordernummer: "ORD-1238",
-    artikel: "Ventilationsaggregat",
-    leverantor: "Fastec AB",
-    kategori: "Material",
-    antal: 8,
-    styckpris: 12400,
-    radbelopp: 99200,
-    valuta: "EUR",
-    mottagare: "S & Verksamheten AB",
-    forfallodatum: "2025-08-20",
-    fakturadatum: "2025-07-15",
-    kostnadsstalle: "Ekonomi & Redovisning",
-    fakturaformat: "E-faktura (Peppol)",
-    betalningsvillkor: "30 dagar netto",
-    projektkod: "PRJ-006",
-    avdelning: "Inköp",
-    betalningsmetod: "Banköverföring",
-    rabatprocent: 0,
-    fraktkostnad: 0,
-    momsbelopp: 24800,
-  },
-];
+import type { MockRow } from "../../types/invoice";
+import { getInvoices } from "../../services/invoices";
 
 // ─── Filter state types ───────────────────────────────────────────────────────
 
@@ -2103,6 +1482,7 @@ export function NyAnalys({
   onAddToDashboard?: (a: SavedAnalysis) => void;
   darkMode?: boolean;
 }) {
+  const [invoiceRows, setInvoiceRows] = useState<MockRow[]>([]);
   const [query, setQuery] = useState(() => readAnalysisField("query", ""));
   const [activeScenario, setActiveScenario] = useState<Scenario | null>(() => {
     const storedQuery = readAnalysisField("query", "");
@@ -2137,6 +1517,16 @@ export function NyAnalys({
   const [currentPage, setCurrentPage] = useState(() =>
     readAnalysisField("currentPage", 1),
   );
+
+  useEffect(() => {
+    let active = true;
+    getInvoices().then((rows) => {
+      if (active) setInvoiceRows(rows);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => writeAnalysisState("query", query), [query]);
   useEffect(
@@ -2222,8 +1612,8 @@ export function NyAnalys({
   const effectiveFilters = useMemo(() => filterValues, [filterValues]);
 
   const filteredRows = useMemo(
-    () => applyFilters(MOCK_DATA, effectiveFilters),
-    [effectiveFilters],
+    () => applyFilters(invoiceRows, effectiveFilters),
+    [invoiceRows, effectiveFilters],
   );
 
   const charts = useMemo(
@@ -2304,15 +1694,16 @@ export function NyAnalys({
         </div>
         <button
           onClick={() => setFilterOpen((o) => !o)}
+          aria-label={filterOpen ? "Stäng filter" : "Öppna filter"}
           className={[
-            "flex items-center gap-2 px-5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap",
+            "flex items-center gap-2 rounded-xl px-5 text-sm font-medium transition-colors whitespace-nowrap max-[500px]:size-11 max-[500px]:justify-center max-[500px]:gap-0 max-[500px]:p-0",
             filterOpen
               ? "bg-[#0f766e] text-white"
               : "bg-[#0f9f96] hover:bg-[#0f766e] text-white",
           ].join(" ")}
         >
           <SlidersHorizontal className="size-4" />
-          Filtrera
+          <span className="max-[500px]:sr-only">Filtrera</span>
           {activeFilterCount > 0 && (
             <span className="bg-white/30 rounded-full px-1.5 text-[11px] font-bold">
               {activeFilterCount}
@@ -2324,23 +1715,30 @@ export function NyAnalys({
 
       {/* Suggestion chips */}
       {!query && !activeScenario && !loading && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {SUGGESTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => {
-                setQuery(s);
-                runSearch(s);
-              }}
-              className={[
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors",
-                "bg-card border-border text-muted-foreground hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] hover:border-[#0f9f96]/30",
-              ].join(" ")}
-            >
-              <ArrowRight className="size-3" />
-              {s}
-            </button>
-          ))}
+        <div className="relative mb-6 px-1 sm:px-10">
+          <Carousel
+            opts={{ align: "start", dragFree: true }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2">
+              {SUGGESTIONS.map((s) => (
+                <CarouselItem key={s} className="basis-auto pl-2">
+                  <button
+                    onClick={() => {
+                      setQuery(s);
+                      runSearch(s);
+                    }}
+                    className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-[#0f9f96]/30 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96]"
+                  >
+                    <ArrowRight className="size-3" />
+                    {s}
+                  </button>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0 max-[500px]:hidden" />
+            <CarouselNext className="right-0 max-[500px]:hidden" />
+          </Carousel>
         </div>
       )}
 
@@ -2357,7 +1755,7 @@ export function NyAnalys({
               Filter{" "}
               {activeFilterCount > 0 && (
                 <span className="ml-1 text-[#0f9f96]">
-                  · {filteredRows.length} av {MOCK_DATA.length} rader visas
+                  · {filteredRows.length} av {invoiceRows.length} rader visas
                 </span>
               )}
             </span>
@@ -2413,7 +1811,9 @@ export function NyAnalys({
 
       {/* Results */}
       {!loading &&
-        (activeScenario || filteredRows.length < MOCK_DATA.length || true) && (
+        (activeScenario ||
+          filteredRows.length < invoiceRows.length ||
+          true) && (
           <>
             {/* ── Action bar: Spara / Lägg till på dashboard ── */}
             {activeScenario && (
@@ -2590,7 +1990,7 @@ export function NyAnalys({
                     <span className="text-sm text-muted-foreground ml-2">
                       · {filteredRows.length} rader
                       {activeFilterCount > 0 &&
-                        ` (filtrerat från ${MOCK_DATA.length})`}{" "}
+                        ` (filtrerat från ${invoiceRows.length})`}{" "}
                       · {totalRadbelopp.toLocaleString("sv-SE")} kr totalt
                     </span>
                   </div>
