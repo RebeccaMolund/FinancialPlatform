@@ -1,17 +1,30 @@
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
-
-const data = [
-  { day: "1", value: 65 },
-  { day: "6", value: 68 },
-  { day: "11", value: 55 },
-  { day: "16", value: 25 },
-  { day: "21", value: 70 },
-  { day: "26", value: 45 },
-  { day: "31", value: 40 },
-];
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
+import type { DueDatePoint } from "../../types/due-date";
+import { getDueDateData } from "../../services/due-date";
 
 export function DueDateChart() {
+  const [data, setData] = useState<DueDatePoint[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    getDueDateData().then((points) => {
+      if (active) setData(points);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <Card className="border-none shadow-none">
       <CardHeader>
@@ -40,7 +53,15 @@ export function DueDateChart() {
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip key="tooltip" cursor={{ stroke: "rgba(20,184,166,0.4)", strokeWidth: 1 }} contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 }} />
+            <Tooltip
+              key="tooltip"
+              cursor={{ stroke: "rgba(20,184,166,0.4)", strokeWidth: 1 }}
+              contentStyle={{
+                borderRadius: 10,
+                border: "1px solid #e5e7eb",
+                fontSize: 12,
+              }}
+            />
             <Area
               key="area-value"
               type="monotone"
