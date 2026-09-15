@@ -24,7 +24,7 @@ export function Sidebar({
     <aside
       className={[
         "group fixed left-0 top-0 h-full z-50 flex flex-col py-6 overflow-hidden transition-all duration-300 ease-in-out shadow-sm",
-        darkMode ? "bg-zinc-950" : "bg-white",
+        "bg-sidebar",
       ].join(" ")}
       style={{ width: "64px" }}
       onMouseEnter={(e) =>
@@ -48,12 +48,8 @@ export function Sidebar({
               className={[
                 "flex items-center gap-3 mx-2 px-3 py-3 rounded-xl whitespace-nowrap transition-colors duration-150 text-left",
                 isActive
-                  ? darkMode
-                    ? "bg-[#0f9f96]/25 text-[#5eead4]"
-                    : "bg-[#0f9f96]/15 text-[#0f9f96]"
-                  : darkMode
-                    ? "text-gray-400 hover:bg-[#0f9f96]/15 hover:text-[#5eead4]"
-                    : "text-gray-400 hover:bg-[#0f9f96]/15 hover:text-[#0f9f96]",
+                  ? "bg-[#0f9f96]/15 text-[#0f9f96]"
+                  : "text-muted-foreground hover:bg-[#0f9f96]/15 hover:text-[#0f9f96]",
               ].join(" ")}
             >
               <Icon className="size-5 shrink-0" aria-hidden="true" />

@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Sidebar, type Page } from "./components/Sidebar";
-import { Header, type DateRange } from "./components/Header";
+import { Header, type CurrencyCode, type DateRange } from "./components/Header";
 import type { SavedAnalysis } from "./pages/NyAnalys";
 
 const Dashboard = lazy(() =>
@@ -56,17 +56,71 @@ const DEFAULT_SETTINGS: AppSettings = {
   email: "rebecca.b@sundsvall.se",
 };
 
+const STORAGE_KEYS = {
+  page: "financial-dashboard.page",
+  settings: "financial-dashboard.settings",
+  savedAnalyses: "financial-dashboard.saved-analyses",
+  dashboardRange: "financial-dashboard.range",
+  dashboardCurrency: "financial-dashboard.currency",
+  dashboardEditMode: "financial-dashboard.edit-mode",
+} as const;
+
+function readStorage<T>(key: string): T | null {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? (JSON.parse(value) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage can be unavailable in private browsing or restricted embeds.
+  }
+}
+
+function restoreRange(value: Partial<DateRange> | null): DateRange {
+  return {
+    start: value?.start ? new Date(value.start) : new Date(2025, 6, 17),
+    end: value?.end ? new Date(value.end) : new Date(2025, 7, 17),
+  };
+}
+
 export default function App() {
-  const [page, setPage] = useState<Page>("dashboard");
-  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
+  const [page, setPage] = useState<Page>(() => {
+    const stored = readStorage<Page>(STORAGE_KEYS.page);
+    return stored ?? "dashboard";
+  });
+  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>(() =>
+    (readStorage<SavedAnalysis[]>(STORAGE_KEYS.savedAnalyses) ?? []).map(
+      (analysis) => ({ ...analysis, savedAt: new Date(analysis.savedAt) }),
+    ),
+  );
   const [pendingDashboardAnalysis, setPendingDashboardAnalysis] =
     useState<SavedAnalysis | null>(null);
-  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
-  const [dashboardEditMode, setDashboardEditMode] = useState(false);
-  const [dashboardRange, setDashboardRange] = useState<DateRange>({
-    start: new Date(2025, 6, 17),
-    end: new Date(2025, 7, 17),
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    const stored = readStorage<Partial<AppSettings>>(STORAGE_KEYS.settings);
+    return {
+      ...DEFAULT_SETTINGS,
+      ...stored,
+      notifications: {
+        ...DEFAULT_SETTINGS.notifications,
+        ...stored?.notifications,
+      },
+    };
   });
+  const [dashboardEditMode, setDashboardEditMode] = useState(
+    () => readStorage<boolean>(STORAGE_KEYS.dashboardEditMode) ?? false,
+  );
+  const [dashboardRange, setDashboardRange] = useState<DateRange>(() =>
+    restoreRange(readStorage<Partial<DateRange>>(STORAGE_KEYS.dashboardRange)),
+  );
+  const [dashboardCurrency, setDashboardCurrency] = useState<CurrencyCode>(
+    () => readStorage<CurrencyCode>(STORAGE_KEYS.dashboardCurrency) ?? "SEK",
+  );
 
   useEffect(() => {
     if (settings.darkMode) {
@@ -75,6 +129,25 @@ export default function App() {
       document.documentElement.classList.remove("dark");
     }
   }, [settings.darkMode]);
+
+  useEffect(() => writeStorage(STORAGE_KEYS.page, page), [page]);
+  useEffect(() => writeStorage(STORAGE_KEYS.settings, settings), [settings]);
+  useEffect(
+    () => writeStorage(STORAGE_KEYS.savedAnalyses, savedAnalyses),
+    [savedAnalyses],
+  );
+  useEffect(
+    () => writeStorage(STORAGE_KEYS.dashboardRange, dashboardRange),
+    [dashboardRange],
+  );
+  useEffect(
+    () => writeStorage(STORAGE_KEYS.dashboardCurrency, dashboardCurrency),
+    [dashboardCurrency],
+  );
+  useEffect(
+    () => writeStorage(STORAGE_KEYS.dashboardEditMode, dashboardEditMode),
+    [dashboardEditMode],
+  );
 
   function handleSave(analysis: SavedAnalysis) {
     setSavedAnalyses((prev) => [analysis, ...prev]);
@@ -98,6 +171,8 @@ export default function App() {
               onEditModeToggle={() => setDashboardEditMode((e) => !e)}
               range={dashboardRange}
               onRangeChange={setDashboardRange}
+              currency={dashboardCurrency}
+              onCurrencyChange={setDashboardCurrency}
             />
             <Dashboard
               savedAnalyses={savedAnalyses}
@@ -107,6 +182,7 @@ export default function App() {
               editMode={dashboardEditMode}
               onEditModeChange={setDashboardEditMode}
               range={dashboardRange}
+              currency={dashboardCurrency}
             />
           </>
         );
@@ -115,6 +191,7 @@ export default function App() {
           <NyAnalys
             onSave={handleSave}
             onAddToDashboard={handleAddToDashboard}
+            darkMode={settings.darkMode}
           />
         );
       case "sparade":
@@ -138,7 +215,7 @@ export default function App() {
 
   return (
     <div
-      className={`size-full ${settings.darkMode ? "bg-zinc-900" : "bg-[#f5f6fa]"}`}
+      className="size-full bg-background"
       role="application"
       aria-label="Finansiellt kontrollcenter"
     >
@@ -161,7 +238,7 @@ export default function App() {
               >
                 <div className="grid grid-cols-4 gap-6">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-28 rounded-2xl bg-gray-200/80" />
+                    <div key={i} className="h-28 rounded-2xl bg-surface-high" />
                   ))}
                 </div>
 
@@ -169,20 +246,20 @@ export default function App() {
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-[326px] rounded-[20px] border border-gray-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+                      className="h-[326px] rounded-[20px] border border-border bg-card p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                     >
                       <div className="flex items-center justify-between pb-4">
-                        <div className="h-4 w-1/3 rounded bg-gray-200" />
+                        <div className="h-4 w-1/3 rounded bg-surface-high" />
                         <div className="flex gap-2">
-                          <div className="h-8 w-8 rounded-lg bg-gray-200" />
-                          <div className="h-8 w-14 rounded-lg bg-gray-200" />
+                          <div className="h-8 w-8 rounded-lg bg-surface-high" />
+                          <div className="h-8 w-14 rounded-lg bg-surface-high" />
                         </div>
                       </div>
-                      <div className="h-40 w-full rounded-xl bg-gray-200" />
+                      <div className="h-40 w-full rounded-xl bg-surface-high" />
                       <div className="mt-4 flex gap-2">
-                        <div className="h-3 w-1/4 rounded bg-gray-200" />
-                        <div className="h-3 w-1/5 rounded bg-gray-200" />
-                        <div className="h-3 w-1/3 rounded bg-gray-200" />
+                        <div className="h-3 w-1/4 rounded bg-surface-high" />
+                        <div className="h-3 w-1/5 rounded bg-surface-high" />
+                        <div className="h-3 w-1/3 rounded bg-surface-high" />
                       </div>
                     </div>
                   ))}

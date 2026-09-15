@@ -21,6 +21,8 @@ export interface DateRange {
   end: Date | null;
 }
 
+export type CurrencyCode = "SEK" | "EUR" | "USD";
+
 function DateRangePicker({
   onClose,
   value,
@@ -62,9 +64,8 @@ function DateRangePicker({
 
   return (
     <div
-      className="absolute right-0 top-full mt-2 z-[100] rounded-2xl border border-gray-100 p-4 w-72"
+      className="absolute right-0 top-full mt-2 z-[100] rounded-2xl border border-border bg-card p-4 w-72"
       style={{
-        backgroundColor: "var(--card)",
         boxShadow: "0 4px 24px rgba(0,47,85,0.12)",
       }}
       onClick={(e) => e.stopPropagation()}
@@ -73,16 +74,16 @@ function DateRangePicker({
       <div className="flex items-center justify-between mb-3">
         <button
           onClick={() => setViewMonth(subMonths(viewMonth, 1))}
-          className="p-1 rounded-lg hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors"
+          className="p-1 rounded-lg hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors text-foreground"
         >
           <ChevronLeft className="size-4" />
         </button>
-        <span className="text-sm font-semibold text-gray-800 capitalize">
+        <span className="text-sm font-semibold text-foreground capitalize">
           {format(viewMonth, "MMMM yyyy", { locale: sv })}
         </span>
         <button
           onClick={() => setViewMonth(addMonths(viewMonth, 1))}
-          className="p-1 rounded-lg hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors"
+          className="p-1 rounded-lg hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] transition-colors text-foreground"
         >
           <ChevronRight className="size-4" />
         </button>
@@ -91,7 +92,10 @@ function DateRangePicker({
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-1">
         {["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"].map((d) => (
-          <div key={d} className="text-center text-xs text-gray-400 py-1">
+          <div
+            key={d}
+            className="text-center text-xs text-muted-foreground py-1"
+          >
             {d}
           </div>
         ))}
@@ -110,7 +114,7 @@ function DateRangePicker({
               onClick={() => handleDay(day)}
               className={[
                 "text-xs py-1.5 rounded-lg transition-colors font-medium",
-                !isCurrentMonth ? "text-gray-300" : "text-gray-700",
+                !isCurrentMonth ? "text-muted-foreground" : "text-foreground",
                 isStart || isEnd ? "bg-[#0f9f96] !text-white" : "",
                 inside ? "bg-[#0f9f96]/15 text-[#0f9f96]" : "",
                 isCurrentMonth && !isStart && !isEnd && !inside
@@ -125,9 +129,9 @@ function DateRangePicker({
       </div>
 
       {/* Selected range display */}
-      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+      <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
         <span>{range.start ? format(range.start, "dd/MM/yyyy") : "–"}</span>
-        <span className="text-gray-300">→</span>
+        <span className="text-muted-foreground">→</span>
         <span>{range.end ? format(range.end, "dd/MM/yyyy") : "–"}</span>
       </div>
 
@@ -149,6 +153,8 @@ interface HeaderProps {
   onEditModeToggle?: () => void;
   range: DateRange;
   onRangeChange?: (range: DateRange) => void;
+  currency: CurrencyCode;
+  onCurrencyChange: (currency: CurrencyCode) => void;
 }
 
 export function Header({
@@ -156,6 +162,8 @@ export function Header({
   onEditModeToggle,
   range,
   onRangeChange,
+  currency,
+  onCurrencyChange,
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
 
@@ -176,7 +184,7 @@ export function Header({
           </span>
         </div>
         <h1
-          className="text-[20px] leading-[28px] text-[#101828] whitespace-nowrap"
+          className="text-[20px] leading-[28px] text-foreground whitespace-nowrap"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
         >
           Välkommen, Rebecca!
@@ -222,27 +230,45 @@ export function Header({
         )}
       </div>
 
-      <div className="relative">
-        <DateFieldButton
-          label={label}
-          open={open}
-          onClick={() => setOpen((o) => !o)}
-          ariaLabel="Välj datumintervall"
-        />
-        {open && (
-          <>
-            <div
-              className="fixed inset-0 z-[99]"
-              onClick={() => setOpen(false)}
-              aria-hidden="true"
-            />
-            <DateRangePicker
-              value={range}
-              onClose={() => setOpen(false)}
-              onApply={(nextRange) => onRangeChange?.(nextRange)}
-            />
-          </>
-        )}
+      <div className="flex items-center gap-2">
+        <label className="sr-only" htmlFor="dashboard-currency">
+          Valuta
+        </label>
+        <select
+          id="dashboard-currency"
+          value={currency}
+          onChange={(event) =>
+            onCurrencyChange(event.target.value as CurrencyCode)
+          }
+          className="h-[40px] rounded-[12px] border border-border bg-card px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label="Välj valuta för dashboarden"
+        >
+          <option value="SEK">SEK</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+        <div className="relative">
+          <DateFieldButton
+            label={label}
+            open={open}
+            onClick={() => setOpen((o) => !o)}
+            ariaLabel="Välj datumintervall"
+          />
+          {open && (
+            <>
+              <div
+                className="fixed inset-0 z-[99]"
+                onClick={() => setOpen(false)}
+                aria-hidden="true"
+              />
+              <DateRangePicker
+                value={range}
+                onClose={() => setOpen(false)}
+                onApply={(nextRange) => onRangeChange?.(nextRange)}
+              />
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

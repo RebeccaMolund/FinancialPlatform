@@ -24,7 +24,7 @@ import {
   format,
   startOfMonth,
 } from "date-fns";
-import type { DateRange } from "../components/Header";
+import type { CurrencyCode, DateRange } from "../components/Header";
 import { StatCard } from "../components/StatCard";
 import { Card, CardContent } from "../components/ui/card";
 import {
@@ -49,7 +49,6 @@ import type { SavedAnalysis } from "./NyAnalys";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ChartVariant = "bar" | "hbar" | "line" | "area" | "pie" | "donut";
-type CurrencyCode = "SEK" | "EUR" | "USD";
 type BuiltinKey = "spend" | "suppliers" | "topcosts" | "duedate";
 
 interface DashboardCard {
@@ -188,6 +187,18 @@ const DEFAULT_CARDS: DashboardCard[] = [
   },
 ];
 
+const DASHBOARD_CARDS_KEY = "financial-dashboard.cards";
+
+function readDashboardCards(): DashboardCard[] {
+  try {
+    const stored = localStorage.getItem(DASHBOARD_CARDS_KEY);
+    const cards = stored ? (JSON.parse(stored) as DashboardCard[]) : null;
+    return Array.isArray(cards) && cards.length > 0 ? cards : DEFAULT_CARDS;
+  } catch {
+    return DEFAULT_CARDS;
+  }
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const fmtY = (v: number) =>
@@ -197,7 +208,11 @@ const fmtY = (v: number) =>
       ? `${Math.round(v / 1_000)}k`
       : String(v);
 
-const ttStyle = { borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 12 };
+const ttStyle = {
+  borderRadius: 10,
+  border: "1px solid var(--md3-outline-variant)",
+  fontSize: 12,
+};
 const ttCursor = { fill: "rgba(20,184,166,0.10)" };
 const SEK_TO_CURRENCY: Record<CurrencyCode, number> = {
   SEK: 1,
@@ -317,7 +332,7 @@ function UniversalChart({
                 dominantBaseline="middle"
                 fontSize={14}
                 fontWeight={700}
-                fill="#111827"
+                fill="var(--foreground)"
               >
                 {formatCurrency(totalValue, currency)}
               </text>
@@ -327,7 +342,7 @@ function UniversalChart({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={11}
-                fill="#6b7280"
+                fill="var(--muted-foreground)"
               >
                 Totalt
               </text>
@@ -351,7 +366,7 @@ function UniversalChart({
               return (
                 <div
                   key={`uc-legend-${i}`}
-                  className="flex min-w-0 items-center gap-2 text-[11px] leading-none rounded-lg px-1.5 py-1 transition-colors hover:bg-[#14b8a6]/10"
+                  className="flex min-w-0 items-center gap-2 text-[11px] leading-none rounded-lg px-1.5 py-1 transition-colors hover:bg-muted"
                 >
                   <span
                     className="size-2.5 rounded-sm shrink-0"
@@ -360,14 +375,14 @@ function UniversalChart({
                         entry.c ?? colors?.[i % (colors?.length ?? 1)] ?? base,
                     }}
                   />
-                  <span className="min-w-0 truncate text-gray-600 flex-1">
+                  <span className="min-w-0 truncate text-muted-foreground flex-1">
                     {entry.k}
                   </span>
                   <div className="ml-auto shrink-0 flex items-baseline gap-[8px] text-right">
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-foreground">
                       {formatCurrency(entry.v, currency)}
                     </span>
-                    <span className="text-[10px] text-gray-500">
+                    <span className="text-[10px] text-muted-foreground">
                       {pct.toFixed(1)}%
                     </span>
                   </div>
@@ -570,12 +585,18 @@ function SpendChart({
   variant,
   color = "#14b8a6",
   range,
+  currency = "SEK",
 }: {
   variant: ChartVariant;
   color?: string;
   range?: { start: Date | null; end: Date | null };
+  currency?: CurrencyCode;
 }) {
-  const visibleSpend = getSpendDataForRange(range);
+  const visibleSpend = getSpendDataForRange(range).map((entry) => ({
+    ...entry,
+    SEK: convertCurrency(entry.SEK, currency),
+    EUR: convertCurrency(entry.EUR, currency),
+  }));
 
   if (variant === "pie" || variant === "donut") {
     const agg = [
@@ -806,7 +827,7 @@ function ColorPicker({
         className="relative size-[32px] rounded-[10px] flex items-center justify-center transition-opacity hover:opacity-80"
         title="Byt färg"
       >
-        <div className="absolute inset-0 rounded-[10px] border border-[#e5e7eb] pointer-events-none" />
+        <div className="absolute inset-0 rounded-[10px] border border-border pointer-events-none" />
         <span
           className="size-[20px] rounded-full block"
           style={{ backgroundColor: current }}
@@ -814,7 +835,7 @@ function ColorPicker({
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-white rounded-xl border border-gray-100 p-3"
+          className="absolute right-0 top-full mt-1 z-[200] bg-card rounded-xl border border-border p-3"
           style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)", minWidth: 136 }}
         >
           <div className="grid grid-cols-4 gap-1">
@@ -858,7 +879,7 @@ function VariantPicker({
       {/* Exactly matches Figma: h-[32px], rounded-[10px], bg-[#f3f4f6] */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 h-[32px] px-[10px] rounded-[10px] bg-[#f3f4f6] hover:bg-[#e5e7eb] transition-colors text-[#6a7282] text-xs"
+        className="flex items-center gap-1 h-[32px] px-[10px] rounded-[10px] bg-muted hover:bg-background transition-colors text-muted-foreground text-xs"
         title="Byt diagramtyp"
       >
         <CurrentIcon className="size-3.5" />
@@ -866,7 +887,7 @@ function VariantPicker({
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-white rounded-xl border border-gray-100 p-1.5 flex flex-col gap-0.5 min-w-[130px]"
+          className="absolute right-0 top-full mt-1 z-[200] bg-card rounded-xl border border-border p-1.5 flex flex-col gap-0.5 min-w-[130px]"
           style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)" }}
         >
           {VARIANT_OPTIONS.map((opt) => (
@@ -880,61 +901,12 @@ function VariantPicker({
                 "flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors w-full text-left",
                 current === opt.value
                   ? "bg-[#14b8a6]/15 text-[#14b8a6]"
-                  : "text-gray-600 hover:bg-gray-50",
+                  : "text-muted-foreground hover:bg-muted",
               ].join(" ")}
             >
               <opt.icon className="size-3.5" />
               {opt.label}
               {current === opt.value && <Check className="size-3 ml-auto" />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CurrencyPicker({
-  current,
-  onChange,
-}: {
-  current: CurrencyCode;
-  onChange: (v: CurrencyCode) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const options: CurrencyCode[] = ["SEK", "EUR", "USD"];
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 h-[32px] px-[10px] rounded-[10px] bg-[#f3f4f6] hover:bg-[#e5e7eb] transition-colors text-[#6a7282] text-[11px] font-medium"
-        title="Byt valuta"
-      >
-        <span>{current}</span>
-        <ChevronDown className="size-3" />
-      </button>
-      {open && (
-        <div
-          className="absolute right-0 top-full mt-1 z-[200] bg-white rounded-xl border border-gray-100 p-1.5 flex flex-col gap-0.5 min-w-[90px]"
-          style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.10)" }}
-        >
-          {options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => {
-                onChange(opt);
-                setOpen(false);
-              }}
-              className={[
-                "flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors w-full text-left",
-                current === opt
-                  ? "bg-[#14b8a6]/15 text-[#14b8a6]"
-                  : "text-gray-600 hover:bg-gray-50",
-              ].join(" ")}
-            >
-              <span>{opt}</span>
-              {current === opt && <Check className="size-3" />}
             </button>
           ))}
         </div>
@@ -958,6 +930,7 @@ function ChartCard({
   onDragEnd,
   onDrop,
   range,
+  currency,
 }: {
   card: DashboardCard;
   editMode: boolean;
@@ -971,18 +944,22 @@ function ChartCard({
   onDragEnd: () => void;
   onDrop: () => void;
   range?: DateRange;
+  currency: CurrencyCode;
 }) {
   const title =
     card.type === "builtin"
       ? BUILTIN_META[card.builtinKey!].title
       : card.analysis!.chart1Title;
-  const [currency, setCurrency] = useState<CurrencyCode>("SEK");
-
   function renderChart() {
     if (card.type === "builtin") {
       if (card.builtinKey === "spend") {
         return (
-          <SpendChart variant={card.variant} color={card.color} range={range} />
+          <SpendChart
+            variant={card.variant}
+            color={card.color}
+            range={range}
+            currency={currency}
+          />
         );
       }
       return (
@@ -1020,18 +997,16 @@ function ChartCard({
       ].join(" ")}
     >
       {/* Matches Figma: bg-white rounded-[12px] h-[326px] p-[20px] gap-[8px] */}
-      <Card
-        className={`border-none shadow-none h-[326px] ${darkMode ? "bg-zinc-800" : "bg-white"}`}
-      >
+      <Card className="border-none shadow-none h-[326px] bg-card">
         <CardContent className="p-[20px] flex flex-col gap-[8px] h-full">
           {/* Card header — h-[32px], matches Figma exactly */}
           <div className="flex items-center justify-between h-[32px] shrink-0">
             <div className="flex items-center gap-2 min-w-0">
               {editMode && (
-                <GripVertical className="size-4 text-gray-300 shrink-0" />
+                <GripVertical className="size-4 text-muted-foreground shrink-0" />
               )}
               <p
-                className="truncate text-[16px] leading-[1.38] text-[#364153]"
+                className="truncate text-[16px] leading-[1.38] text-foreground"
                 style={{
                   fontFamily: "'IBM Plex Sans', sans-serif",
                   fontWeight: 500,
@@ -1048,7 +1023,6 @@ function ChartCard({
                 current={card.variant}
                 onChange={onVariantChange}
               />
-              <CurrencyPicker current={currency} onChange={setCurrency} />
               {editMode && (
                 <button
                   onClick={onRemove}
@@ -1063,7 +1037,7 @@ function ChartCard({
           {renderChart()}
 
           {card.type === "ai" && card.analysis && (
-            <p className="text-xs text-gray-400 mt-2 truncate">
+            <p className="text-xs text-muted-foreground mt-2 truncate">
               Från: {card.analysis.name} · {card.analysis.resultCount} rader
             </p>
           )}
@@ -1079,10 +1053,12 @@ function AddDiagramPanel({
   savedAnalyses,
   onAdd,
   onClose,
+  darkMode,
 }: {
   savedAnalyses: SavedAnalysis[];
   onAdd: (card: DashboardCard) => void;
   onClose: () => void;
+  darkMode?: boolean;
 }) {
   return (
     <div
@@ -1091,17 +1067,25 @@ function AddDiagramPanel({
     >
       <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" />
       <div
-        className="relative bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-y-auto"
+        className={[
+          "relative rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-y-auto",
+          "bg-card border border-border",
+        ].join(" ")}
         style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.15)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white rounded-t-3xl px-6 py-4 flex items-center justify-between border-b border-gray-100 z-10">
-          <h2 className="text-base font-semibold text-gray-900">
+        <div
+          className={[
+            "sticky top-0 rounded-t-3xl px-6 py-4 flex items-center justify-between border-b z-10",
+            "bg-card border-border",
+          ].join(" ")}
+        >
+          <h2 className="text-base font-semibold text-foreground">
             Lägg till diagram
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
           >
             <XIcon className="size-4" />
           </button>
@@ -1109,7 +1093,7 @@ function AddDiagramPanel({
 
         {/* Standard charts */}
         <div className="px-6 mt-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Standarddiagram
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -1131,16 +1115,16 @@ function AddDiagramPanel({
                   });
                   onClose();
                 }}
-                className="flex items-start gap-3 p-4 bg-gray-50 hover:bg-[#14b8a6]/10 border border-gray-100 hover:border-[#14b8a6]/30 rounded-2xl transition-colors text-left group"
+                className="flex items-start gap-3 p-4 bg-muted hover:bg-[#14b8a6]/10 border border-border hover:border-[#14b8a6]/30 rounded-2xl transition-colors text-left group"
               >
                 <div className="size-9 rounded-xl bg-[#14b8a6]/15 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#14b8a6]/25 transition-colors">
                   <BarChart2 className="size-4 text-[#14b8a6]" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-800 leading-snug">
+                  <p className="text-sm font-medium text-foreground leading-snug">
                     {meta.title}
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {meta.description}
                   </p>
                 </div>
@@ -1152,7 +1136,7 @@ function AddDiagramPanel({
         {/* AI analyses */}
         {savedAnalyses.length > 0 && (
           <div className="px-6 mt-6">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               Mina AI-analyser
             </p>
             <div className="flex flex-col gap-2">
@@ -1169,20 +1153,20 @@ function AddDiagramPanel({
                     });
                     onClose();
                   }}
-                  className="flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-[#14b8a6]/10 border border-gray-100 hover:border-[#14b8a6]/30 rounded-xl transition-colors text-left"
+                  className="flex items-center gap-3 px-4 py-3 bg-muted hover:bg-[#14b8a6]/10 border border-border hover:border-[#14b8a6]/30 rounded-xl transition-colors text-left"
                 >
                   <div className="size-8 rounded-lg bg-[#14b8a6]/15 flex items-center justify-center shrink-0">
                     <BarChart2 className="size-4 text-[#14b8a6]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {a.name}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       {a.chart1Title} · {a.resultCount} rader
                     </p>
                   </div>
-                  <Plus className="size-4 text-gray-400 shrink-0" />
+                  <Plus className="size-4 text-muted-foreground shrink-0" />
                 </button>
               ))}
             </div>
@@ -1190,7 +1174,7 @@ function AddDiagramPanel({
         )}
 
         {savedAnalyses.length === 0 && (
-          <p className="px-6 mt-4 text-sm text-gray-400">
+          <p className="px-6 mt-4 text-sm text-muted-foreground">
             Spara analyser i AI analys för att kunna lägga till dem här.
           </p>
         )}
@@ -1210,6 +1194,7 @@ interface Props {
   editMode?: boolean;
   onEditModeChange?: (v: boolean) => void;
   range?: DateRange;
+  currency?: CurrencyCode;
 }
 
 export function Dashboard({
@@ -1220,8 +1205,9 @@ export function Dashboard({
   editMode: externalEditMode,
   onEditModeChange,
   range,
+  currency = "SEK",
 }: Props) {
-  const [cards, setCards] = useState<DashboardCard[]>(DEFAULT_CARDS);
+  const [cards, setCards] = useState<DashboardCard[]>(readDashboardCards);
   const selectedRange = range ?? {
     start: new Date(2025, 6, 17),
     end: new Date(2025, 7, 17),
@@ -1245,6 +1231,14 @@ export function Dashboard({
   const [showAddPanel, setShowAddPanel] = useState(false);
   const draggedId = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(DASHBOARD_CARDS_KEY, JSON.stringify(cards));
+    } catch {
+      // Storage can be unavailable in private browsing or restricted embeds.
+    }
+  }, [cards]);
 
   function updateVariant(instanceId: string, variant: ChartVariant) {
     setCards((prev) =>
@@ -1311,17 +1305,15 @@ export function Dashboard({
   }));
 
   return (
-    <main
-      className={`flex-1 overflow-auto px-6 py-[24px] flex flex-col gap-[24px] ${darkMode ? "bg-zinc-900" : ""}`}
-    >
+    <main className="flex-1 overflow-auto px-6 py-[24px] flex flex-col gap-[24px] bg-background">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">
+        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
           Visa intervall:{" "}
           {format(selectedRange.start ?? new Date(), "dd/MM/yyyy")} –{" "}
           {format(selectedRange.end ?? new Date(), "dd/MM/yyyy")}
         </span>
       </div>
-      {/* Stat cards — matches Figma: flex row, gap-[24px], exact hex colors */}
+      {/* Stat cards — match card semantics while keeping the light pastel header bands */}
       <div className="flex gap-[24px]">
         <StatCard
           title="Totalblopp denna månad"
@@ -1329,6 +1321,7 @@ export function Dashboard({
           subtitle="EUR · fakturaladatum"
           icon={Receipt}
           backgroundColor="bg-[#fce7f3]"
+          darkMode={Boolean(darkMode)}
         />
         <StatCard
           title="Antal fakturor"
@@ -1336,6 +1329,7 @@ export function Dashboard({
           subtitle="denna månad"
           icon={FileText}
           backgroundColor="bg-[#dbeafe]"
+          darkMode={Boolean(darkMode)}
         />
         <StatCard
           title="Förfaller inom 30 dgr"
@@ -1343,6 +1337,7 @@ export function Dashboard({
           subtitle="fakturor"
           icon={Clock}
           backgroundColor="bg-[#cefafe]"
+          darkMode={Boolean(darkMode)}
         />
         <StatCard
           title="Aktiva leverantörer"
@@ -1350,13 +1345,14 @@ export function Dashboard({
           subtitle="unika"
           icon={Users}
           backgroundColor="bg-[#f3e8ff]"
+          darkMode={Boolean(darkMode)}
         />
       </div>
 
       {/* "Lägg till diagram" button — only in edit mode */}
       {editMode && (
         <div className="flex items-center justify-between -mb-[12px]">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-muted-foreground">
             Dra för att ändra ordning
           </span>
           <button
@@ -1371,8 +1367,8 @@ export function Dashboard({
 
       {/* Chart grid — gap-[24px] matching Figma */}
       {cards.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed border-gray-200 rounded-[12px]">
-          <p className="text-gray-400 text-sm mb-3">
+        <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed border-border rounded-[12px]">
+          <p className="text-muted-foreground text-sm mb-3">
             Inga diagram på dashboarden
           </p>
           <button
@@ -1410,6 +1406,7 @@ export function Dashboard({
               }}
               onDrop={() => handleDrop(card.instanceId)}
               range={selectedRange}
+              currency={currency}
             />
           ))}
         </div>
@@ -1421,6 +1418,7 @@ export function Dashboard({
           savedAnalyses={savedAnalyses}
           onAdd={addCard}
           onClose={() => setShowAddPanel(false)}
+          darkMode={darkMode}
         />
       )}
     </main>

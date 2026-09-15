@@ -35,7 +35,7 @@ export function DateFieldButton({
       aria-label={ariaLabel ?? "Datumfält"}
       aria-expanded={open}
       aria-haspopup="dialog"
-      className="bg-[#fbfcff] rounded-[24px] overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f96] focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75"
+      className="bg-card rounded-[24px] overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground"
     >
       {/* TextField1 — drop-shadow, rounded-[12px] */}
       <div className="drop-shadow-[0px_0px_7.5px_rgba(0,47,85,0.17)] flex flex-col items-start justify-center overflow-clip rounded-[12px]">
@@ -43,7 +43,7 @@ export function DateFieldButton({
         <div className="rounded-tl-[4px] rounded-tr-[4px] w-full">
           <div className="flex flex-row items-center">
             <div className="flex gap-[4px] items-center px-[16px] py-[4px]">
-              {/* Trailing icon — calendar (svg p398f0df0), fill #3F4753 */}
+              {/* Trailing icon — calendar (svg p398f0df0), fill current semantic text */}
               <div className="flex items-center justify-center shrink-0">
                 <div className="flex flex-col items-center justify-center overflow-clip rounded-[8px] shrink-0 w-[32px]">
                   <div className="flex h-[32px] items-center justify-center w-full">
@@ -56,7 +56,7 @@ export function DateFieldButton({
                           viewBox="0 0 15 16.6667"
                           aria-hidden="true"
                         >
-                          <path d={svgPaths.p398f0df0} fill="#3F4753" />
+                          <path d={svgPaths.p398f0df0} fill="currentColor" />
                         </svg>
                       </div>
                     </div>
@@ -68,7 +68,7 @@ export function DateFieldButton({
               <div className="flex flex-col items-start justify-center shrink-0">
                 <div className="flex items-center shrink-0">
                   <span
-                    className="text-[#191c1f] text-[16px] leading-[24px] tracking-[0.5px] whitespace-nowrap font-normal"
+                    className="text-foreground text-[16px] leading-[24px] tracking-[0.5px] whitespace-nowrap font-normal"
                     style={{
                       fontFamily: "'Roboto', sans-serif",
                       fontVariationSettings: '"wdth" 100',
@@ -79,7 +79,7 @@ export function DateFieldButton({
                 </div>
               </div>
 
-              {/* Leading icon — chevron (svg p13733a00), fill #49454F, rotates when open */}
+              {/* Leading icon — chevron; rotates when open */}
               <div className="flex items-center justify-center shrink-0 size-[32px]">
                 <div className="flex flex-col items-center justify-center overflow-clip rounded-[100px] shrink-0 w-[32px]">
                   <div className="flex h-[40px] items-center justify-center w-full">
@@ -92,7 +92,7 @@ export function DateFieldButton({
                           viewBox="0 0 12 7.4"
                           aria-hidden="true"
                         >
-                          <path d={svgPaths.p13733a00} fill="#49454F" />
+                          <path d={svgPaths.p13733a00} fill="currentColor" />
                         </svg>
                       </div>
                     </div>

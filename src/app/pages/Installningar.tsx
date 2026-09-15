@@ -29,12 +29,12 @@ function Toggle({
       aria-pressed={on}
       className={[
         "relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f96]",
-        on ? "bg-[#0f9f96]" : "bg-gray-200",
+        on ? "bg-[#0f9f96]" : "bg-surface-highest",
       ].join(" ")}
     >
       <span
         className={[
-          "absolute top-0.5 left-0.5 size-5 bg-white rounded-full shadow transition-transform duration-200",
+          "absolute top-0.5 left-0.5 size-5 bg-card rounded-full shadow transition-transform duration-200",
           on ? "translate-x-5" : "translate-x-0",
         ].join(" ")}
       />
@@ -57,7 +57,7 @@ function SectionHeader({
       >
         <Icon className="size-4 text-[#0f9f96]" />
       </div>
-      <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
     </div>
   );
 }
@@ -72,11 +72,11 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-3.5 border-b border-gray-100 last:border-0">
+    <div className="flex items-center justify-between py-3.5 border-b border-border last:border-0">
       <div>
-        <p className="text-sm font-medium text-gray-700">{label}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
         {description && (
-          <p className="text-xs text-gray-400 mt-0.5">{description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         )}
       </div>
       <div className="shrink-0 ml-4">{children}</div>
@@ -97,7 +97,7 @@ function SegmentedControl<T extends string>({
 }) {
   return (
     <div
-      className="flex rounded-xl overflow-hidden border border-gray-200"
+      className="flex rounded-xl overflow-hidden border border-border"
       role="radiogroup"
       aria-label={ariaLabel}
     >
@@ -112,7 +112,7 @@ function SegmentedControl<T extends string>({
             "px-3 py-1.5 text-xs font-medium transition-colors",
             value === o.value
               ? "bg-[#0f9f96] text-white"
-              : "text-gray-500 hover:bg-gray-50",
+              : "text-muted-foreground hover:bg-muted",
           ].join(" ")}
         >
           {o.label}
@@ -193,37 +193,19 @@ export function Installningar({ settings, onSettingsChange }: Props) {
     <main
       className={[
         "flex-1 overflow-auto p-8 pt-6",
-        isDark ? "bg-zinc-950 text-zinc-100" : "bg-[#f5f6fa] text-gray-900",
+        "bg-background text-foreground",
       ].join(" ")}
     >
-      <h1
-        className={
-          isDark
-            ? "text-2xl font-semibold text-zinc-100 mb-6"
-            : "text-2xl font-semibold text-gray-900 mb-6"
-        }
-      >
-        {t.title}
-      </h1>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">{t.title}</h1>
 
       <div className="max-w-xl mx-auto space-y-5">
         {/* Profile */}
-        <Card
-          className={
-            isDark
-              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
-              : "border-none shadow-none bg-white"
-          }
-        >
-          <CardContent
-            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
-          >
+        <Card className="border-none shadow-none bg-card">
+          <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={Sun} title={t.profile} />
             <div
               className={
-                isDark
-                  ? "flex items-center gap-4 mb-4 pb-4 border-b border-zinc-700"
-                  : "flex items-center gap-4 mb-4 pb-4 border-b border-gray-100"
+                "flex items-center gap-4 mb-4 pb-4 border-b border-border"
               }
             >
               <button
@@ -249,22 +231,10 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 )}
               </button>
               <div>
-                <p
-                  className={
-                    isDark
-                      ? "text-sm font-semibold text-zinc-100"
-                      : "text-sm font-semibold text-gray-800"
-                  }
-                >
+                <p className={"text-sm font-semibold text-foreground"}>
                   {settings.displayName}
                 </p>
-                <p
-                  className={
-                    isDark
-                      ? "text-xs text-zinc-400 mb-1.5"
-                      : "text-xs text-gray-400 mb-1.5"
-                  }
-                >
+                <p className={"text-xs text-muted-foreground mb-1.5"}>
                   Inköpsanalytiker · Sundsvall Fastigheter AB
                 </p>
                 <button
@@ -296,9 +266,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 onChange={(e) => update("displayName", e.target.value)}
                 className={[
                   "w-44 px-3 py-1.5 rounded-lg text-sm border focus:outline-none focus:border-[#0f9f96]",
-                  isDark
-                    ? "bg-zinc-800 text-zinc-100 border-zinc-700"
-                    : "bg-gray-50 text-gray-700 border-gray-200",
+                  "bg-muted text-foreground border-border",
                 ].join(" ")}
               />
             </Row>
@@ -312,9 +280,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 onChange={(e) => update("email", e.target.value)}
                 className={[
                   "w-44 px-3 py-1.5 rounded-lg text-sm border focus:outline-none focus:border-[#0f9f96]",
-                  isDark
-                    ? "bg-zinc-800 text-zinc-100 border-zinc-700"
-                    : "bg-gray-50 text-gray-700 border-gray-200",
+                  "bg-muted text-foreground border-border",
                 ].join(" ")}
               />
             </Row>
@@ -324,11 +290,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
               </span>
             </Row>
             <Row label={t.company}>
-              <span
-                className={
-                  isDark ? "text-sm text-zinc-400" : "text-sm text-gray-500"
-                }
-              >
+              <span className="text-sm text-muted-foreground">
                 Sundsvall Fastigheter AB
               </span>
             </Row>
@@ -336,16 +298,8 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Appearance */}
-        <Card
-          className={
-            isDark
-              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
-              : "border-none shadow-none bg-white"
-          }
-        >
-          <CardContent
-            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
-          >
+        <Card className="border-none shadow-none bg-card">
+          <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader
               icon={settings.darkMode ? Moon : Sun}
               title={t.appearance}
@@ -372,16 +326,8 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Notifications */}
-        <Card
-          className={
-            isDark
-              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
-              : "border-none shadow-none bg-white"
-          }
-        >
-          <CardContent
-            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
-          >
+        <Card className="border-none shadow-none bg-card">
+          <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={Bell} title={t.notif} />
             <Row label={t.dueInv} description={t.dueInvDesc}>
               <Toggle
@@ -435,16 +381,8 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Export */}
-        <Card
-          className={
-            isDark
-              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
-              : "border-none shadow-none bg-white"
-          }
-        >
-          <CardContent
-            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
-          >
+        <Card className="border-none shadow-none bg-card">
+          <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={FileDown} title={t.exportS} />
             <Row label={t.defFmt} description={t.defFmtDesc}>
               <SegmentedControl
@@ -483,16 +421,8 @@ export function Installningar({ settings, onSettingsChange }: Props) {
         </Card>
 
         {/* Security */}
-        <Card
-          className={
-            isDark
-              ? "border-none shadow-none bg-zinc-900 text-zinc-100"
-              : "border-none shadow-none bg-white"
-          }
-        >
-          <CardContent
-            className={isDark ? "px-6 pt-5 pb-3 bg-zinc-900" : "px-6 pt-5 pb-3"}
-          >
+        <Card className="border-none shadow-none bg-card">
+          <CardContent className="px-6 pt-5 pb-3 bg-card">
             <SectionHeader icon={Shield} title={t.security} />
             <Row label={t.twoFA} description={t.twoFADesc}>
               <Toggle

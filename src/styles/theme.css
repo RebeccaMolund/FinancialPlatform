@@ -1,4 +1,4 @@
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --font-size: 16px;
@@ -19,7 +19,11 @@
   --md3-on-tertiary-container: #2b1a46;
 
   --md3-background: #f5f6fa;
+  --md3-surface-lowest: #eef2f7;
+  --md3-surface-low: #f8fafc;
   --md3-surface: #ffffff;
+  --md3-surface-high: #eef2f7;
+  --md3-surface-highest: #dce4ee;
   --md3-surface-variant: #f3f4f6;
   --md3-on-surface: #111827;
   --md3-on-surface-variant: #475467;
@@ -43,6 +47,11 @@
 
   --background: var(--md3-background);
   --foreground: var(--md3-on-surface);
+  --surface-lowest: var(--md3-surface-lowest);
+  --surface-low: var(--md3-surface-low);
+  --surface-high: var(--md3-surface-high);
+  --surface-highest: var(--md3-surface-highest);
+  --surface-variant: var(--md3-surface-variant);
   --card: var(--md3-surface);
   --card-foreground: var(--md3-on-surface);
   --popover: var(--md3-surface);
@@ -91,8 +100,12 @@
   --md3-secondary-container: #1f2937;
   --md3-on-secondary-container: #e5e7eb;
 
-  --md3-background: #0f172a;
-  --md3-surface: #111827;
+  --md3-background: #07111d;
+  --md3-surface-lowest: #050b12;
+  --md3-surface-low: #0c1523;
+  --md3-surface: #111a2a;
+  --md3-surface-high: #182238;
+  --md3-surface-highest: #202b44;
   --md3-surface-variant: #1f2937;
   --md3-on-surface: #f9fafb;
   --md3-on-surface-variant: #d1d5db;
@@ -117,6 +130,10 @@
   --foreground: var(--md3-on-surface);
   --card: var(--md3-surface);
   --card-foreground: var(--md3-on-surface);
+  --surface-lowest: var(--md3-surface-lowest);
+  --surface-low: var(--md3-surface-low);
+  --surface-high: var(--md3-surface-high);
+  --surface-highest: var(--md3-surface-highest);
   --popover: var(--md3-surface);
   --popover-foreground: var(--md3-on-surface);
   --primary: var(--md3-primary);
@@ -139,7 +156,7 @@
   --chart-3: #a78bfa;
   --chart-4: #fbbf24;
   --chart-5: #f87171;
-  --sidebar: #111827;
+  --sidebar: var(--md3-surface-low);
   --sidebar-foreground: var(--md3-on-surface);
   --sidebar-primary: var(--md3-primary);
   --sidebar-primary-foreground: var(--md3-on-primary);
@@ -152,6 +169,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface-lowest: var(--surface-lowest);
+  --color-surface-low: var(--surface-low);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+  --color-surface-variant: var(--surface-variant);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
