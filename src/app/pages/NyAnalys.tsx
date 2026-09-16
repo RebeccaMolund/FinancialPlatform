@@ -23,6 +23,13 @@ import {
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -66,6 +73,8 @@ import type { Scenario } from "../../types/analysis";
 import { getScenarios } from "../../services/scenarios";
 import type { FilterDef } from "../../types/filters";
 import { getFilterConfig } from "../../services/filters";
+import type { AnalysisColorPalette } from "../../types/analysis-colors";
+import { getAnalysisChartColors } from "../../services/analysis-colors";
 
 // ─── Filter state types ───────────────────────────────────────────────────────
 
@@ -811,17 +820,6 @@ const fmtY = (v: number) =>
 
 type ChartVariant = "bar" | "hbar" | "line" | "area" | "pie" | "donut";
 
-const CHART_COLORS = [
-  "#0f9f96",
-  "#818cf8",
-  "#a78bfa",
-  "#fb7185",
-  "#f59e0b",
-  "#34d399",
-  "#60a5fa",
-  "#f97316",
-];
-
 const VARIANT_OPTIONS: { value: ChartVariant; label: string }[] = [
   { value: "bar", label: "Stapel" },
   { value: "hbar", label: "Horisontell" },
@@ -836,10 +834,12 @@ function AnalysisChart({
   data,
   variant,
   color,
+  colors,
 }: {
   data: ChartPoint[];
   variant: ChartVariant;
   color: string;
+  colors: AnalysisColorPalette;
 }) {
   const ttStyle = {
     borderRadius: 10,
@@ -865,10 +865,7 @@ function AnalysisChart({
             stroke="none"
           >
             {data.map((_, i) => (
-              <Cell
-                key={`ac-cell-${i}`}
-                fill={CHART_COLORS[i % CHART_COLORS.length]}
-              />
+              <Cell key={`ac-cell-${i}`} fill={colors[i % colors.length]} />
             ))}
           </Pie>
           <Tooltip
@@ -1254,6 +1251,9 @@ export function NyAnalys({
   const [chartColor, setChartColor] = useState(() =>
     readAnalysisField("chartColor", "#0f9f96"),
   );
+  const [chartColors, setChartColors] = useState<AnalysisColorPalette>([
+    "#0f9f96",
+  ]);
   const [exportOpen, setExportOpen] = useState(false);
   const [sortCol, setSortCol] = useState<keyof MockRow | null>(() =>
     readAnalysisField("sortCol", null),
@@ -1281,6 +1281,16 @@ export function NyAnalys({
       if (!active) return;
       setFilterDefs(config.filters);
       setFilterOptions(config.options);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getAnalysisChartColors().then((colors) => {
+      if (active) setChartColors(colors);
     });
     return () => {
       active = false;
@@ -1709,45 +1719,53 @@ export function NyAnalys({
                         : "Kostnad per kategori (kr)"}
                     </p>
                     <div className="flex items-center gap-3 shrink-0">
-                      {/* Color swatches */}
-                      <div className="flex gap-1.5">
-                        {CHART_COLORS.map((c) => (
-                          <Button
-                            key={c}
-                            onClick={() => setChartColor(c)}
-                            className={[
-                              "size-5 rounded-full transition-transform hover:scale-110",
-                              chartColor === c
-                                ? "ring-2 ring-offset-1 ring-gray-400 scale-110"
-                                : "",
-                            ].join(" ")}
-                            style={{ backgroundColor: c }}
-                          />
-                        ))}
-                      </div>
-                      {/* Chart type pills */}
-                      <div className="flex gap-1">
-                        {VARIANT_OPTIONS.map((o) => (
-                          <button
-                            key={o.value}
-                            onClick={() => setChartVariant(o.value)}
-                            className={[
-                              "px-2.5 py-1 rounded-lg text-xs font-medium transition-colors",
-                              chartVariant === o.value
-                                ? "bg-[#0f9f96]/15 text-[#0f9f96]"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                            ].join(" ")}
-                          >
-                            {o.label}
-                          </button>
-                        ))}
-                      </div>
+                      {/* Color dropdown */}
+                      <Select value={chartColor} onValueChange={setChartColor}>
+                        <SelectTrigger
+                          aria-label="Välj diagramfärg"
+                          className="h-9 w-auto min-w-[72px] justify-center gap-2 rounded-full border-border bg-card px-3.5 py-1 text-xs font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="min-w-[72px] rounded-xl border-border bg-card text-foreground">
+                          {chartColors.map((c) => (
+                            <SelectItem key={c} value={c} textValue={c}>
+                              <span
+                                className="size-3.5 rounded-full"
+                                style={{ backgroundColor: c }}
+                              />
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {/* Chart type dropdown */}
+                      <Select
+                        value={chartVariant}
+                        onValueChange={(v) =>
+                          setChartVariant(v as ChartVariant)
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label="Välj diagramtyp"
+                          className="h-9 w-auto min-w-[110px] justify-center gap-2 rounded-full border-border bg-card px-3.5 py-1 text-xs font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-border bg-card text-foreground">
+                          {VARIANT_OPTIONS.map((o) => (
+                            <SelectItem key={o.value} value={o.value}>
+                              {o.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <AnalysisChart
                     data={charts.chart1}
                     variant={chartVariant}
                     color={chartColor}
+                    colors={chartColors}
                   />
                 </CardContent>
               </Card>

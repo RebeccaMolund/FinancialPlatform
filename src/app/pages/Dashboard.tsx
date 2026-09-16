@@ -59,6 +59,19 @@ import type { DashboardTopCostPoint } from "../../types/dashboard-top-cost";
 import { getDashboardTopCostsData } from "../../services/dashboard-top-costs";
 import type { DashboardDueDatePoint } from "../../types/dashboard-due-date";
 import { getDashboardDueDateData } from "../../services/dashboard-due-date";
+import { getDefaultDashboardCards } from "../../services/dashboard-config";
+import type {
+  DashboardBuiltinMeta,
+  DashboardBuiltinMetaMap,
+} from "../../types/dashboard-meta";
+import { getDashboardBuiltinMeta } from "../../services/dashboard-meta";
+import type {
+  DashboardVariantIcon,
+  DashboardVariantOption,
+} from "../../types/dashboard-variants";
+import { getDashboardVariantOptions } from "../../services/dashboard-variants";
+import type { DashboardColorPalette } from "../../types/dashboard-colors";
+import { getDashboardChartColors } from "../../services/dashboard-colors";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -76,57 +89,14 @@ interface DashboardCard {
 
 // ─── Built-in chart data ──────────────────────────────────────────────────────
 
-const BUILTIN_META: Record<
-  BuiltinKey,
-  { title: string; defaultVariant: ChartVariant; description: string }
-> = {
-  spend: {
-    title: "Spend-analys historisk (per valuta)",
-    defaultVariant: "bar",
-    description: "Månatlig spend uppdelat på SEK/EUR",
-  },
-  suppliers: {
-    title: "Totalbelopp per leverantör – Top 10",
-    defaultVariant: "donut",
-    description: "De 10 största leverantörerna per belopp",
-  },
-  topcosts: {
-    title: "10 största kostnader – Artikelnivå",
-    defaultVariant: "hbar",
-    description: "Dyraste artiklar sorterade efter kostnad",
-  },
-  duedate: {
-    title: "Kommande per förfallodag",
-    defaultVariant: "area",
-    description: "Fakturor som förfaller framöver",
-  },
+const VARIANT_ICONS: Record<DashboardVariantIcon, React.ElementType> = {
+  bar: BarChart2,
+  horizontal: BarChart4,
+  line: LineChartIcon,
+  area: AreaChartIcon,
+  pie: PieChartIcon,
+  donut: CircleDashed,
 };
-
-const VARIANT_OPTIONS: {
-  value: ChartVariant;
-  label: string;
-  icon: React.ElementType;
-}[] = [
-  { value: "bar", label: "Stapel", icon: BarChart2 },
-  { value: "hbar", label: "Horisontell", icon: BarChart4 },
-  { value: "line", label: "Linje", icon: LineChartIcon },
-  { value: "area", label: "Area", icon: AreaChartIcon },
-  { value: "pie", label: "Tårta", icon: PieChartIcon },
-  { value: "donut", label: "Munkring", icon: CircleDashed },
-];
-
-// ─── Color palette ────────────────────────────────────────────────────────────
-
-export const CHART_COLORS = [
-  "#14b8a6", // teal (brand)
-  "#818cf8", // indigo
-  "#a78bfa", // purple
-  "#fb7185", // rose
-  "#f59e0b", // amber
-  "#34d399", // emerald
-  "#60a5fa", // blue
-  "#f97316", // orange
-];
 
 function mixHexColors(source: string, target: string, amount: number) {
   const sourceRgb = source
@@ -166,46 +136,15 @@ function getColorScale(base: string, count: number) {
   });
 }
 
-const DEFAULT_CARDS: DashboardCard[] = [
-  {
-    instanceId: "spend-0",
-    type: "builtin",
-    builtinKey: "spend",
-    variant: "bar",
-    color: "#14b8a6",
-  },
-  {
-    instanceId: "suppliers-0",
-    type: "builtin",
-    builtinKey: "suppliers",
-    variant: "donut",
-    color: "#14b8a6",
-  },
-  {
-    instanceId: "topcosts-0",
-    type: "builtin",
-    builtinKey: "topcosts",
-    variant: "hbar",
-    color: "#14b8a6",
-  },
-  {
-    instanceId: "duedate-0",
-    type: "builtin",
-    builtinKey: "duedate",
-    variant: "area",
-    color: "#a78bfa",
-  },
-];
-
 const DASHBOARD_CARDS_KEY = "financial-dashboard.cards";
 
 function readDashboardCards(): DashboardCard[] {
   try {
     const stored = localStorage.getItem(DASHBOARD_CARDS_KEY);
     const cards = stored ? (JSON.parse(stored) as DashboardCard[]) : null;
-    return Array.isArray(cards) && cards.length > 0 ? cards : DEFAULT_CARDS;
+    return Array.isArray(cards) && cards.length > 0 ? cards : [];
   } catch {
-    return DEFAULT_CARDS;
+    return [];
   }
 }
 
@@ -861,9 +800,11 @@ function getBuiltinData(
 function ColorPicker({
   current,
   onChange,
+  colors,
 }: {
   current: string;
   onChange: (c: string) => void;
+  colors: DashboardColorPalette;
 }) {
   return (
     <DropdownMenu>
@@ -883,7 +824,7 @@ function ColorPicker({
         align="end"
         className="grid min-w-[136px] grid-cols-4 gap-1 rounded-xl border-0 bg-surface-high p-3"
       >
-        {CHART_COLORS.map((c) => (
+        {colors.map((c) => (
           <DropdownMenuItem
             key={c}
             onSelect={() => onChange(c)}
@@ -902,12 +843,14 @@ function ColorPicker({
 function VariantPicker({
   current,
   onChange,
+  options,
 }: {
   current: ChartVariant;
   onChange: (v: ChartVariant) => void;
+  options: DashboardVariantOption[];
 }) {
   const CurrentIcon =
-    VARIANT_OPTIONS.find((o) => o.value === current)?.icon ?? BarChart2;
+    VARIANT_ICONS[options.find((o) => o.value === current)?.icon ?? "bar"];
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -924,22 +867,25 @@ function VariantPicker({
         align="end"
         className="min-w-[130px] rounded-xl border-0 bg-surface-high p-1.5"
       >
-        {VARIANT_OPTIONS.map((opt) => (
-          <DropdownMenuItem
-            key={opt.value}
-            onSelect={() => onChange(opt.value)}
-            className={[
-              "flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium",
-              current === opt.value
-                ? "bg-[#14b8a6]/15 text-[#14b8a6]"
-                : "text-muted-foreground hover:bg-muted",
-            ].join(" ")}
-          >
-            <opt.icon className="size-3.5" />
-            {opt.label}
-            {current === opt.value && <Check className="ml-auto size-3" />}
-          </DropdownMenuItem>
-        ))}
+        {options.map((opt) => {
+          const OptionIcon = VARIANT_ICONS[opt.icon];
+          return (
+            <DropdownMenuItem
+              key={opt.value}
+              onSelect={() => onChange(opt.value)}
+              className={[
+                "flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium",
+                current === opt.value
+                  ? "bg-[#14b8a6]/15 text-[#14b8a6]"
+                  : "text-muted-foreground hover:bg-muted",
+              ].join(" ")}
+            >
+              <OptionIcon className="size-3.5" />
+              {opt.label}
+              {current === opt.value && <Check className="ml-auto size-3" />}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -965,6 +911,9 @@ function ChartCard({
   supplierData,
   topCostsData,
   dueDateData,
+  builtinMeta,
+  variantOptions,
+  chartColors,
 }: {
   card: DashboardCard;
   editMode: boolean;
@@ -983,10 +932,13 @@ function ChartCard({
   supplierData: DashboardSupplierPoint[];
   topCostsData: DashboardTopCostPoint[];
   dueDateData: DashboardDueDatePoint[];
+  builtinMeta: DashboardBuiltinMetaMap;
+  variantOptions: DashboardVariantOption[];
+  chartColors: DashboardColorPalette;
 }) {
   const title =
     card.type === "builtin"
-      ? BUILTIN_META[card.builtinKey!].title
+      ? (builtinMeta[card.builtinKey!]?.title ?? card.builtinKey)
       : card.analysis!.chart1Title;
   function renderChart() {
     if (card.type === "builtin") {
@@ -1064,10 +1016,15 @@ function ChartCard({
             </div>
             {/* Controls: gap-[6px], matching Figma exactly */}
             <div className="flex items-center gap-[6px] shrink-0">
-              <ColorPicker current={card.color} onChange={onColorChange} />
+              <ColorPicker
+                current={card.color}
+                onChange={onColorChange}
+                colors={chartColors}
+              />
               <VariantPicker
                 current={card.variant}
                 onChange={onVariantChange}
+                options={variantOptions}
               />
               {editMode && (
                 <button
@@ -1100,11 +1057,13 @@ function AddDiagramPanel({
   onAdd,
   onClose,
   darkMode,
+  builtinMeta,
 }: {
   savedAnalyses: SavedAnalysis[];
   onAdd: (card: DashboardCard) => void;
   onClose: () => void;
   darkMode?: boolean;
+  builtinMeta: DashboardBuiltinMetaMap;
 }) {
   return (
     <div
@@ -1144,9 +1103,9 @@ function AddDiagramPanel({
           </p>
           <div className="grid grid-cols-2 gap-3">
             {(
-              Object.entries(BUILTIN_META) as [
+              Object.entries(builtinMeta) as [
                 BuiltinKey,
-                (typeof BUILTIN_META)[BuiltinKey],
+                DashboardBuiltinMeta,
               ][]
             ).map(([key, meta]) => (
               <button
@@ -1260,6 +1219,11 @@ export function Dashboard({
   );
   const [topCostsData, setTopCostsData] = useState<DashboardTopCostPoint[]>([]);
   const [dueDateData, setDueDateData] = useState<DashboardDueDatePoint[]>([]);
+  const [builtinMeta, setBuiltinMeta] = useState<DashboardBuiltinMetaMap>({});
+  const [variantOptions, setVariantOptions] = useState<
+    DashboardVariantOption[]
+  >([]);
+  const [chartColors, setChartColors] = useState<DashboardColorPalette>([]);
   const selectedRange = range ?? {
     start: new Date(2025, 6, 17),
     end: new Date(2025, 7, 17),
@@ -1318,6 +1282,49 @@ export function Dashboard({
     let active = true;
     getDashboardDueDateData().then((data) => {
       if (active) setDueDateData(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDefaultDashboardCards().then((defaultCards) => {
+      if (!active) return;
+      setCards((currentCards) =>
+        currentCards.length > 0 ? currentCards : defaultCards,
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardBuiltinMeta().then((meta) => {
+      if (active) setBuiltinMeta(meta);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardVariantOptions().then((options) => {
+      if (active) setVariantOptions(options);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    getDashboardChartColors().then((colors) => {
+      if (active) setChartColors(colors);
     });
     return () => {
       active = false;
@@ -1503,6 +1510,9 @@ export function Dashboard({
               supplierData={supplierData}
               topCostsData={topCostsData}
               dueDateData={dueDateData}
+              builtinMeta={builtinMeta}
+              variantOptions={variantOptions}
+              chartColors={chartColors}
             />
           ))}
         </div>
@@ -1515,6 +1525,7 @@ export function Dashboard({
           onAdd={addCard}
           onClose={() => setShowAddPanel(false)}
           darkMode={darkMode}
+          builtinMeta={builtinMeta}
         />
       )}
     </main>

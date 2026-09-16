@@ -1,13 +1,14 @@
 import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Pencil,
-  Check,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { DateFieldButton } from "./DateFieldButton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import {
   format,
   addMonths,
@@ -246,24 +247,28 @@ export function Header({
         <label className="sr-only" htmlFor="dashboard-currency">
           Valuta
         </label>
-        <div className="relative max-[639px]:flex-1">
-          <select
-            id="dashboard-currency"
+        <div className="max-[639px]:flex-1">
+          <Select
             value={currency}
-            onChange={(event) =>
-              onCurrencyChange(event.target.value as CurrencyCode)
-            }
-            className="h-[40px] min-w-[90px] appearance-none rounded-full border border-border bg-card px-4 py-2 pr-10 text-center text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-label="Välj valuta för dashboarden"
+            onValueChange={(value) => onCurrencyChange(value as CurrencyCode)}
           >
-            <option value="SEK">SEK</option>
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-          </select>
-          <ChevronDown
-            className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-foreground"
-            aria-hidden="true"
-          />
+            <SelectTrigger
+              id="dashboard-currency"
+              aria-label="Välj valuta för dashboarden"
+              className="h-[48px] min-h-[48px] w-full min-w-[90px] justify-center gap-1 rounded-full border-border bg-card px-4 py-2 text-[16px] leading-[24px] tracking-[0.5px] text-foreground transition-opacity hover:opacity-90 active:opacity-75 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 [&_svg]:text-foreground [&_svg]:opacity-100"
+              style={{
+                fontFamily: "'Roboto', sans-serif",
+                fontVariationSettings: '"wdth" 100',
+              }}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-border bg-card text-foreground">
+              <SelectItem value="SEK">SEK</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="USD">USD</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="relative">
           <DateFieldButton

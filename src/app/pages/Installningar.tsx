@@ -10,7 +10,7 @@ import {
   Check,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
-import type { AppSettings } from "../App";
+import type { AppSettings } from "../../types/app-settings";
 
 function Toggle({
   on,

@@ -2,6 +2,8 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { Sidebar, type Page } from "./components/Sidebar";
 import { Header, type CurrencyCode, type DateRange } from "./components/Header";
 import type { SavedAnalysis } from "./pages/NyAnalys";
+import type { AppSettings } from "../types/app-settings";
+import { DEFAULT_SETTINGS, STORAGE_KEYS } from "../config/app-config";
 
 const Dashboard = lazy(() =>
   import("./pages/Dashboard").then((module) => ({ default: module.Dashboard })),
@@ -19,51 +21,6 @@ const Installningar = lazy(() =>
     default: module.Installningar,
   })),
 );
-
-export interface AppSettings {
-  darkMode: boolean;
-  language: "sv" | "en";
-  notifications: {
-    dueInvoices: boolean;
-    weeklyReport: boolean;
-    newSupplier: boolean;
-    budgetAlert: boolean;
-  };
-  defaultFormat: "csv" | "pdf";
-  dateFormat: "dmy" | "ymd";
-  currency: "SEK" | "EUR";
-  twoFactor: boolean;
-  logoSrc: string | null;
-  displayName: string;
-  email: string;
-}
-
-const DEFAULT_SETTINGS: AppSettings = {
-  darkMode: false,
-  language: "sv",
-  notifications: {
-    dueInvoices: true,
-    weeklyReport: false,
-    newSupplier: true,
-    budgetAlert: true,
-  },
-  defaultFormat: "csv",
-  dateFormat: "dmy",
-  currency: "SEK",
-  twoFactor: false,
-  logoSrc: null,
-  displayName: "Rebecca Bergström",
-  email: "rebecca.b@sundsvall.se",
-};
-
-const STORAGE_KEYS = {
-  page: "financial-dashboard.page",
-  settings: "financial-dashboard.settings",
-  savedAnalyses: "financial-dashboard.saved-analyses",
-  dashboardRange: "financial-dashboard.range",
-  dashboardCurrency: "financial-dashboard.currency",
-  dashboardEditMode: "financial-dashboard.edit-mode",
-} as const;
 
 function readStorage<T>(key: string): T | null {
   try {
