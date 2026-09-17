@@ -191,7 +191,7 @@ export function Header({
           </span>
         </div>
         <h1
-          className="truncate text-base leading-6 text-foreground sm:text-[20px] sm:leading-[28px]"
+          className="hidden truncate text-base leading-6 text-foreground sm:block sm:text-[20px] sm:leading-[28px]"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
         >
           Välkommen, Rebecca!
@@ -243,11 +243,11 @@ export function Header({
         )}
       </div>
 
-      <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
+      <div className="flex items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
         <label className="sr-only" htmlFor="dashboard-currency">
           Valuta
         </label>
-        <div className="max-[639px]:flex-1">
+        <div className="max-[639px]:flex-none">
           <Select
             value={currency}
             onValueChange={(value) => onCurrencyChange(value as CurrencyCode)}
@@ -255,7 +255,7 @@ export function Header({
             <SelectTrigger
               id="dashboard-currency"
               aria-label="Välj valuta för dashboarden"
-              className="h-[48px] min-h-[48px] w-full min-w-[90px] justify-center gap-1 rounded-full border-border bg-card px-4 py-2 text-[16px] leading-[24px] tracking-[0.5px] text-foreground transition-opacity hover:opacity-90 active:opacity-75 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 [&_svg]:text-foreground [&_svg]:opacity-100"
+              className="h-[40px] min-h-[40px] w-auto min-w-0 justify-center gap-1 rounded-full border-border bg-card px-3 py-1.5 text-[14px] leading-[24px] tracking-[0.5px] text-foreground transition-opacity hover:opacity-90 active:opacity-75 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:h-[48px] sm:min-h-[48px] sm:w-full sm:min-w-[90px] sm:px-4 sm:py-2 sm:text-[16px] [&_svg]:text-foreground [&_svg]:opacity-100"
               style={{
                 fontFamily: "'Roboto', sans-serif",
                 fontVariationSettings: '"wdth" 100',

@@ -1161,6 +1161,28 @@ const allChips = [
 ];
 
 const NY_ANALYSIS_STORAGE_KEY = "financial-dashboard.new-analysis";
+const SEARCH_HISTORY_KEY = "financial-dashboard.search-history";
+const MAX_SEARCH_HISTORY = 8;
+
+function readSearchHistory(): string[] {
+  try {
+    const stored = localStorage.getItem(SEARCH_HISTORY_KEY);
+    const parsed = stored ? (JSON.parse(stored) as unknown) : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSearchHistory(history: string[]) {
+  try {
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // Storage can be unavailable in private browsing or restricted embeds.
+  }
+}
 
 function readAnalysisField<T>(field: string, fallback: T): T {
   try {
@@ -1230,7 +1252,10 @@ export function NyAnalys({
   const [filterOptions, setFilterOptions] = useState<Record<string, string[]>>(
     {},
   );
-  const [query, setQuery] = useState(() => readAnalysisField("query", ""));
+  const [query, setQuery] = useState("");
+  const [searchHistory, setSearchHistory] =
+    useState<string[]>(readSearchHistory);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
   const [loading, setLoading] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -1302,17 +1327,12 @@ export function NyAnalys({
     getScenarios().then((loadedScenarios) => {
       if (!active) return;
       setScenarios(loadedScenarios);
-      const storedQuery = readAnalysisField("query", "");
-      if (storedQuery) {
-        setActiveScenario(matchScenario(storedQuery, loadedScenarios));
-      }
     });
     return () => {
       active = false;
     };
   }, []);
 
-  useEffect(() => writeAnalysisState("query", query), [query]);
   useEffect(
     () => writeAnalysisState("filterValues", filterValues),
     [filterValues],
@@ -1343,6 +1363,15 @@ export function NyAnalys({
 
   function runSearch(q: string) {
     if (!q.trim()) return;
+    setHistoryOpen(false);
+    setSearchHistory((prev) => {
+      const next = [q, ...prev.filter((item) => item !== q)].slice(
+        0,
+        MAX_SEARCH_HISTORY,
+      );
+      writeSearchHistory(next);
+      return next;
+    });
     setLoading(true);
     setActiveScenario(null);
     setTimeout(() => {
@@ -1463,6 +1492,8 @@ export function NyAnalys({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => searchHistory.length > 0 && setHistoryOpen(true)}
+            onBlur={() => setTimeout(() => setHistoryOpen(false), 150)}
             onKeyDown={(e) => e.key === "Enter" && runSearch(query)}
             placeholder="Beskriv vad du vill analysera..."
             className={[
@@ -1478,6 +1509,32 @@ export function NyAnalys({
             >
               <CornerDownLeft className="size-4" />
             </button>
+          )}
+          {historyOpen && searchHistory.length > 0 && (
+            <div
+              className="absolute left-0 right-0 top-full mt-2 z-50 rounded-xl border border-border bg-card shadow-lg overflow-hidden"
+              role="listbox"
+              aria-label="Senaste sökningar"
+            >
+              {searchHistory.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  role="option"
+                  aria-selected={item === query}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setQuery(item);
+                    setHistoryOpen(false);
+                    runSearch(item);
+                  }}
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-[#0f9f96]/10 hover:text-[#0f9f96]"
+                >
+                  <Search className="size-3.5 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{item}</span>
+                </button>
+              ))}
+            </div>
           )}
         </div>
         <button
@@ -1503,29 +1560,31 @@ export function NyAnalys({
 
       {/* Suggestion chips */}
       {!query && !activeScenario && !loading && (
-        <div className="relative mb-6 px-1 sm:px-10">
+        <div className="relative mb-6">
           <Carousel
             opts={{ align: "start", dragFree: true }}
             className="w-full"
           >
-            <CarouselContent className="-ml-2">
-              {SUGGESTIONS.map((s) => (
-                <CarouselItem key={s} className="basis-auto pl-2">
-                  <button
-                    onClick={() => {
-                      setQuery(s);
-                      runSearch(s);
-                    }}
-                    className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-[#0f9f96]/30 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96]"
-                  >
-                    <ArrowRight className="size-3" />
-                    {s}
-                  </button>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-0 max-[500px]:hidden" />
-            <CarouselNext className="right-0 max-[500px]:hidden" />
+            <div className="flex items-center gap-2">
+              <CarouselPrevious className="static translate-y-0 size-8 shrink-0 max-[500px]:hidden" />
+              <CarouselContent className="-ml-2 flex-1 min-w-0">
+                {SUGGESTIONS.map((s) => (
+                  <CarouselItem key={s} className="basis-auto pl-2">
+                    <button
+                      onClick={() => {
+                        setQuery(s);
+                        runSearch(s);
+                      }}
+                      className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-[#0f9f96]/30 hover:bg-[#0f9f96]/10 hover:text-[#0f9f96]"
+                    >
+                      <ArrowRight className="size-3" />
+                      {s}
+                    </button>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselNext className="static translate-y-0 size-8 shrink-0 max-[500px]:hidden" />
+            </div>
           </Carousel>
         </div>
       )}
@@ -1600,9 +1659,7 @@ export function NyAnalys({
 
       {/* Results */}
       {!loading &&
-        (activeScenario ||
-          filteredRows.length < invoiceRows.length ||
-          true) && (
+        (activeScenario || filteredRows.length < invoiceRows.length) && (
           <>
             {/* ── Action bar: Spara / Lägg till på dashboard ── */}
             {activeScenario && (
@@ -1694,10 +1751,12 @@ export function NyAnalys({
               </div>
             )}
 
-            {/* Insight (1/3) + Chart (2/3) side by side */}
+            {/* Insight (1/3) + Chart (2/3) side by side (stacked på mobil) */}
             <div
               className={
-                activeScenario ? "grid grid-cols-3 gap-6 mb-6" : "mb-6"
+                activeScenario
+                  ? "grid grid-cols-1 gap-6 mb-6 sm:grid-cols-3"
+                  : "mb-6"
               }
             >
               {activeScenario && (
@@ -1771,12 +1830,17 @@ export function NyAnalys({
               </Card>
             </div>
 
-            {/* Table */}
-            <Card className={["border-none shadow-none", "bg-card"].join(" ")}>
+            {/* Table — på mobil bryter den ut ur sidans padding och går kant till kant */}
+            <Card
+              className={[
+                "border-none shadow-none max-sm:rounded-none max-sm:bg-transparent max-sm:-mx-8",
+                "bg-card",
+              ].join(" ")}
+            >
               <CardContent className="p-0">
                 <div
                   className={[
-                    "flex items-center justify-between px-6 py-4 border-b",
+                    "flex items-center justify-between px-4 py-4 border-b sm:px-6",
                     "border-border",
                   ].join(" ")}
                 >
@@ -1801,92 +1865,98 @@ export function NyAnalys({
                       variant="outline"
                       size="sm"
                       onClick={() => setExportOpen(true)}
-                      className="gap-1.5 border-border text-muted-foreground hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] hover:border-[#0f9f96]/30 rounded-lg"
+                      aria-label="Exportera"
+                      className="gap-1.5 border-border text-muted-foreground hover:bg-[#0f9f96]/15 hover:text-[#0f9f96] hover:border-[#0f9f96]/30 rounded-lg max-sm:size-8 max-sm:gap-0 max-sm:px-0"
                     >
                       <Download className="size-3.5" />
-                      Exportera
+                      <span className="max-sm:sr-only">Exportera</span>
                     </Button>
                   </div>
                 </div>
 
-                <div
-                  className={[
-                    "grid grid-cols-[2fr_2fr_1.2fr_0.8fr_1fr_1fr] px-6 py-3 border-b bg-muted/60",
-                    "border-border",
-                  ].join(" ")}
-                >
-                  {(
-                    [
-                      ["Artikelnamn", "artikel"],
-                      ["Leverantör", "leverantor"],
-                      ["Kategori", null],
-                      ["Antal", "antal"],
-                      ["Styckpris", "styckpris"],
-                      ["Radbelopp", "radbelopp"],
-                    ] as [string, keyof MockRow | null][]
-                  ).map(([label, col]) => (
-                    <button
-                      key={label}
-                      onClick={() => col && handleSort(col)}
-                      className={[
-                        "flex items-center gap-1 text-xs font-medium transition-colors",
-                        col
-                          ? "cursor-pointer hover:text-[#0f9f96]"
-                          : "cursor-default",
-                        sortCol === col
-                          ? "text-[#0f9f96]"
-                          : "text-muted-foreground",
-                      ].join(" ")}
-                    >
-                      {label}
-                      {col &&
-                        (sortCol === col ? (
-                          <span className="text-[10px]">
-                            {sortDir === "asc" ? "↑" : "↓"}
-                          </span>
-                        ) : (
-                          <ArrowUpDown className="size-3 opacity-40" />
-                        ))}
-                    </button>
-                  ))}
-                </div>
-
-                {pagedRows.length === 0 ? (
-                  <div className="px-6 py-12 text-center text-sm text-muted-foreground">
-                    Inga rader matchar de aktiva filtren.
-                  </div>
-                ) : (
-                  pagedRows.map((row) => (
+                {/* Horisontell scroll på smala skärmar */}
+                <div className="overflow-x-auto">
+                  <div className="min-w-[640px]">
                     <div
-                      key={row.id}
                       className={[
-                        "grid grid-cols-[2fr_2fr_1.2fr_0.8fr_1fr_1fr] px-6 py-4 border-b hover:bg-[#0f9f96]/5 transition-colors text-sm",
+                        "grid grid-cols-[2fr_2fr_1.2fr_0.8fr_1fr_1fr] px-4 py-3 border-b bg-muted/60 sm:px-6",
                         "border-border",
                       ].join(" ")}
                     >
-                      <span className="text-foreground font-medium">
-                        {row.artikel}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {row.leverantor}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {row.kategori}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {row.antal.toLocaleString("sv-SE")}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {row.styckpris.toLocaleString("sv-SE")}
-                      </span>
-                      <span className="text-foreground font-medium">
-                        {row.radbelopp.toLocaleString("sv-SE")}
-                      </span>
+                      {(
+                        [
+                          ["Artikelnamn", "artikel"],
+                          ["Leverantör", "leverantor"],
+                          ["Kategori", null],
+                          ["Antal", "antal"],
+                          ["Styckpris", "styckpris"],
+                          ["Radbelopp", "radbelopp"],
+                        ] as [string, keyof MockRow | null][]
+                      ).map(([label, col]) => (
+                        <button
+                          key={label}
+                          onClick={() => col && handleSort(col)}
+                          className={[
+                            "flex items-center gap-1 text-xs font-medium transition-colors",
+                            col
+                              ? "cursor-pointer hover:text-[#0f9f96]"
+                              : "cursor-default",
+                            sortCol === col
+                              ? "text-[#0f9f96]"
+                              : "text-muted-foreground",
+                          ].join(" ")}
+                        >
+                          {label}
+                          {col &&
+                            (sortCol === col ? (
+                              <span className="text-[10px]">
+                                {sortDir === "asc" ? "↑" : "↓"}
+                              </span>
+                            ) : (
+                              <ArrowUpDown className="size-3 opacity-40" />
+                            ))}
+                        </button>
+                      ))}
                     </div>
-                  ))
-                )}
 
-                <div className="flex items-center justify-between px-6 py-4">
+                    {pagedRows.length === 0 ? (
+                      <div className="px-6 py-12 text-center text-sm text-muted-foreground">
+                        Inga rader matchar de aktiva filtren.
+                      </div>
+                    ) : (
+                      pagedRows.map((row) => (
+                        <div
+                          key={row.id}
+                          className={[
+                            "grid grid-cols-[2fr_2fr_1.2fr_0.8fr_1fr_1fr] px-4 py-4 border-b hover:bg-[#0f9f96]/5 transition-colors text-sm sm:px-6",
+                            "border-border",
+                          ].join(" ")}
+                        >
+                          <span className="text-foreground font-medium">
+                            {row.artikel}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {row.leverantor}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {row.kategori}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {row.antal.toLocaleString("sv-SE")}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {row.styckpris.toLocaleString("sv-SE")}
+                          </span>
+                          <span className="text-foreground font-medium">
+                            {row.radbelopp.toLocaleString("sv-SE")}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between px-4 py-4 sm:px-6">
                   <span className="text-xs text-muted-foreground">
                     Visar {pagedRows.length} av {sortedRows.length} rader
                   </span>
@@ -1897,9 +1967,10 @@ export function NyAnalys({
                           setCurrentPage((p) => Math.max(1, p - 1))
                         }
                         disabled={currentPage === 1}
-                        className="px-2 py-1 hover:text-[#0f9f96] disabled:opacity-30 disabled:cursor-not-allowed"
+                        aria-label="Föregående sida"
+                        className="flex items-center justify-center size-7 rounded hover:text-[#0f9f96] disabled:opacity-30 disabled:cursor-not-allowed"
                       >
-                        ‹
+                        <ChevronLeft className="size-4" />
                       </button>
                       {Array.from({ length: totalPages }, (_, i) => i + 1)
                         .filter(
@@ -1940,9 +2011,10 @@ export function NyAnalys({
                           setCurrentPage((p) => Math.min(totalPages, p + 1))
                         }
                         disabled={currentPage === totalPages}
-                        className="px-2 py-1 hover:text-[#0f9f96] disabled:opacity-30 disabled:cursor-not-allowed"
+                        aria-label="Nästa sida"
+                        className="flex items-center justify-center size-7 rounded hover:text-[#0f9f96] disabled:opacity-30 disabled:cursor-not-allowed"
                       >
-                        ›
+                        <ChevronRight className="size-4" />
                       </button>
                     </div>
                   )}

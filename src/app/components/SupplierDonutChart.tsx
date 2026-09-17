@@ -60,7 +60,7 @@ export function SupplierDonutChart() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center gap-6 min-w-0 w-full">
+        <div className="flex flex-wrap items-center justify-center gap-6 min-w-0 w-full">
           <div className="shrink-0 min-w-0" style={{ width: 220, height: 220 }}>
             <svg
               viewBox="0 0 220 220"

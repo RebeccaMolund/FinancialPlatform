@@ -35,14 +35,14 @@ export function DateFieldButton({
       aria-label={ariaLabel ?? "Datumfält"}
       aria-expanded={open}
       aria-haspopup="dialog"
-      className="w-full max-w-full h-[48px] bg-card rounded-full border border-border overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground"
+      className="h-[40px] bg-card rounded-full border border-border overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground max-sm:w-auto sm:h-[48px] sm:w-full sm:max-w-full"
     >
       {/* TextField1 — rounded corners */}
       <div className="flex flex-col items-start justify-center overflow-clip rounded-full">
         {/* StateLayer — inner row */}
         <div className="rounded-tl-[4px] rounded-tr-[4px] w-full">
           <div className="flex flex-row items-center">
-            <div className="flex gap-[4px] items-center px-[16px]">
+            <div className="flex gap-[4px] items-center px-[16px] max-sm:px-[12px]">
               {/* Trailing icon — calendar (svg p398f0df0), fill current semantic text */}
               <div className="flex items-center justify-center shrink-0">
                 <div className="flex flex-col items-center justify-center overflow-clip rounded-[8px] shrink-0 w-[32px]">
@@ -64,8 +64,8 @@ export function DateFieldButton({
                 </div>
               </div>
 
-              {/* Date text — font Roboto, #191c1f, 16px, tracking-[0.5px] */}
-              <div className="flex flex-col items-start justify-center shrink-0">
+              {/* Date text — dold på mobil, endast ikon visas */}
+              <div className="hidden flex-col items-start justify-center shrink-0 sm:flex">
                 <div className="flex items-center shrink-0">
                   <span
                     className="max-w-[calc(100vw-150px)] truncate text-foreground text-[14px] leading-[24px] tracking-[0.5px] whitespace-nowrap font-normal sm:max-w-none sm:text-[16px]"
@@ -79,8 +79,8 @@ export function DateFieldButton({
                 </div>
               </div>
 
-              {/* Leading icon — chevron; rotates when open */}
-              <div className="flex items-center justify-center shrink-0 size-[32px]">
+              {/* Leading icon — chevron; rotates when open (dold på mobil) */}
+              <div className="hidden items-center justify-center shrink-0 size-[32px] sm:flex">
                 <div className="flex flex-col items-center justify-center overflow-clip rounded-[100px] shrink-0 w-[32px]">
                   <div className="flex h-[40px] items-center justify-center w-full">
                     <div className="overflow-clip shrink-0 size-[24px] relative">

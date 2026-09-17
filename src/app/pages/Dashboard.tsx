@@ -254,7 +254,7 @@ function UniversalChart({
     const totalValue = displayData.reduce((sum, entry) => sum + entry.v, 0);
 
     return (
-      <div className="flex w-full min-w-0 items-center gap-4 max-[1023px]:flex-col max-[1023px]:items-start">
+      <div className="flex w-full min-w-0 items-center gap-4 max-[1023px]:flex-col">
         <div className="h-[220px] w-[220px] shrink-0 max-[480px]:h-[180px] max-[480px]:w-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
