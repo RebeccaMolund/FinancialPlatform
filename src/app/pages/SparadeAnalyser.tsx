@@ -224,7 +224,7 @@ export function SparadeAnalyser({
   }
 
   return (
-    <main className="flex-1 overflow-auto p-8 pt-6">
+    <main className="flex-1 min-w-0 overflow-auto px-4 py-4 sm:px-6 sm:py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">

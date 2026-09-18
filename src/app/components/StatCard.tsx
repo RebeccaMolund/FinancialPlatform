@@ -29,7 +29,7 @@ export function StatCard({
     : undefined;
 
   return (
-    <div className="min-w-0 flex-1 rounded-[12px] overflow-hidden bg-card text-card-foreground flex flex-col border border-border max-sm:flex-row max-sm:items-center max-sm:gap-3 max-sm:rounded-none max-sm:border-0 max-sm:min-h-[52px] max-sm:px-4 max-sm:py-3 lg:min-w-[200px]">
+    <div className="min-w-0 flex-1 rounded-[12px] overflow-hidden bg-card text-card-foreground flex flex-col border border-border max-sm:flex-row max-sm:items-center max-sm:gap-3 max-sm:rounded-none max-sm:border-0 max-sm:min-h-[52px] max-sm:px-4 max-sm:py-3 max-sm:first:rounded-t-[12px] max-sm:last:rounded-b-[12px] lg:min-w-[200px]">
       {/* Colored header band — kompakt ikonplatta på mobil */}
       <div
         className={`${backgroundColor} flex items-center gap-2 max-sm:rounded-[8px] max-sm:size-9 max-sm:justify-center max-sm:shrink-0 sm:px-4 sm:py-3`}

@@ -1,14 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  Bell,
-  FileDown,
-  Shield,
-  ChevronRight,
-  Moon,
-  Sun,
-  Upload,
-  Check,
-} from "lucide-react";
+import { Bell, FileDown, Shield, Moon, Sun, Upload, Check } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import type { AppSettings } from "../../types/app-settings";
 
@@ -182,9 +173,6 @@ export function Installningar({ settings, onSettingsChange }: Props) {
     twoFADesc: sv_
       ? "Extra skyddslager vid inloggning"
       : "Extra protection at login",
-    sessions: sv_ ? "Aktiva sessioner" : "Active sessions",
-    sessDesc: sv_ ? "Inloggad på 1 enhet" : "Logged in on 1 device",
-    manage: sv_ ? "Hantera" : "Manage",
     save: sv_ ? "Spara ändringar" : "Save changes",
     saved: sv_ ? "Ändringar sparades" : "Changes saved",
   };
@@ -192,7 +180,7 @@ export function Installningar({ settings, onSettingsChange }: Props) {
   return (
     <main
       className={[
-        "flex-1 overflow-auto p-8 pt-6",
+        "flex-1 min-w-0 overflow-auto px-4 py-4 sm:px-6 sm:py-6",
         "bg-background text-foreground",
       ].join(" ")}
     >
@@ -430,16 +418,6 @@ export function Installningar({ settings, onSettingsChange }: Props) {
                 onChange={(v) => update("twoFactor", v)}
                 ariaLabel={t.twoFA}
               />
-            </Row>
-            <Row label={t.sessions} description={t.sessDesc}>
-              <button
-                type="button"
-                className="flex items-center gap-1 text-xs font-medium text-[#0f9f96] hover:underline"
-                aria-label={t.manage}
-              >
-                {t.manage}{" "}
-                <ChevronRight className="size-3.5" aria-hidden="true" />
-              </button>
             </Row>
           </CardContent>
         </Card>

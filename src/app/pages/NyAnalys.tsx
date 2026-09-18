@@ -1506,7 +1506,7 @@ export function NyAnalys({
   return (
     <main
       className={[
-        "flex-1 min-w-0 overflow-auto p-8 pt-6",
+        "flex-1 min-w-0 overflow-auto px-4 py-4 sm:px-6 sm:py-6",
         "bg-background text-foreground",
       ].join(" ")}
     >
@@ -1846,7 +1846,7 @@ export function NyAnalys({
               <CardContent className="p-0">
                 <div
                   className={[
-                    "flex items-center justify-between px-4 py-4 border-b sm:px-6",
+                    "flex items-center justify-between px-7 py-4 border-b sm:px-6",
                     "border-border",
                   ].join(" ")}
                 >
@@ -1863,8 +1863,18 @@ export function NyAnalys({
                   </div>
                   <div className="flex items-center gap-3">
                     {activeFilterCount > 0 && (
-                      <span className="px-3 py-1.5 bg-[#0f9f96]/10 text-[#0f9f96] text-xs rounded-full font-medium">
-                        {activeFilterCount} aktiva filter
+                      <span
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0f9f96]/10 text-[#0f9f96] rounded-full"
+                        title={`${activeFilterCount} aktiva filter`}
+                        aria-label={`${activeFilterCount} aktiva filter`}
+                      >
+                        <SlidersHorizontal className="size-3.5" />
+                        <span className="text-xs font-bold leading-none">
+                          {activeFilterCount}
+                        </span>
+                        <span className="hidden sm:inline text-xs font-medium">
+                          aktiva filter
+                        </span>
                       </span>
                     )}
                     <Button
@@ -1881,7 +1891,7 @@ export function NyAnalys({
                 </div>
 
                 {/* Horisontell scroll på smala skärmar */}
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto px-3 sm:px-0">
                   <div className="min-w-[640px]">
                     <div
                       className={[
@@ -1962,7 +1972,7 @@ export function NyAnalys({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between px-4 py-4 sm:px-6">
+                <div className="flex items-center justify-between px-7 py-4 sm:px-6">
                   <span className="text-xs text-muted-foreground">
                     Visar {pagedRows.length} av {sortedRows.length} rader
                   </span>
@@ -2053,7 +2063,7 @@ export function NyAnalys({
       )}
 
       {/* Empty state */}
-      {!activeScenario && !loading && !query && (
+      {!activeScenario && !loading && !query && activeFilterCount === 0 && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="size-16 rounded-2xl bg-[#0f9f96]/10 flex items-center justify-center mb-4">
             <Sparkles className="size-8 text-[#0f9f96]" />
