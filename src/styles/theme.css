@@ -224,6 +224,17 @@
     transition: scrollbar-color 0.4s ease;
   }
 
+  /* Overlay scrollbar — tar ingen layout-plats, lägger sig ovanpå innehållet */
+  .scrollbar-overlay {
+    overflow: overlay;
+    scrollbar-gutter: stable both-edges;
+  }
+  @supports not (overflow: overlay) {
+    .scrollbar-overlay {
+      overflow: auto;
+    }
+  }
+
   *:is(:hover, :focus, :focus-within, :active) {
     scrollbar-color: var(--border) transparent;
   }

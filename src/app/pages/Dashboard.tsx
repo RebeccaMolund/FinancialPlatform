@@ -9,13 +9,7 @@ import {
   X as XIcon,
   Plus,
   BarChart2,
-  LineChart as LineChartIcon,
-  PieChart as PieChartIcon,
-  BarChart4,
-  AreaChart as AreaChartIcon,
   GripVertical,
-  ChevronDown,
-  CircleDashed,
   MoreVertical,
 } from "lucide-react";
 import {
@@ -33,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import { ColorPicker, VariantPicker } from "../components/ChartPickers";
 import {
   BarChart,
   Bar,
@@ -65,10 +60,7 @@ import type {
   DashboardBuiltinMetaMap,
 } from "../../types/dashboard-meta";
 import { getDashboardBuiltinMeta } from "../../services/dashboard-meta";
-import type {
-  DashboardVariantIcon,
-  DashboardVariantOption,
-} from "../../types/dashboard-variants";
+import type { DashboardVariantOption } from "../../types/dashboard-variants";
 import { getDashboardVariantOptions } from "../../services/dashboard-variants";
 import type { DashboardColorPalette } from "../../types/dashboard-colors";
 import { getDashboardChartColors } from "../../services/dashboard-colors";
@@ -88,15 +80,6 @@ interface DashboardCard {
 }
 
 // ─── Built-in chart data ──────────────────────────────────────────────────────
-
-const VARIANT_ICONS: Record<DashboardVariantIcon, React.ElementType> = {
-  bar: BarChart2,
-  horizontal: BarChart4,
-  line: LineChartIcon,
-  area: AreaChartIcon,
-  pie: PieChartIcon,
-  donut: CircleDashed,
-};
 
 function mixHexColors(source: string, target: string, amount: number) {
   const sourceRgb = source
@@ -796,100 +779,7 @@ function getBuiltinData(
 }
 
 // ─── Color picker ────────────────────────────────────────────────────────────
-
-function ColorPicker({
-  current,
-  onChange,
-  colors,
-}: {
-  current: string;
-  onChange: (c: string) => void;
-  colors: DashboardColorPalette;
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          className="relative flex size-[32px] items-center justify-center rounded-[10px] bg-surface-high transition-colors hover:bg-surface-highest"
-          title="Byt färg"
-          aria-label="Byt färg"
-        >
-          <span
-            className="block size-[20px] rounded-full"
-            style={{ backgroundColor: current }}
-          />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="grid min-w-[136px] grid-cols-4 gap-1 rounded-xl border-0 bg-surface-high p-3"
-      >
-        {colors.map((c) => (
-          <DropdownMenuItem
-            key={c}
-            onSelect={() => onChange(c)}
-            className="size-7 cursor-pointer rounded-full p-0 focus:bg-transparent"
-            style={{ backgroundColor: c }}
-            aria-label={`Välj färg ${c}`}
-          />
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-// ─── Variant picker popover ───────────────────────────────────────────────────
-
-function VariantPicker({
-  current,
-  onChange,
-  options,
-}: {
-  current: ChartVariant;
-  onChange: (v: ChartVariant) => void;
-  options: DashboardVariantOption[];
-}) {
-  const CurrentIcon =
-    VARIANT_ICONS[options.find((o) => o.value === current)?.icon ?? "bar"];
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          className="flex h-[32px] items-center gap-1 rounded-[10px] bg-surface-high px-[10px] text-xs text-muted-foreground transition-colors hover:bg-surface-highest"
-          title="Byt diagramtyp"
-          aria-label="Byt diagramtyp"
-        >
-          <CurrentIcon className="size-3.5" />
-          <ChevronDown className="size-3" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="min-w-[130px] rounded-xl border-0 bg-surface-high p-1.5"
-      >
-        {options.map((opt) => {
-          const OptionIcon = VARIANT_ICONS[opt.icon];
-          return (
-            <DropdownMenuItem
-              key={opt.value}
-              onSelect={() => onChange(opt.value)}
-              className={[
-                "flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium",
-                current === opt.value
-                  ? "bg-[#14b8a6]/15 text-[#14b8a6]"
-                  : "text-muted-foreground hover:bg-muted",
-              ].join(" ")}
-            >
-              <OptionIcon className="size-3.5" />
-              {opt.label}
-              {current === opt.value && <Check className="ml-auto size-3" />}
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+// ColorPicker & VariantPicker live in ../components/ChartPickers.tsx
 
 // ─── Single dashboard chart card ──────────────────────────────────────────────
 
@@ -932,7 +822,7 @@ function ChartCard({
   supplierData: DashboardSupplierPoint[];
   topCostsData: DashboardTopCostPoint[];
   dueDateData: DashboardDueDatePoint[];
-  builtinMeta: DashboardBuiltinMetaMap;
+  builtinMeta: Partial<DashboardBuiltinMetaMap>;
   variantOptions: DashboardVariantOption[];
   chartColors: DashboardColorPalette;
 }) {
@@ -1063,7 +953,7 @@ function AddDiagramPanel({
   onAdd: (card: DashboardCard) => void;
   onClose: () => void;
   darkMode?: boolean;
-  builtinMeta: DashboardBuiltinMetaMap;
+  builtinMeta: Partial<DashboardBuiltinMetaMap>;
 }) {
   return (
     <div
@@ -1219,7 +1109,9 @@ export function Dashboard({
   );
   const [topCostsData, setTopCostsData] = useState<DashboardTopCostPoint[]>([]);
   const [dueDateData, setDueDateData] = useState<DashboardDueDatePoint[]>([]);
-  const [builtinMeta, setBuiltinMeta] = useState<DashboardBuiltinMetaMap>({});
+  const [builtinMeta, setBuiltinMeta] = useState<
+    Partial<DashboardBuiltinMetaMap>
+  >({});
   const [variantOptions, setVariantOptions] = useState<
     DashboardVariantOption[]
   >([]);
@@ -1412,8 +1304,8 @@ export function Dashboard({
           {format(selectedRange.end ?? new Date(), "dd/MM/yyyy")}
         </span>
       </div>
-      {/* Stat cards — match card semantics while keeping the light pastel header bands */}
-      <div className="grid grid-cols-1 gap-3 min-[640px]:grid-cols-2 lg:grid-cols-4 lg:gap-[24px]">
+      {/* Stat cards — på mobil ett samlat kort med avdelare, på desktop separata kort */}
+      <div className="grid grid-cols-1 gap-3 max-sm:gap-0 max-sm:rounded-[12px] max-sm:border max-sm:border-border max-sm:bg-card max-sm:divide-y max-sm:divide-border min-[640px]:grid-cols-2 lg:grid-cols-4 lg:gap-[24px]">
         <StatCard
           title="Kostnader denna månad"
           value="12,5 M kr"

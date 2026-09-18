@@ -241,7 +241,7 @@ export function SparadeAnalyser({
       {savedAnalyses.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {savedAnalyses.map((a) => (
             <AnalysisCard
               key={a.id}

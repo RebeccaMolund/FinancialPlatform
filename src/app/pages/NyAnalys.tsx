@@ -22,19 +22,14 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
+import { ColorPicker, VariantPicker } from "../components/ChartPickers";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "../components/ui/carousel";
 import {
   BarChart,
@@ -75,6 +70,7 @@ import type { FilterDef } from "../../types/filters";
 import { getFilterConfig } from "../../services/filters";
 import type { AnalysisColorPalette } from "../../types/analysis-colors";
 import { getAnalysisChartColors } from "../../services/analysis-colors";
+import type { DashboardVariantIcon } from "../../types/dashboard-variants";
 
 // ─── Filter state types ───────────────────────────────────────────────────────
 
@@ -820,13 +816,17 @@ const fmtY = (v: number) =>
 
 type ChartVariant = "bar" | "hbar" | "line" | "area" | "pie" | "donut";
 
-const VARIANT_OPTIONS: { value: ChartVariant; label: string }[] = [
-  { value: "bar", label: "Stapel" },
-  { value: "hbar", label: "Horisontell" },
-  { value: "line", label: "Linje" },
-  { value: "area", label: "Area" },
-  { value: "pie", label: "Tårta" },
-  { value: "donut", label: "Munkring" },
+const VARIANT_OPTIONS: {
+  value: ChartVariant;
+  label: string;
+  icon: DashboardVariantIcon;
+}[] = [
+  { value: "bar", label: "Stapel", icon: "bar" },
+  { value: "hbar", label: "Horisontell", icon: "horizontal" },
+  { value: "line", label: "Linje", icon: "line" },
+  { value: "area", label: "Area", icon: "area" },
+  { value: "pie", label: "Tårta", icon: "pie" },
+  { value: "donut", label: "Munkring", icon: "donut" },
 ];
 
 // Single chart renderer — self-contained with ResponsiveContainer
@@ -1289,6 +1289,34 @@ export function NyAnalys({
   const [currentPage, setCurrentPage] = useState(() =>
     readAnalysisField("currentPage", 1),
   );
+  const [chipsApi, setChipsApi] = useState<CarouselApi>();
+  const [chipsCanScrollPrev, setChipsCanScrollPrev] = useState(false);
+  const [chipsCanScrollNext, setChipsCanScrollNext] = useState(false);
+
+  useEffect(() => {
+    if (!chipsApi) return;
+    const update = () => {
+      setChipsCanScrollPrev(chipsApi.canScrollPrev());
+      setChipsCanScrollNext(chipsApi.canScrollNext());
+    };
+    update();
+    chipsApi.on("select", update);
+    chipsApi.on("reInit", update);
+    return () => {
+      chipsApi.off("select", update);
+      chipsApi.off("reInit", update);
+    };
+  }, [chipsApi]);
+
+  // Fade:a bara den kant där det finns dolt innehåll att scrolla till
+  const chipsFadeClass =
+    chipsCanScrollPrev && chipsCanScrollNext
+      ? "[-webkit-mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)] [mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)]"
+      : chipsCanScrollPrev
+        ? "[-webkit-mask-image:linear-gradient(to_right,transparent,black_2rem)] [mask-image:linear-gradient(to_right,transparent,black_2rem)]"
+        : chipsCanScrollNext
+          ? "[-webkit-mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)]"
+          : undefined;
 
   useEffect(() => {
     let active = true;
@@ -1478,7 +1506,7 @@ export function NyAnalys({
   return (
     <main
       className={[
-        "flex-1 overflow-auto p-8 pt-6",
+        "flex-1 min-w-0 overflow-auto p-8 pt-6",
         "bg-background text-foreground",
       ].join(" ")}
     >
@@ -1487,7 +1515,7 @@ export function NyAnalys({
       {/* Search row */}
       <div className="flex gap-3 mb-4 items-stretch">
         <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-[#0f9f96]" />
           <input
             type="text"
             value={query}
@@ -1497,7 +1525,8 @@ export function NyAnalys({
             onKeyDown={(e) => e.key === "Enter" && runSearch(query)}
             placeholder="Beskriv vad du vill analysera..."
             className={[
-              "w-full h-full pl-11 pr-14 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#0f9f96]/30 focus:border-[#0f9f96]",
+              "w-full h-full pl-11 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#0f9f96]/30 focus:border-[#0f9f96]",
+              query ? "pr-14" : "pr-4",
               "bg-card border-border text-foreground placeholder:text-muted-foreground",
             ].join(" ")}
           />
@@ -1563,11 +1592,15 @@ export function NyAnalys({
         <div className="relative mb-6">
           <Carousel
             opts={{ align: "start", dragFree: true }}
+            setApi={setChipsApi}
             className="w-full"
           >
             <div className="flex items-center gap-2">
               <CarouselPrevious className="static translate-y-0 size-8 shrink-0 max-[500px]:hidden" />
-              <CarouselContent className="-ml-2 flex-1 min-w-0">
+              <CarouselContent
+                viewportClassName={chipsFadeClass}
+                className="-ml-2 flex-1 min-w-0"
+              >
                 {SUGGESTIONS.map((s) => (
                   <CarouselItem key={s} className="basis-auto pl-2">
                     <button
@@ -1755,18 +1788,21 @@ export function NyAnalys({
             <div
               className={
                 activeScenario
-                  ? "grid grid-cols-1 gap-6 mb-6 sm:grid-cols-3"
+                  ? "grid grid-cols-1 gap-6 mb-6 min-w-0 sm:grid-cols-3"
                   : "mb-6"
               }
             >
               {activeScenario && (
-                <InsightCard scenario={activeScenario} darkMode={darkMode} />
+                <div className="min-w-0">
+                  <InsightCard scenario={activeScenario} darkMode={darkMode} />
+                </div>
               )}
 
               {/* Single chart card (2/3 width) */}
               <Card
                 className={[
-                  "border-none shadow-none col-span-2",
+                  "border-none shadow-none min-w-0",
+                  activeScenario ? "sm:col-span-2" : "col-span-1",
                   "bg-card",
                 ].join(" ")}
               >
@@ -1778,46 +1814,16 @@ export function NyAnalys({
                         : "Kostnad per kategori (kr)"}
                     </p>
                     <div className="flex items-center gap-3 shrink-0">
-                      {/* Color dropdown */}
-                      <Select value={chartColor} onValueChange={setChartColor}>
-                        <SelectTrigger
-                          aria-label="Välj diagramfärg"
-                          className="h-9 w-auto min-w-[72px] justify-center gap-2 rounded-full border-border bg-card px-3.5 py-1 text-xs font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="min-w-[72px] rounded-xl border-border bg-card text-foreground">
-                          {chartColors.map((c) => (
-                            <SelectItem key={c} value={c} textValue={c}>
-                              <span
-                                className="size-3.5 rounded-full"
-                                style={{ backgroundColor: c }}
-                              />
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {/* Chart type dropdown */}
-                      <Select
-                        value={chartVariant}
-                        onValueChange={(v) =>
-                          setChartVariant(v as ChartVariant)
-                        }
-                      >
-                        <SelectTrigger
-                          aria-label="Välj diagramtyp"
-                          className="h-9 w-auto min-w-[110px] justify-center gap-2 rounded-full border-border bg-card px-3.5 py-1 text-xs font-medium text-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-border bg-card text-foreground">
-                          {VARIANT_OPTIONS.map((o) => (
-                            <SelectItem key={o.value} value={o.value}>
-                              {o.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <ColorPicker
+                        current={chartColor}
+                        onChange={setChartColor}
+                        colors={chartColors}
+                      />
+                      <VariantPicker
+                        current={chartVariant}
+                        onChange={(v) => setChartVariant(v as ChartVariant)}
+                        options={VARIANT_OPTIONS}
+                      />
                     </div>
                   </div>
                   <AnalysisChart

@@ -29,7 +29,7 @@ export function StatCard({
     : undefined;
 
   return (
-    <div className="min-w-0 flex-1 rounded-[12px] overflow-hidden bg-card text-card-foreground flex flex-col border border-border max-sm:flex-row max-sm:items-center max-sm:gap-3 max-sm:px-3 max-sm:py-2.5 lg:min-w-[200px]">
+    <div className="min-w-0 flex-1 rounded-[12px] overflow-hidden bg-card text-card-foreground flex flex-col border border-border max-sm:flex-row max-sm:items-center max-sm:gap-3 max-sm:rounded-none max-sm:border-0 max-sm:min-h-[52px] max-sm:px-4 max-sm:py-3 lg:min-w-[200px]">
       {/* Colored header band — kompakt ikonplatta på mobil */}
       <div
         className={`${backgroundColor} flex items-center gap-2 max-sm:rounded-[8px] max-sm:size-9 max-sm:justify-center max-sm:shrink-0 sm:px-4 sm:py-3`}
@@ -52,7 +52,7 @@ export function StatCard({
         </span>
       </div>
       {/* Semantic body surface with theme-aware foreground and muted text */}
-      <div className="flex flex-col justify-between flex-1 bg-card max-sm:flex-row max-sm:items-center max-sm:py-0 sm:px-4 sm:py-6">
+      <div className="flex flex-col justify-between flex-1 max-sm:flex-row max-sm:items-center max-sm:py-0 sm:px-4 sm:py-6">
         <span
           className="text-[13px] leading-[18px] text-muted-foreground sm:hidden"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
