@@ -64,8 +64,8 @@
   --muted-foreground: var(--md3-on-surface-variant);
   --accent: var(--md3-primary-container);
   --accent-foreground: var(--md3-on-primary-container);
-  --destructive: var(--md3-error);
-  --destructive-foreground: var(--md3-on-error);
+  --destructive: var(--md3-error-container);
+  --destructive-foreground: var(--md3-on-error-container);
   --border: var(--md3-outline);
   --input: transparent;
   --input-background: var(--md3-surface-variant);
@@ -144,8 +144,8 @@
   --muted-foreground: var(--md3-on-surface-variant);
   --accent: var(--md3-primary-container);
   --accent-foreground: var(--md3-on-primary-container);
-  --destructive: var(--md3-error);
-  --destructive-foreground: var(--md3-on-error);
+  --destructive: var(--md3-error-container);
+  --destructive-foreground: var(--md3-on-error-container);
   --border: var(--md3-outline);
   --input: var(--md3-surface-variant);
   --input-background: var(--md3-surface-variant);

@@ -136,7 +136,7 @@ function DateRangePicker({
       </div>
 
       {/* Selected range display */}
-      <div className="mt-3 pt-3 border-t border-border">
+      {/* <div className="mt-3 pt-3 border-t border-border">
         <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1">
           Intervall
         </p>
@@ -145,7 +145,7 @@ function DateRangePicker({
           <span className="text-muted-foreground">→</span>
           <span>{range.end ? format(range.end, "dd/MM/yy") : "–"}</span>
         </div>
-      </div>
+      </div> */}
 
       <Button
         className="mt-3 w-full bg-[#0f9f96] hover:bg-[#0f766e] text-white text-sm"

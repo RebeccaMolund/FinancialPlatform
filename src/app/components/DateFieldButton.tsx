@@ -36,11 +36,11 @@ export function DateFieldButton({
       aria-label={ariaLabel ?? "Datumfält"}
       aria-expanded={open}
       aria-haspopup="dialog"
-      className="h-[40px] w-full bg-card rounded-full border border-border overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground sm:h-[48px] sm:max-w-full"
+      className="px-2 h-[40px] w-full bg-card rounded-full border-none overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground sm:h-[48px] sm:max-w-full"
     >
-      <div className="flex items-center gap-[4px] px-[16px] max-sm:px-[12px]">
+      <div className="flex justify-between items-center gap-3 px-[16px] max-sm:px-[12px]">
         {/* Calendar icon */}
-        <span className="flex size-[20px] shrink-0 items-center justify-center">
+        <span className="flex size-3 shrink-0 items-center justify-center">
           <svg
             className="block size-full"
             fill="none"
@@ -65,7 +65,7 @@ export function DateFieldButton({
 
         {/* Chevron — rotates when open */}
         <ChevronDown
-          className={`ml-auto size-4 shrink-0 opacity-50 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`size-4 shrink-0 opacity-50 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
       </div>

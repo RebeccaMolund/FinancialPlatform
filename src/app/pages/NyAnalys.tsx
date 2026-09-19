@@ -1764,19 +1764,20 @@ export function NyAnalys({
             {activeScenario && (
               <div className="flex items-center gap-3 mb-5">
                 <div className="relative">
-                  <button
+                  <Button
                     onClick={() => {
                       setSaveName(query || "Min analys");
                       setSaveOpen((o) => !o);
                     }}
                     className={[
                       "flex items-center gap-2 px-4 py-2.5 border text-sm font-medium rounded-xl transition-colors",
-                      "bg-card border-border text-foreground hover:bg-muted",
+                      "border-border text-foreground hover:bg-muted",
                     ].join(" ")}
+                    variant="secondary"
                   >
                     <BookmarkPlus className="size-4" />
                     Spara analys
-                  </button>
+                  </Button>
                   {saveOpen && (
                     <div
                       className={[
@@ -1814,7 +1815,7 @@ export function NyAnalys({
                   )}
                 </div>
                 {onAddToDashboard && (
-                  <button
+                  <Button
                     onClick={() => {
                       const a: SavedAnalysis = {
                         id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -1842,10 +1843,11 @@ export function NyAnalys({
                       setTimeout(() => setSavedToast(false), 2500);
                     }}
                     className="flex items-center gap-2 px-4 py-2.5 border border-border text-foreground hover:bg-[#0f9f96]/10 hover:text-[#0f9f96] hover:border-[#0f9f96]/30 text-sm font-medium rounded-xl transition-colors"
+                    variant="secondary"
                   >
                     <LayoutDashboard className="size-4" />
                     Lägg till på dashboard
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -2118,10 +2120,10 @@ export function NyAnalys({
         <div
           className={[
             "fixed bottom-6 right-6 z-[500] flex items-center gap-2.5 px-4 py-3 text-sm font-medium rounded-2xl shadow-xl",
-            "bg-foreground text-background border border-border",
+            "bg-popover text-popover-foreground border border-border",
           ].join(" ")}
         >
-          <CheckCircle2 className="size-4 text-[#0f9f96] shrink-0" />
+          <CheckCircle2 className="size-4 text-[var(--md3-success)] shrink-0" />
           Diagrammet lades till på dashboarden
         </div>
       )}

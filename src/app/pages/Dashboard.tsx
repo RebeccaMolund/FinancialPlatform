@@ -21,12 +21,12 @@ import {
 import type { CurrencyCode, DateRange } from "../components/Header";
 import { StatCard } from "../components/StatCard";
 import { Card, CardContent } from "../components/ui/card";
-/* import {
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu"; */
+} from "../components/ui/dropdown-menu";
 import { ColorPicker, VariantPicker } from "../components/ChartPickers";
 import {
   BarChart,
@@ -243,7 +243,7 @@ function UniversalChart({
     const totalValue = displayData.reduce((sum, entry) => sum + entry.v, 0);
 
     return (
-      <div className="flex w-full min-w-0 items-center gap-4 max-[1023px]:flex-col">
+      <div className="flex w-full min-w-0 items-center justify-center gap-6 max-[1023px]:flex-col">
         <div className="h-[220px] w-[220px] shrink-0 max-[480px]:h-[180px] max-[480px]:w-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -299,15 +299,15 @@ function UniversalChart({
           </ResponsiveContainer>
         </div>
 
-        <div className="min-w-0 flex-1 overflow-hidden max-[1023px]:w-full">
-          <div className="flex flex-col gap-1">
+        <div className="w-full flex justify-between min-w-0 flex-col max-[1023px]:w-full">
+          <div className="w-full justify-center flex flex-col gap-1">
             {displayData.map((entry, i) => {
               const pct = totalValue > 0 ? (entry.v / totalValue) * 100 : 0;
 
               return (
                 <div
                   key={`uc-legend-${i}`}
-                  className="flex min-w-0 items-center gap-2 text-[11px] leading-none rounded-lg px-1.5 py-1 transition-colors hover:bg-muted"
+                  className="w-fullflex-1 flex items-center gap-4 text-[12px] leading-none rounded-lg px-1.5 py-1 transition-colors hover:bg-muted"
                 >
                   <span
                     className="size-2.5 rounded-sm shrink-0"
@@ -318,7 +318,7 @@ function UniversalChart({
                   <span className="min-w-0 truncate text-muted-foreground flex-1">
                     {entry.k}
                   </span>
-                  <div className="ml-auto shrink-0 flex items-baseline gap-[8px] text-right">
+                  <div className="ml-auto shrink-0 flex items-baseline gap-8 text-right">
                     <span className="font-medium text-foreground">
                       {formatCurrency(entry.v, currency)}
                     </span>
@@ -891,8 +891,8 @@ function ChartCard({
       ].join(" ")}
     >
       {/* Matches Figma: bg-white rounded-[12px] h-[326px] p-[20px] gap-[8px] */}
-      <Card className="h-[326px] border-none shadow-none bg-card max-[1023px]:h-auto max-[1023px]:min-h-[326px]">
-        <CardContent className="p-[20px] flex flex-col gap-[8px] h-full">
+      <Card className="flex justify-center h-[326px] border-none shadow-none bg-card max-[1023px]:h-auto max-[1023px]:min-h-[326px] pb-6">
+        <CardContent className="p-[20px]  flex flex-col gap-[8px] h-full justify-between">
           {/* Card header — h-[32px], matches Figma exactly */}
           <div className="flex items-center justify-between h-[32px] shrink-0">
             <div className="flex items-center gap-2 min-w-0">
@@ -925,7 +925,7 @@ function ChartCard({
               {editMode && (
                 <button
                   onClick={onRemove}
-                  className="size-[32px] flex items-center justify-center rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                  className="size-[32px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground hover:bg-destructive-50% hover:text-destructive-foreground transition-colors"
                 >
                   <XIcon className="size-3.5" />
                 </button>
