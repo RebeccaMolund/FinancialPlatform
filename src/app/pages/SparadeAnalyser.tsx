@@ -20,6 +20,7 @@ import {
   Tooltip,
 } from "recharts";
 import type { SavedAnalysis } from "./NyAnalys";
+import { formatCurrency } from "../../lib/format";
 
 const fmtY = (v: number) =>
   v >= 1_000_000
@@ -157,7 +158,7 @@ function AnalysisCard({
           <div className="px-5 py-3 border-r border-border">
             <p className="text-[10px] text-muted-foreground mb-0.5">Totalt</p>
             <p className="text-sm font-semibold text-foreground">
-              {Math.round(analysis.totalRadbelopp / 1000)}k kr
+              {formatCurrency(analysis.totalRadbelopp)}
             </p>
           </div>
           <div className="px-5 py-3">

@@ -1,9 +1,10 @@
-import { DASHBOARD_SUPPLIER_DATA } from "../data/dashboard-supplier";
 import type { DashboardSupplierPoint } from "../types/dashboard-supplier";
+import { getInvoices } from "./invoices";
+import { deriveSupplierData } from "./derive-dashboard";
 
 export async function getDashboardSupplierData(): Promise<
   DashboardSupplierPoint[]
 > {
-  // Replace this return with a real fetch() call when the API is available.
-  return DASHBOARD_SUPPLIER_DATA;
+  // Derived from the shared invoice dataset (single source of truth).
+  return deriveSupplierData(await getInvoices());
 }

@@ -1,7 +1,8 @@
-import { DASHBOARD_SPEND_DATA } from "../data/dashboard-spend";
 import type { DashboardSpendPoint } from "../types/dashboard-spend";
+import { getInvoices } from "./invoices";
+import { deriveSpendData } from "./derive-dashboard";
 
 export async function getDashboardSpendData(): Promise<DashboardSpendPoint[]> {
-  // Replace this return with a real fetch() call when the API is available.
-  return DASHBOARD_SPEND_DATA;
+  // Derived from the shared invoice dataset (single source of truth).
+  return deriveSpendData(await getInvoices());
 }

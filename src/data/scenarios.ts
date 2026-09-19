@@ -20,7 +20,11 @@ export const SCENARIOS: Scenario[] = [
         text: "3 fakturor från Sundsvall Energi AB saknar projektkod och kan inte allokeras.",
       },
     ],
-    chart1Title: "Energikostnad per leverantör (kr)",
+    chart1: {
+      subject: "Energikostnad",
+      groupBy: "leverantor",
+      metric: "radbelopp",
+    },
     chart1Color: "#0f9f96",
     chart2Title: "Energislag – antal enheter",
     chart2Color: "#818cf8",
@@ -46,7 +50,11 @@ export const SCENARIOS: Scenario[] = [
         text: "Möjlig volymrabatt på 3 % om månatliga beställningar överstiger 85 000 kr.",
       },
     ],
-    chart1Title: "Peab – kostnad per artikel (kr)",
+    chart1: {
+      subject: "Peab – kostnad",
+      groupBy: "leverantor",
+      metric: "radbelopp",
+    },
     chart1Color: "#0f9f96",
     chart2Title: "Peab – fördelning per kategori",
     chart2Color: "#f59e0b",
@@ -55,9 +63,9 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     query: "material",
-    headline: "Materialkostnader – kategorianalys",
+    headline: "Materialkostnad – denna månad",
     summary:
-      "Materialkostnader är er enskilt största inköpskategori och uppgår till 1 101 200 kr. Stål och betong dominerar. Prisutvecklingen har stabiliserats men är 6 % över föregående år.",
+      "Materialkostnaden denna månad är 1 101 200 kr. Stål och betong dominerar. Prisutvecklingen har stabiliserats men är 6 % över föregående år.",
     insights: [
       {
         type: "warning",
@@ -72,7 +80,11 @@ export const SCENARIOS: Scenario[] = [
         text: "Armeringsnät köps från 4 leverantörer – konsolidering kan ge bättre pris.",
       },
     ],
-    chart1Title: "Materialkostnad per leverantör (kr)",
+    chart1: {
+      subject: "Materialkostnad",
+      groupBy: "kategori",
+      metric: "radbelopp",
+    },
     chart1Color: "#0f9f96",
     chart2Title: "Material – antal enheter per artikel",
     chart2Color: "#818cf8",
@@ -98,9 +110,43 @@ export const SCENARIOS: Scenario[] = [
         text: "Andelen e-fakturor ökade till 44 % – minskar manuell hantering.",
       },
     ],
-    chart1Title: "Fakturor per fakturaformat",
+    chart1: {
+      subject: "Fakturor",
+      groupBy: "forfallodatum",
+      metric: "count",
+    },
     chart1Color: "#a78bfa",
     chart2Title: "Fakturor per leverantör (antal)",
+    chart2Color: "#0f9f96",
+    chips: ["Spend historiskt", "Enheter per kategori"],
+    preFilter: {},
+  },
+  {
+    query: "fakturaformat",
+    headline: "Fakturaformat – fördelning",
+    summary:
+      "Fakturorna är fördelade på fyra format. PDF är vanligast, följt av e-faktura via Peppol. Andelen elektroniska fakturor (Peppol + EDI) växer och minskar manuell hantering.",
+    insights: [
+      {
+        type: "info",
+        text: "PDF är det vanligaste fakturaformatet i perioden.",
+      },
+      {
+        type: "success",
+        text: "E-fakturor (Peppol + EDI) minskar manuell hantering och fel.",
+      },
+      {
+        type: "warning",
+        text: "Pappersfakturor kräver mest manuell hantering – överväg att flytta dessa leverantörer till e-faktura.",
+      },
+    ],
+    chart1: {
+      subject: "Fakturor",
+      groupBy: "fakturaformat",
+      metric: "count",
+    },
+    chart1Color: "#a78bfa",
+    chart2Title: "Antal enheter per kategori",
     chart2Color: "#0f9f96",
     chips: ["Spend historiskt", "Enheter per kategori"],
     preFilter: {},
@@ -124,7 +170,11 @@ export const SCENARIOS: Scenario[] = [
         text: "Nyman AB förbättrade sin leveransprecision till 97 % denna period.",
       },
     ],
-    chart1Title: "Inköpsvärde per leverantör (kr)",
+    chart1: {
+      subject: "Inköpsvärde",
+      groupBy: "leverantor",
+      metric: "radbelopp",
+    },
     chart1Color: "#0f9f96",
     chart2Title: "Antal fakturor per leverantör",
     chart2Color: "#818cf8",
@@ -147,7 +197,11 @@ export const SCENARIOS: Scenario[] = [
         text: "IT-kostnader minskade 11 % efter omförhandling av licensavtal.",
       },
     ],
-    chart1Title: "Kostnad per kategori (kr)",
+    chart1: {
+      subject: "Kostnad",
+      groupBy: "leverantor",
+      metric: "radbelopp",
+    },
     chart1Color: "#0f9f96",
     chart2Title: "Kostnad per leverantör (kr)",
     chart2Color: "#818cf8",

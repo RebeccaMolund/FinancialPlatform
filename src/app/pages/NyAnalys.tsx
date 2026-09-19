@@ -64,13 +64,14 @@ import {
 import { sv } from "date-fns/locale";
 import type { MockRow } from "../../types/invoice";
 import { getInvoices } from "../../services/invoices";
-import type { Scenario } from "../../types/analysis";
+import type { ChartDimension, Scenario } from "../../types/analysis";
 import { getScenarios } from "../../services/scenarios";
 import type { FilterDef } from "../../types/filters";
 import { getFilterConfig } from "../../services/filters";
 import type { AnalysisColorPalette } from "../../types/analysis-colors";
 import { getAnalysisChartColors } from "../../services/analysis-colors";
 import type { DashboardVariantIcon } from "../../types/dashboard-variants";
+import { formatCurrency } from "../../lib/format";
 
 // ─── Filter state types ───────────────────────────────────────────────────────
 
@@ -204,25 +205,79 @@ function matchScenario(q: string, scenarios: Scenario[]): Scenario | null {
   if (/energi|el\b|värme|fjärr|kwh/.test(ql)) return scenarios[0];
   if (/peab/.test(ql)) return scenarios[1];
   if (/material|betong|stål|gips|armer|isoler/.test(ql)) return scenarios[2];
+  if (/fakturaformat/.test(ql)) return scenarios[4];
   if (/faktura|fakturor|förfall|betalning|försen/.test(ql)) return scenarios[3];
   if (/leverantör|leverantörer|solent|jämtkraft|nyman/.test(ql))
-    return scenarios[4];
-  return scenarios[5];
+    return scenarios[5];
+  return scenarios[6];
 }
 
 // ─── Computed charts from rows ────────────────────────────────────────────────
 
+const DIMENSION_LABELS: Record<ChartDimension, string> = {
+  leverantor: "leverantör",
+  kategori: "kategori",
+  fakturaformat: "fakturaformat",
+  forfallodatum: "förfalloperiod",
+};
+
+const DUE_BUCKETS = [
+  "Förfallen",
+  "0–7 dagar",
+  "8–30 dagar",
+  "31–60 dagar",
+  "60+ dagar",
+];
+
+function dueBucket(forfallodatum: string): string {
+  const days = Math.ceil(
+    (parseISO(forfallodatum).getTime() - Date.now()) / 86_400_000,
+  );
+  if (days < 0) return DUE_BUCKETS[0];
+  if (days <= 7) return DUE_BUCKETS[1];
+  if (days <= 30) return DUE_BUCKETS[2];
+  if (days <= 60) return DUE_BUCKETS[3];
+  return DUE_BUCKETS[4];
+}
+
 function computeCharts(rows: MockRow[], scenario: Scenario | null) {
   if (scenario) {
-    // group by leverantör for chart1
-    const byLev = Object.entries(
-      rows.reduce<Record<string, number>>((acc, r) => {
-        acc[r.leverantor] = (acc[r.leverantor] || 0) + r.radbelopp;
+    // group chart1 by the scenario's spec — the title is derived from the same
+    // spec so it always matches what is actually plotted
+    const spec = scenario.chart1;
+    let grouped: [string, number][];
+    if (spec.groupBy === "forfallodatum") {
+      const byBucket = rows.reduce<Record<string, number>>((acc, r) => {
+        const bucket = dueBucket(r.forfallodatum);
+        const val =
+          spec.metric === "count"
+            ? 1
+            : spec.metric === "antal"
+              ? r.antal
+              : r.radbelopp;
+        acc[bucket] = (acc[bucket] || 0) + val;
         return acc;
-      }, {}),
-    )
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6);
+      }, {});
+      grouped = DUE_BUCKETS.filter((b) => byBucket[b] !== undefined).map(
+        (b) => [b, byBucket[b]],
+      );
+    } else {
+      grouped = Object.entries(
+        rows.reduce<Record<string, number>>((acc, r) => {
+          const key = r[spec.groupBy];
+          const val =
+            spec.metric === "count"
+              ? 1
+              : spec.metric === "antal"
+                ? r.antal
+                : r.radbelopp;
+          acc[key] = (acc[key] || 0) + val;
+          return acc;
+        }, {}),
+      )
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6);
+    }
 
     // group by kategori for chart2
     const byKat = Object.entries(
@@ -232,9 +287,20 @@ function computeCharts(rows: MockRow[], scenario: Scenario | null) {
       }, {}),
     ).sort((a, b) => b[1] - a[1]);
 
+    const unitSuffix =
+      spec.metric === "radbelopp"
+        ? " (kr)"
+        : spec.metric === "antal"
+          ? " (antal)"
+          : "";
+
     return {
-      chart1: byLev.map(([k, v]) => ({ k: k.split(" ")[0], v })),
+      chart1: grouped.map(([k, v]) => ({
+        k: spec.groupBy === "leverantor" ? k.split(" ")[0] : k,
+        v,
+      })),
       chart2: byKat.map(([k, v]) => ({ k, v })),
+      chart1Title: `${spec.subject} per ${DIMENSION_LABELS[spec.groupBy]}${unitSuffix}`,
     };
   }
   // default: cost by category + units by supplier
@@ -257,6 +323,7 @@ function computeCharts(rows: MockRow[], scenario: Scenario | null) {
   return {
     chart1: byCat.map(([k, v]) => ({ k, v })),
     chart2: byLev.map(([k, v]) => ({ k: k.split(" ")[0], v })),
+    chart1Title: "Kostnad per kategori (kr)",
   };
 }
 
@@ -1144,9 +1211,9 @@ function ExportModal({
 
 const SUGGESTIONS = [
   "Visa energikostnader per leverantör",
-  "Vilka fakturor förfaller snart?",
+  "Hur är fakturorna fördelade per fakturaformat?",
   "Analysera Peab Sverige AB",
-  "Materialkostnader denna period",
+  "Materialkostnad denna månad",
   "Top leverantörer efter belopp",
   "Kostnadsöversikt per kategori",
 ];
@@ -1409,16 +1476,15 @@ export function NyAnalys({
         setLoading(false);
         return;
       }
-      // pre-apply the scenario's filter
-      if (s.preFilter && Object.keys(s.preFilter).length > 0) {
-        const safePreFilter = Object.entries(s.preFilter).reduce<
-          Record<string, FilterVal>
-        >((acc, [key, value]) => {
-          if (value !== undefined) acc[key] = value as FilterVal;
-          return acc;
-        }, {});
-        setFilterValues((prev) => ({ ...prev, ...safePreFilter }));
-      }
+      // pre-apply the scenario's filter (replace, so a previous scenario's
+      // filters don't leak into this one; scenarios without a preFilter reset)
+      const safePreFilter = Object.entries(s.preFilter ?? {}).reduce<
+        Record<string, FilterVal>
+      >((acc, [key, value]) => {
+        if (value !== undefined) acc[key] = value as FilterVal;
+        return acc;
+      }, {});
+      setFilterValues(safePreFilter);
       setLoading(false);
     }, 1100);
   }
@@ -1439,7 +1505,7 @@ export function NyAnalys({
       ),
       resultCount: filteredRows.length,
       totalRadbelopp: filteredRows.reduce((s, r) => s + r.radbelopp, 0),
-      chart1Title: activeScenario?.chart1Title ?? "Kostnad per kategori (kr)",
+      chart1Title: charts.chart1Title,
       chart1Color: activeScenario?.chart1Color ?? "#0f9f96",
       chart2Title: activeScenario?.chart2Title ?? "Enheter per leverantör",
       chart2Color: activeScenario?.chart2Color ?? "#818cf8",
@@ -1764,7 +1830,7 @@ export function NyAnalys({
                           (s, r) => s + r.radbelopp,
                           0,
                         ),
-                        chart1Title: activeScenario.chart1Title,
+                        chart1Title: charts.chart1Title,
                         chart1Color: activeScenario.chart1Color,
                         chart2Title: activeScenario.chart2Title,
                         chart2Color: activeScenario.chart2Color,
@@ -1809,9 +1875,7 @@ export function NyAnalys({
                 <CardContent className="pt-4 pb-4 px-5">
                   <div className="flex items-center justify-between gap-3 mb-4">
                     <p className="text-sm font-medium text-foreground truncate">
-                      {activeScenario
-                        ? activeScenario.chart1Title
-                        : "Kostnad per kategori (kr)"}
+                      {charts.chart1Title}
                     </p>
                     <div className="flex items-center gap-3 shrink-0">
                       <ColorPicker
@@ -1858,7 +1922,7 @@ export function NyAnalys({
                       · {filteredRows.length} rader
                       {activeFilterCount > 0 &&
                         ` (filtrerat från ${invoiceRows.length})`}{" "}
-                      · {totalRadbelopp.toLocaleString("sv-SE")} kr totalt
+                      · {formatCurrency(totalRadbelopp)} totalt
                     </span>
                   </div>
                   <div className="flex items-center gap-3">

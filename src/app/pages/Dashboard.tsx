@@ -55,6 +55,12 @@ import { getDashboardTopCostsData } from "../../services/dashboard-top-costs";
 import type { DashboardDueDatePoint } from "../../types/dashboard-due-date";
 import { getDashboardDueDateData } from "../../services/dashboard-due-date";
 import { getDefaultDashboardCards } from "../../services/dashboard-config";
+import { getInvoices } from "../../services/invoices";
+import {
+  deriveKpis,
+  type DashboardKpis,
+} from "../../services/derive-dashboard";
+import { formatCurrency as formatCurrencySEK } from "../../lib/format";
 import type {
   DashboardBuiltinMeta,
   DashboardBuiltinMetaMap,
@@ -1116,6 +1122,7 @@ export function Dashboard({
     DashboardVariantOption[]
   >([]);
   const [chartColors, setChartColors] = useState<DashboardColorPalette>([]);
+  const [kpis, setKpis] = useState<DashboardKpis | null>(null);
   const selectedRange = range ?? {
     start: new Date(2025, 6, 17),
     end: new Date(2025, 7, 17),
@@ -1224,6 +1231,16 @@ export function Dashboard({
   }, []);
 
   useEffect(() => {
+    let active = true;
+    getInvoices().then((rows) => {
+      if (active) setKpis(deriveKpis(rows));
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     try {
       localStorage.setItem(DASHBOARD_CARDS_KEY, JSON.stringify(cards));
     } catch {
@@ -1308,7 +1325,7 @@ export function Dashboard({
       <div className="grid grid-cols-1 gap-3 max-sm:gap-0 max-sm:rounded-[12px] max-sm:border max-sm:border-border max-sm:bg-card max-sm:divide-y max-sm:divide-border min-[640px]:grid-cols-2 lg:grid-cols-4 lg:gap-[24px]">
         <StatCard
           title="Totala kostnader"
-          value="12,5 M kr"
+          value={kpis ? formatCurrencySEK(kpis.totalKostnader) : "–"}
           subtitle="Efter fakturadatum"
           icon={Receipt}
           backgroundColor="bg-[#fce7f3]"
@@ -1316,7 +1333,7 @@ export function Dashboard({
         />
         <StatCard
           title="Antal fakturor"
-          value="4 312"
+          value={kpis ? kpis.antalFakturor.toLocaleString("sv-SE") : "–"}
           subtitle="denna månad"
           icon={FileText}
           backgroundColor="bg-[#dbeafe]"
@@ -1324,7 +1341,7 @@ export function Dashboard({
         />
         <StatCard
           title="Förfaller inom 30 dgr"
-          value="53"
+          value={kpis ? String(kpis.forfaller30) : "–"}
           subtitle="fakturor"
           icon={Clock}
           backgroundColor="bg-[#cefafe]"
@@ -1332,7 +1349,7 @@ export function Dashboard({
         />
         <StatCard
           title="Aktiva leverantörer"
-          value="949"
+          value={kpis ? String(kpis.aktivaLeverantorer) : "–"}
           subtitle="unika"
           icon={Users}
           backgroundColor="bg-[#f3e8ff]"
