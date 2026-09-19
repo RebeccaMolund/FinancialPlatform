@@ -14,6 +14,7 @@
  */
 
 import svgPaths from "@/imports/TextField/svg-gzvro74ho3";
+import { ChevronDown } from "lucide-react";
 
 interface DateFieldButtonProps {
   label: string;
@@ -35,73 +36,38 @@ export function DateFieldButton({
       aria-label={ariaLabel ?? "Datumfält"}
       aria-expanded={open}
       aria-haspopup="dialog"
-      className="h-[40px] bg-card rounded-full border border-border overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground max-sm:w-auto sm:h-[48px] sm:w-full sm:max-w-full"
+      className="h-[40px] w-full bg-card rounded-full border border-border overflow-clip focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 transition-opacity hover:opacity-90 active:opacity-75 text-foreground sm:h-[48px] sm:max-w-full"
     >
-      {/* TextField1 — rounded corners */}
-      <div className="flex flex-col items-start justify-center overflow-clip rounded-full">
-        {/* StateLayer — inner row */}
-        <div className="rounded-tl-[4px] rounded-tr-[4px] w-full">
-          <div className="flex flex-row items-center">
-            <div className="flex gap-[4px] items-center px-[16px] max-sm:px-[12px]">
-              {/* Trailing icon — calendar (svg p398f0df0), fill current semantic text */}
-              <div className="flex items-center justify-center shrink-0">
-                <div className="flex flex-col items-center justify-center overflow-clip rounded-[8px] shrink-0 w-[32px]">
-                  <div className="flex h-[32px] items-center justify-center w-full">
-                    <div className="overflow-clip shrink-0 size-[20px] relative">
-                      <div className="absolute inset-[8.33%_12.5%]">
-                        <svg
-                          className="absolute block inset-0 size-full"
-                          fill="none"
-                          preserveAspectRatio="none"
-                          viewBox="0 0 15 16.6667"
-                          aria-hidden="true"
-                        >
-                          <path d={svgPaths.p398f0df0} fill="currentColor" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <div className="flex items-center gap-[4px] px-[16px] max-sm:px-[12px]">
+        {/* Calendar icon */}
+        <span className="flex size-[20px] shrink-0 items-center justify-center">
+          <svg
+            className="block size-full"
+            fill="none"
+            preserveAspectRatio="none"
+            viewBox="0 0 15 16.6667"
+            aria-hidden="true"
+          >
+            <path d={svgPaths.p398f0df0} fill="currentColor" />
+          </svg>
+        </span>
 
-              {/* Date text — dold på mobil, endast ikon visas */}
-              <div className="hidden flex-col items-start justify-center shrink-0 sm:flex">
-                <div className="flex items-center shrink-0">
-                  <span
-                    className="max-w-[calc(100vw-150px)] truncate text-foreground text-[14px] leading-[24px] tracking-[0.5px] whitespace-nowrap font-normal sm:max-w-none sm:text-[16px]"
-                    style={{
-                      fontFamily: "'Roboto', sans-serif",
-                      fontVariationSettings: '"wdth" 100',
-                    }}
-                  >
-                    {label}
-                  </span>
-                </div>
-              </div>
+        {/* Date text */}
+        <span
+          className="max-w-[calc(100vw-150px)] truncate text-[14px] leading-[24px] tracking-[0.5px] whitespace-nowrap font-normal sm:max-w-none sm:text-[16px]"
+          style={{
+            fontFamily: "'Roboto', sans-serif",
+            fontVariationSettings: '"wdth" 100',
+          }}
+        >
+          {label}
+        </span>
 
-              {/* Leading icon — chevron; rotates when open */}
-              <div className="flex items-center justify-center shrink-0 size-[32px]">
-                <div className="flex flex-col items-center justify-center overflow-clip rounded-[100px] shrink-0 w-[32px]">
-                  <div className="flex h-[40px] items-center justify-center w-full">
-                    <div className="overflow-clip shrink-0 size-[24px] relative">
-                      <div className="absolute bottom-[35.83%] left-1/4 right-1/4 top-[33.33%]">
-                        <svg
-                          className={`absolute block inset-0 size-full transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-                          fill="none"
-                          preserveAspectRatio="none"
-                          viewBox="0 0 12 7.4"
-                          aria-hidden="true"
-                        >
-                          <path d={svgPaths.p13733a00} fill="currentColor" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Chevron — rotates when open */}
+        <ChevronDown
+          className={`ml-auto size-4 shrink-0 opacity-50 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
       </div>
     </button>
   );

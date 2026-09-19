@@ -21,12 +21,12 @@ import {
 import type { CurrencyCode, DateRange } from "../components/Header";
 import { StatCard } from "../components/StatCard";
 import { Card, CardContent } from "../components/ui/card";
-import {
+/* import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
+} from "../components/ui/dropdown-menu"; */
 import { ColorPicker, VariantPicker } from "../components/ChartPickers";
 import {
   BarChart,
@@ -1314,13 +1314,6 @@ export function Dashboard({
 
   return (
     <main className="flex-1 overflow-auto px-4 py-4 flex flex-col gap-4 bg-background sm:px-6 sm:py-[24px] sm:gap-[24px]">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
-          Visa intervall:{" "}
-          {format(selectedRange.start ?? new Date(), "dd/MM/yyyy")} –{" "}
-          {format(selectedRange.end ?? new Date(), "dd/MM/yyyy")}
-        </span>
-      </div>
       {/* Stat cards — på mobil ett samlat kort med avdelare, på desktop separata kort */}
       <div className="grid grid-cols-1 gap-3 max-sm:gap-0 max-sm:rounded-[12px] max-sm:border max-sm:border-border max-sm:bg-card max-sm:divide-y max-sm:divide-border min-[640px]:grid-cols-2 lg:grid-cols-4 lg:gap-[24px]">
         <StatCard

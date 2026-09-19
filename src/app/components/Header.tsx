@@ -136,10 +136,15 @@ function DateRangePicker({
       </div>
 
       {/* Selected range display */}
-      <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-        <span>{range.start ? format(range.start, "dd/MM/yyyy") : "–"}</span>
-        <span className="text-muted-foreground">→</span>
-        <span>{range.end ? format(range.end, "dd/MM/yyyy") : "–"}</span>
+      <div className="mt-3 pt-3 border-t border-border">
+        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1">
+          Intervall
+        </p>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{range.start ? format(range.start, "dd/MM/yy") : "–"}</span>
+          <span className="text-muted-foreground">→</span>
+          <span>{range.end ? format(range.end, "dd/MM/yy") : "–"}</span>
+        </div>
       </div>
 
       <Button
@@ -174,10 +179,11 @@ export function Header({
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
 
-  const label = `${format(range.start ?? new Date(), "dd/MM/yyyy")} - ${format(range.end ?? new Date(), "dd/MM/yyyy")}`;
+  const label = `${format(range.start ?? new Date(), "dd/MM/yy")} - ${format(range.end ?? new Date(), "dd/MM/yy")}`;
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-6 sm:py-4 bg-transparent">
+    <header className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 bg-transparent">
+      {/* Rad 1: avatar + redigera-knapp */}
       <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
         <div
           className="size-9 sm:size-10 bg-[var(--md3-primary)] rounded-full flex items-center justify-center shrink-0"
@@ -232,7 +238,7 @@ export function Header({
                   style={{ color: "var(--md3-primary)" }}
                 />
                 <span
-                  className="hidden text-[14px] tracking-[0.056px] sm:inline"
+                  className="text-[14px] tracking-[0.056px]"
                   style={{ color: "var(--md3-primary)" }}
                 >
                   Redigera dashboard
@@ -243,34 +249,9 @@ export function Header({
         )}
       </div>
 
-      <div className="flex items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
-        <label className="sr-only" htmlFor="dashboard-currency">
-          Valuta
-        </label>
-        <div className="max-[639px]:flex-none">
-          <Select
-            value={currency}
-            onValueChange={(value) => onCurrencyChange(value as CurrencyCode)}
-          >
-            <SelectTrigger
-              id="dashboard-currency"
-              aria-label="Välj valuta för dashboarden"
-              className="h-[40px] min-h-[40px] w-auto min-w-0 justify-center gap-1 rounded-full border-border bg-card px-3 py-1.5 text-[14px] leading-[24px] tracking-[0.5px] text-foreground transition-opacity hover:opacity-90 active:opacity-75 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:h-[48px] sm:min-h-[48px] sm:w-full sm:min-w-[90px] sm:px-4 sm:py-2 sm:text-[16px] [&_svg]:text-foreground [&_svg]:opacity-100"
-              style={{
-                fontFamily: "'Roboto', sans-serif",
-                fontVariationSettings: '"wdth" 100',
-              }}
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl border-border bg-card text-foreground">
-              <SelectItem value="SEK">SEK</SelectItem>
-              <SelectItem value="EUR">EUR</SelectItem>
-              <SelectItem value="USD">USD</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="relative">
+      {/* Rad 2 (mobil) / höger (desktop): datumintervall + valuta */}
+      <div className="flex basis-full items-stretch justify-start gap-2 sm:basis-auto sm:w-auto sm:flex-nowrap sm:justify-end">
+        <div className="relative flex-1 sm:flex-none">
           <DateFieldButton
             label={label}
             open={open}
@@ -291,6 +272,32 @@ export function Header({
               />
             </>
           )}
+        </div>
+        <label className="sr-only" htmlFor="dashboard-currency">
+          Valuta
+        </label>
+        <div className="shrink-0">
+          <Select
+            value={currency}
+            onValueChange={(value) => onCurrencyChange(value as CurrencyCode)}
+          >
+            <SelectTrigger
+              id="dashboard-currency"
+              aria-label="Välj valuta för dashboarden"
+              className="h-[40px] min-h-[40px] w-auto min-w-0 justify-center gap-1 rounded-full border-border !bg-card dark:!bg-card px-3 py-1.5 text-[14px] leading-[24px] tracking-[0.5px] text-foreground transition-opacity hover:opacity-90 active:opacity-75 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:h-[48px] sm:min-h-[48px] sm:w-full sm:min-w-[90px] sm:px-4 sm:py-2 sm:text-[16px] [&_svg]:text-foreground [&_svg]:opacity-100"
+              style={{
+                fontFamily: "'Roboto', sans-serif",
+                fontVariationSettings: '"wdth" 100',
+              }}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-border bg-card text-foreground">
+              <SelectItem value="SEK">SEK</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="USD">USD</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </header>
