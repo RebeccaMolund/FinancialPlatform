@@ -79,8 +79,8 @@ export function DateFieldButton({
                 </div>
               </div>
 
-              {/* Leading icon — chevron; rotates when open (dold på mobil) */}
-              <div className="hidden items-center justify-center shrink-0 size-[32px] sm:flex">
+              {/* Leading icon — chevron; rotates when open */}
+              <div className="flex items-center justify-center shrink-0 size-[32px]">
                 <div className="flex flex-col items-center justify-center overflow-clip rounded-[100px] shrink-0 w-[32px]">
                   <div className="flex h-[40px] items-center justify-center w-full">
                     <div className="overflow-clip shrink-0 size-[24px] relative">
