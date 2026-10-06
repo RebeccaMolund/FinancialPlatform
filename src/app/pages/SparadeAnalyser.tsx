@@ -68,8 +68,8 @@ function AnalysisCard({
   onDashboard: boolean;
 }) {
   return (
-    <Card className="border-none shadow-none bg-card overflow-hidden group">
-      <CardContent className="p-0">
+    <Card className="border-none shadow-none bg-card overflow-hidden group h-full">
+      <CardContent className="p-0 flex flex-col flex-1">
         {/* Header */}
         <div className="px-5 pt-5 pb-3 border-b border-border">
           <div className="flex items-start justify-between gap-3 mb-1">
@@ -101,7 +101,7 @@ function AnalysisCard({
         </div>
 
         {/* Mini chart */}
-        <div className="px-5 pt-3 pb-0">
+        <div className="px-5 pt-3 pb-3">
           <p className="text-[11px] text-muted-foreground mb-1.5">
             {analysis.chart1Title}
           </p>
@@ -148,7 +148,7 @@ function AnalysisCard({
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-0 border-t border-border mt-3">
+        <div className="grid grid-cols-3 gap-0 border-t border-border mt-auto">
           <div className="px-5 py-3 border-r border-border">
             <p className="text-[10px] text-muted-foreground mb-0.5">Rader</p>
             <p className="text-sm font-semibold text-foreground">
@@ -170,7 +170,7 @@ function AnalysisCard({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3 bg-muted border-t border-border">
+        <div className="flex items-center justify-between px-5 py-3 bg-[#fafbfd] dark:bg-[#0c1524] border-t border-border">
           <div className="flex items-center gap-3">
             {analysis.activeFilterCount > 0 && (
               <span className="flex items-center gap-1 text-[10px] text-[#0f9f96] font-medium">
