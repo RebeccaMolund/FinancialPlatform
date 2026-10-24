@@ -5,6 +5,11 @@ import * as SliderPrimitive from "@radix-ui/react-slider";
 
 import { cn } from "./utils";
 
+/**
+ * Allows a numeric value or range to be selected along a track.
+ * Use it for bounded numeric input; use a text field when exact values need
+ * direct entry.
+ */
 function Slider({
   className,
   defaultValue,

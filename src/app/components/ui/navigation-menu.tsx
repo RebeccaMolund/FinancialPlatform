@@ -5,6 +5,10 @@ import { ChevronDownIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Renders a hierarchical navigation menu with optional viewport behavior.
+ * Use it for grouped site navigation; do not use it for command actions.
+ */
 function NavigationMenu({
   className,
   children,

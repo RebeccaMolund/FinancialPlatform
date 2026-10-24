@@ -23,11 +23,15 @@ import {
 } from "date-fns";
 import { sv } from "date-fns/locale";
 
+/** Inclusive date endpoints selected for the dashboard. */
 export interface DateRange {
+  /** First date in the range, or `null` when no start has been selected. */
   start: Date | null;
+  /** Last date in the range, or `null` when no end has been selected. */
   end: Date | null;
 }
 
+/** Currencies supported by the dashboard's display selector. */
 export type CurrencyCode = "SEK" | "EUR" | "USD";
 
 function DateRangePicker({
@@ -160,15 +164,31 @@ function DateRangePicker({
   );
 }
 
-interface HeaderProps {
+/**
+ * Props for the dashboard header.
+ *
+ * The header coordinates date range, currency and optional edit-mode controls;
+ * it is not a generic page header.
+ */
+export interface HeaderProps {
+  /** Whether dashboard edit mode is enabled. */
   editMode?: boolean;
+  /** Called when the edit-mode control is toggled. */
   onEditModeToggle?: () => void;
+  /** Currently selected date range. */
   range: DateRange;
+  /** Called when a new date range is applied. */
   onRangeChange?: (range: DateRange) => void;
+  /** Currency displayed by the dashboard. */
   currency: CurrencyCode;
+  /** Called when the currency selection changes. */
   onCurrencyChange: (currency: CurrencyCode) => void;
 }
 
+/**
+ * Renders the dashboard's date, currency, and optional edit-mode controls.
+ * Use it on the dashboard; do not use it as a generic site header.
+ */
 export function Header({
   editMode,
   onEditModeToggle,

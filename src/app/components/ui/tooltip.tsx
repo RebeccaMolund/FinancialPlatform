@@ -18,6 +18,11 @@ function TooltipProvider({
   );
 }
 
+/**
+ * Provides brief explanatory text for a trigger on hover or focus.
+ * Use it for supplementary help; do not put essential instructions only in
+ * a tooltip.
+ */
 function Tooltip({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {

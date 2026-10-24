@@ -6,6 +6,10 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Groups top-level menus into a keyboard-accessible menu bar.
+ * Use it for application commands; do not use it as a page breadcrumb.
+ */
 function Menubar({
   className,
   ...props

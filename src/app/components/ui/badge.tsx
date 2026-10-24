@@ -25,6 +25,10 @@ const badgeVariants = cva(
   },
 );
 
+/**
+ * Displays a short status or category label with a visual variant.
+ * Use it for compact metadata; do not use it for an interactive control.
+ */
 function Badge({
   className,
   variant,

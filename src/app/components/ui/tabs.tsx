@@ -5,6 +5,10 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "./utils";
 
+/**
+ * Coordinates selection among related tab triggers and content panels.
+ * Use it to switch between peer views; do not use it for sequential steps.
+ */
 function Tabs({
   className,
   ...props

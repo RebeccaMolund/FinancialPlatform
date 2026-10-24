@@ -1,8 +1,3 @@
-Här är hela README:n, komplett och redo att klistra in:
-
----
-
-````markdown
 # FinancialPlatform
 
 FinancialPlatform is a Swedish-first financial dashboard prototype for companies
@@ -89,7 +84,6 @@ Install dependencies and start the development server:
 npm install
 npm run dev
 ```
-````
 
 Create a production build with:
 
@@ -108,15 +102,81 @@ scope:
 - Live invoice imports and synchronization
 - Production-grade currency conversion and financial data integrations
 
+## Component library
+
+### Storybook
+
+Run the component documentation locally:
+
+```bash
+npm run storybook
 ```
 
----
+Create a static Storybook build with:
 
-Och som en sista påminnelse innan du skickar in till Bits, här är resten av paketet, samlat:
-
-- **CV:** https://www.canva.com/design/DAHV7Fos5yM
-- **Svar 1 (something you shipped)** och **svar 2 (interface you love/fix)** — de vi skrev tidigare
-- **Cover letter** — det till Robin om att göra komplex information begriplig
-
-Lycka till! 🍀
+```bash
+npm run build-storybook
 ```
+
+Use the Theme toolbar control to view stories in light or dark mode. Storybook
+loads the same stylesheet as the app, so components receive the application
+theme tokens.
+
+### Design tokens
+
+Color tokens live in `src/styles/theme.css` as CSS custom properties. The
+`--md3-*` values are the underlying palette; semantic aliases such as
+`--background`, `--foreground`, `--primary`, and `--surface-*` are mapped to
+Tailwind color utilities. The `.dark` class switches the values for dark mode.
+Spacing follows Tailwind's 4px base scale, and typography uses Inter with IBM
+Plex Sans as the additional font family. See the Design tokens story for a
+side-by-side overview.
+
+### Adding a component
+
+1. Keep reusable app components in `src/app/components`; put shared primitive
+   wrappers in `src/app/components/ui`.
+2. Export a named TypeScript props type and use it as the component's props
+   annotation. Add JSDoc for the component and each custom prop, including
+   what it is for, when to use it, and when not to use it. Document observed
+   behavior only.
+3. Add a colocated `*.stories.tsx` file. Type its metadata with
+   `Meta<typeof Component>` and stories with `StoryObj<typeof meta>` so
+   Storybook can infer controls from the component's TypeScript props.
+4. Cover the default state, supported variants and sizes, disabled/error
+   states where applicable, and both themes. Use only props and states the
+   component actually supports.
+5. Run `npm run build` and `npm run build-storybook`.
+
+### Components covered and pending review
+
+Stories cover the project-specific components (`ColorPicker`, `VariantPicker`,
+`DateFieldButton`, `Header`, `Sidebar`, `StatCard`, and `ImageWithFallback`)
+and every UI primitive found to use application theme tokens or used by those
+components: `Accordion`, `Alert`, `AlertDialog`, `Avatar`, `Badge`,
+`Breadcrumb`, `Button`, `Calendar`, `Card`, `Chart`, `Checkbox`, `Command`,
+`ContextMenu`, `Dialog`, `Drawer`, `DropdownMenu`, `Form`, `HoverCard`, `Input`,
+`InputOTP`, `Menubar`, `NavigationMenu`, `Popover`, `Progress`, `RadioGroup`,
+`ScrollArea`, `Select`, `Separator`, `Sheet`, `Sidebar`, `Skeleton`, `Slider`,
+`Switch`, `Table`, `Tabs`, `Textarea`, `Toggle`, `ToggleGroup`, and `Tooltip`.
+
+The props aliases for the documented primitives are exported from
+`src/app/components/ui/props.ts` (and `ButtonProps` is also exported directly
+from `button.tsx`). The component-specific props types for app components are
+exported from their component modules.
+
+These existing UI primitives do not use the application's semantic theme
+tokens and are left undocumented in Storybook for separate review:
+`AspectRatio`, `Carousel`, `Collapsible`, `Label`, `Pagination`, and `Sonner`.
+The `use-mobile` hook and `cn` helper are utilities, not components.
+
+Known API inconsistencies are documented rather than changed: the app
+components do not expose disabled/error states where none exist; `Sidebar`
+accepts a `darkMode` prop although its visual theme is controlled globally;
+`StatCard.backgroundColor` is an unrestricted CSS class string; and
+`DateFieldButton` exposes only its date-picker-specific click/open API rather
+than native button props. Pagination's previous/next exports are links, not
+disabled controls. The `Resizable` wrapper is also left undocumented because
+its current `react-resizable-panels` imports (`PanelGroup` and
+`PanelResizeHandle`) do not exist in the installed package API; the existing
+TypeScript check reports those mismatches.

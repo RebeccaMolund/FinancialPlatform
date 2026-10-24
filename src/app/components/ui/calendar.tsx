@@ -7,6 +7,11 @@ import { DayPicker } from "react-day-picker";
 import { cn } from "./utils";
 import { buttonVariants } from "./button";
 
+/**
+ * Renders a selectable calendar using the configured date-picker props.
+ * Use it to select dates or date ranges; do not use it as a read-only
+ * calendar display.
+ */
 function Calendar({
   className,
   classNames,

@@ -19,6 +19,11 @@ const alertVariants = cva(
   },
 );
 
+/**
+ * Groups a short message and its optional title into a themed alert surface.
+ * Use `destructive` for an error message; do not use it for interactive
+ * dialogs or long-form content.
+ */
 function Alert({
   className,
   variant,

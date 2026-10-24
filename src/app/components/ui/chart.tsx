@@ -34,6 +34,11 @@ function useChart() {
   return context;
 }
 
+/**
+ * Provides responsive sizing and theme-aware CSS variables for chart series.
+ * Use it as the wrapper for a Recharts chart configured with `ChartConfig`;
+ * do not use it as a chart renderer by itself.
+ */
 function ChartContainer({
   id,
   className,

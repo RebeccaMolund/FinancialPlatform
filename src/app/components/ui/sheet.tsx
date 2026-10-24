@@ -6,6 +6,10 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Coordinates a modal sheet trigger and its content panel.
+ * Use it for a focused side or edge panel; use a dialog for centered content.
+ */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }

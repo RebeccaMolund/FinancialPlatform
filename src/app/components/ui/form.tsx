@@ -16,6 +16,11 @@ import {
 import { cn } from "./utils";
 import { Label } from "./label";
 
+/**
+ * Provides React Hook Form state to a form subtree.
+ * Use it with the related field and message components; do not use it as a
+ * native form element by itself.
+ */
 const Form = FormProvider;
 
 type FormFieldContextValue<

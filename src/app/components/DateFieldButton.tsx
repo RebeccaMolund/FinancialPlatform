@@ -16,13 +16,28 @@
 import svgPaths from "@/imports/TextField/svg-gzvro74ho3";
 import { ChevronDown } from "lucide-react";
 
-interface DateFieldButtonProps {
+/**
+ * Props for the date-range field button.
+ *
+ * This component is intended to open a date picker; it is not a general
+ * purpose button and does not accept native button props.
+ */
+export interface DateFieldButtonProps {
+  /** Text displayed in the field. */
   label: string;
+  /** Whether the associated date picker is open. */
   open: boolean;
+  /** Called when the field is clicked. */
   onClick: () => void;
+  /** Accessible name override; defaults to the Swedish label "Datumfält". */
   ariaLabel?: string;
 }
 
+/**
+ * Displays a date-range field and reports clicks to its owner.
+ * Use it to trigger the app's date picker; do not use it as a generic
+ * interactive button or when native button attributes are needed.
+ */
 export function DateFieldButton({
   label,
   open,

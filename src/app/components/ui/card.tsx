@@ -2,6 +2,11 @@ import * as React from "react";
 
 import { cn } from "./utils";
 
+/**
+ * Provides a themed surface for a related content group.
+ * Use it with card subcomponents for structured content; do not use it as an
+ * interactive dialog.
+ */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

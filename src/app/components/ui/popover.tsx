@@ -5,6 +5,10 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "./utils";
 
+/**
+ * Anchors supplemental interactive content to a trigger.
+ * Use it for compact contextual controls; use a dialog for blocking workflows.
+ */
 function Popover({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) {

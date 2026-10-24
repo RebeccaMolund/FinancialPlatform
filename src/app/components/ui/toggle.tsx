@@ -28,6 +28,10 @@ const toggleVariants = cva(
   },
 );
 
+/**
+ * Renders a pressable control with selected and unselected states.
+ * Use it for a single toggle action; use `ToggleGroup` for related choices.
+ */
 function Toggle({
   className,
   variant,

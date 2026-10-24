@@ -5,6 +5,10 @@ import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 
 import { cn } from "./utils";
 
+/**
+ * Reveals supplemental content when its trigger is hovered or focused.
+ * Use it for brief contextual details; use a dialog for required interaction.
+ */
 function HoverCard({
   ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {

@@ -14,6 +14,11 @@ const ToggleGroupContext = React.createContext<
   variant: "default",
 });
 
+/**
+ * Groups related toggle controls for single or multiple selection.
+ * Use it for a compact set of related options; use radio or checkbox controls
+ * when their form semantics are needed.
+ */
 function ToggleGroup({
   className,
   variant,

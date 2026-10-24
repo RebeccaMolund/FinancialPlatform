@@ -5,6 +5,11 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 import { cn } from "./utils";
 
+/**
+ * Provides a scrollable viewport with themed scrollbars.
+ * Use it to constrain overflowing content; do not use it when the page should
+ * own the scrolling behavior.
+ */
 function ScrollArea({
   className,
   children,

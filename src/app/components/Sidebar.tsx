@@ -1,5 +1,6 @@
 import { LayoutDashboard, BarChart2, Bookmark, Settings } from "lucide-react";
 
+/** Application destinations supported by the primary sidebar. */
 export type Page = "dashboard" | "ny-analys" | "sparade" | "installningar";
 
 const navItems: { icon: React.ElementType; label: string; page: Page }[] = [
@@ -9,12 +10,25 @@ const navItems: { icon: React.ElementType; label: string; page: Page }[] = [
   { icon: Settings, label: "Kontoinställningar", page: "installningar" },
 ];
 
-interface SidebarProps {
+/**
+ * Props for the application's page navigation.
+ *
+ * This sidebar is tied to the application's `Page` routes rather than being
+ * a general navigation menu.
+ */
+export interface SidebarProps {
+  /** Currently active application page. */
   currentPage: Page;
+  /** Called when a navigation destination is selected. */
   onNavigate: (page: Page) => void;
+  /** Retained theme flag accepted by this component. */
   darkMode?: boolean;
 }
 
+/**
+ * Renders navigation for the four application pages.
+ * Use it for the app's page navigation; do not use it for arbitrary menus.
+ */
 export function Sidebar({
   currentPage,
   onNavigate,

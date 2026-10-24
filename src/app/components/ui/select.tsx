@@ -6,6 +6,10 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Provides selection state and accessibility context for a select menu.
+ * Use it for one choice from a list; do not use it for free-form input.
+ */
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {

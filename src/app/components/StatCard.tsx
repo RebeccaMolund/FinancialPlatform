@@ -1,11 +1,22 @@
 import { LucideIcon } from "lucide-react";
 
-interface StatCardProps {
+/**
+ * Props for the dashboard statistic tile.
+ *
+ * It displays caller-provided content and does not calculate or format values.
+ */
+export interface StatCardProps {
+  /** Statistic label. */
   title: string;
+  /** Preformatted statistic value. */
   value: string;
+  /** Supporting text shown below the value. */
   subtitle: string;
+  /** Lucide icon rendered by the card. */
   icon: LucideIcon;
+  /** CSS class name used as the card background color. */
   backgroundColor: string;
+  /** Whether to use the card's dark-mode color mapping. */
   darkMode?: boolean;
 }
 
@@ -16,6 +27,11 @@ const DARK_BAND_COLORS: Record<string, string> = {
   "bg-[#f3e8ff]": "#392653",
 };
 
+/**
+ * Displays one precomputed dashboard statistic.
+ * Use it for a KPI with a title, value, subtitle and icon; do not use it when
+ * the component should derive or format the statistic itself.
+ */
 export function StatCard({
   title,
   value,

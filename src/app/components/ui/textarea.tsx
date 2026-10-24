@@ -2,6 +2,10 @@ import * as React from "react";
 
 import { cn } from "./utils";
 
+/**
+ * Styles a native multiline input with the shared field tokens.
+ * Use it for longer free-form text; use `Input` for single-line values.
+ */
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

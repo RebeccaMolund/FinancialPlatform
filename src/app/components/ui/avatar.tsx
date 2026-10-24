@@ -5,6 +5,11 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
 import { cn } from "./utils";
 
+/**
+ * Displays a profile image with a fallback when the image is unavailable.
+ * Use it to identify a person or account; do not use it for decorative
+ * imagery without identity meaning.
+ */
 function Avatar({
   className,
   ...props

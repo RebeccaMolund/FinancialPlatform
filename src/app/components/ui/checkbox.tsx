@@ -6,6 +6,11 @@ import { CheckIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Renders an accessible binary or indeterminate selection control.
+ * Use it for independently selectable options; use a radio group for
+ * mutually exclusive choices.
+ */
 function Checkbox({
   className,
   ...props

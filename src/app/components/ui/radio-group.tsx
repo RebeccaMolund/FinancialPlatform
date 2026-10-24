@@ -6,6 +6,11 @@ import { CircleIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Groups mutually exclusive radio choices.
+ * Use it when exactly one option can be selected; use checkboxes for
+ * independent choices.
+ */
 function RadioGroup({
   className,
   ...props

@@ -4,6 +4,10 @@ import * as React from "react";
 
 import { cn } from "./utils";
 
+/**
+ * Renders tabular data with themed header, row and cell subcomponents.
+ * Use it for row-and-column data; do not use it for unrelated page layout.
+ */
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div

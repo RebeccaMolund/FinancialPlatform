@@ -13,6 +13,10 @@ import {
   DialogTitle,
 } from "./dialog";
 
+/**
+ * Provides a searchable command-list root and keyboard-navigation context.
+ * Use it to filter and choose actions; do not use it as a general text field.
+ */
 function Command({
   className,
   ...props

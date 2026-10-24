@@ -5,6 +5,11 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator";
 
 import { cn } from "./utils";
 
+/**
+ * Visually or semantically separates adjacent content.
+ * Use it to mark a section boundary; do not use it as a decorative line with
+ * meaningful content of its own.
+ */
 function Separator({
   className,
   orientation = "horizontal",

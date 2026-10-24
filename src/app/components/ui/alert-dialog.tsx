@@ -6,6 +6,10 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import { cn } from "./utils";
 import { buttonVariants } from "./button";
 
+/**
+ * Presents a modal confirmation that requires a deliberate response.
+ * Use it for important actions; do not use it for non-blocking information.
+ */
 function AlertDialog({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {

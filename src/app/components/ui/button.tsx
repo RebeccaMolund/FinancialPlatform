@@ -34,6 +34,11 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * Renders a semantic button with the library's action variants and sizes.
+ * Use it for interactive actions; do not use it for navigation links unless
+ * composing a link with `asChild`.
+ */
 function Button({
   className,
   variant,
@@ -56,3 +61,6 @@ function Button({
 }
 
 export { Button, buttonVariants };
+
+/** Props accepted by the variant- and size-aware action button. */
+export type ButtonProps = React.ComponentProps<typeof Button>;

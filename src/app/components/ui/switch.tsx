@@ -5,6 +5,10 @@ import * as SwitchPrimitive from "@radix-ui/react-switch";
 
 import { cn } from "./utils";
 
+/**
+ * Renders an accessible on/off control.
+ * Use it for immediate binary settings; do not use it for multiple choices.
+ */
 function Switch({
   className,
   ...props

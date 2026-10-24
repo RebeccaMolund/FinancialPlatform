@@ -6,6 +6,10 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Presents modal content above the current page.
+ * Use it for focused workflows; do not use it for brief non-blocking notices.
+ */
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {

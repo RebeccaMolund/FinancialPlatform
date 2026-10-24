@@ -5,6 +5,11 @@ import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "./utils";
 
+/**
+ * Presents a modal panel using the drawer interaction pattern.
+ * Use it for focused, touch-friendly content; do not use it for simple
+ * inline disclosure.
+ */
 function Drawer({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {

@@ -495,6 +495,11 @@ const sidebarMenuButtonVariants = cva(
   },
 );
 
+/**
+ * Renders a sidebar navigation item with active, variant and size states.
+ * Use it inside the sidebar menu composition; do not use it as a general
+ * page-level action.
+ */
 function SidebarMenuButton({
   asChild = false,
   isActive = false,

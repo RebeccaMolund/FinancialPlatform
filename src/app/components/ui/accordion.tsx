@@ -6,6 +6,10 @@ import { ChevronDownIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Groups related content into collapsible sections.
+ * Use it to reveal optional details; do not use it as a tabbed interface.
+ */
 function Accordion({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Root>) {

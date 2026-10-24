@@ -5,6 +5,10 @@ import * as ProgressPrimitive from "@radix-ui/react-progress";
 
 import { cn } from "./utils";
 
+/**
+ * Communicates progress toward a known or ongoing task.
+ * Use it for measurable completion; do not use it as a numeric input control.
+ */
 function Progress({
   className,
   value,

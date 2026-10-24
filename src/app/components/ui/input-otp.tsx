@@ -6,6 +6,11 @@ import { MinusIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+/**
+ * Renders a segmented one-time-password input.
+ * Use it for fixed-length verification codes; do not use it for ordinary
+ * free-form text.
+ */
 function InputOTP({
   className,
   containerClassName,

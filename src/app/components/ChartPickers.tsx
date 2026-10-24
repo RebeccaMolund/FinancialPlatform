@@ -33,15 +33,25 @@ export const VARIANT_ICONS: Record<DashboardVariantIcon, React.ElementType> = {
 
 // ─── Color picker ────────────────────────────────────────────────────────────
 
+/**
+ * Presents the available chart colors in a compact dropdown.
+ * Use it when a dashboard chart exposes a color choice; do not use it for
+ * arbitrary color input because choices are limited to the supplied palette.
+ */
+export interface ColorPickerProps {
+  /** Currently selected color string. */
+  current: string;
+  /** Called with the selected palette color. */
+  onChange: (c: string) => void;
+  /** Available color strings. */
+  colors: string[];
+}
+
 export function ColorPicker({
   current,
   onChange,
   colors,
-}: {
-  current: string;
-  onChange: (c: string) => void;
-  colors: string[];
-}) {
+}: ColorPickerProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -76,19 +86,35 @@ export function ColorPicker({
 
 // ─── Variant picker popover ───────────────────────────────────────────────────
 
+/** A dropdown for choosing one of the supplied chart variants. */
+export interface VariantPickerOption {
+  /** Variant value passed to `onChange`. */
+  value: DashboardChartVariant;
+  /** Visible option label. */
+  label: string;
+  /** Icon key resolved through `VARIANT_ICONS`. */
+  icon: DashboardVariantIcon;
+}
+
+/**
+ * Presents chart variants as a dropdown with an icon and selected indicator.
+ * Use it for dashboard chart variant selection; do not use it for choices
+ * outside the supplied chart-variant options.
+ */
+export interface VariantPickerProps {
+  /** Currently selected chart variant. */
+  current: DashboardChartVariant;
+  /** Called with the selected chart variant. */
+  onChange: (v: DashboardChartVariant) => void;
+  /** Variants shown in the menu. */
+  options: VariantPickerOption[];
+}
+
 export function VariantPicker({
   current,
   onChange,
   options,
-}: {
-  current: DashboardChartVariant;
-  onChange: (v: DashboardChartVariant) => void;
-  options: {
-    value: DashboardChartVariant;
-    label: string;
-    icon: DashboardVariantIcon;
-  }[];
-}) {
+}: VariantPickerProps) {
   const CurrentIcon =
     VARIANT_ICONS[options.find((o) => o.value === current)?.icon ?? "bar"];
   return (
