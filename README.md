@@ -1,8 +1,3 @@
-Här är hela README:n, komplett och redo att klistra in:
-
----
-
-````markdown
 # FinancialPlatform
 
 FinancialPlatform is a Swedish-first financial dashboard prototype for companies
@@ -108,15 +103,4 @@ scope:
 - Live invoice imports and synchronization
 - Production-grade currency conversion and financial data integrations
 
-```
 
----
-
-Och som en sista påminnelse innan du skickar in till Bits, här är resten av paketet, samlat:
-
-- **CV:** https://www.canva.com/design/DAHV7Fos5yM
-- **Svar 1 (something you shipped)** och **svar 2 (interface you love/fix)** — de vi skrev tidigare
-- **Cover letter** — det till Robin om att göra komplex information begriplig
-
-Lycka till! 🍀
-```
